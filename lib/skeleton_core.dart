@@ -32,6 +32,10 @@ export 'src/widgets/custom_sliver_app_bar.dart';
 // for direct import but not auto-exported to avoid conflicts with
 // app-specific localized versions.
 
+// Navs
+export 'src/navs/menu_nav.dart';
+export 'src/navs/top_score_nav.dart';
+
 // Animations
 export 'src/animations/particle.dart';
 export 'src/animations/particle_system.dart';
