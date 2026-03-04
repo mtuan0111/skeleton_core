@@ -4,6 +4,9 @@
 /// that can be shared across multiple game projects.
 library skeleton_core;
 
+// App launcher
+export 'src/skeleton_app.dart';
+
 // Config
 export 'src/config/env_config.dart';
 export 'src/config/theme_config.dart';
