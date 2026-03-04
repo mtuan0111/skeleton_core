@@ -6,6 +6,7 @@ library skeleton_core;
 
 // Config
 export 'src/config/env_config.dart';
+export 'src/config/theme_config.dart';
 
 // Models
 export 'src/models/user_model.dart';
@@ -18,6 +19,21 @@ export 'src/helpers/ui_constants.dart';
 export 'src/helpers/extension.dart';
 export 'src/helpers/const.dart';
 export 'src/helpers/app_text_styles.dart';
+export 'src/helpers/helper.dart';
+
+// Widgets
+export 'src/widgets/template_widgets.dart';
+// alert_template.dart and update_notice_dialog.dart are available
+// for direct import but not auto-exported to avoid conflicts with
+// app-specific localized versions.
+
+// Animations
+export 'src/animations/particle.dart';
+export 'src/animations/particle_system.dart';
+export 'src/animations/animated_game_wrapper.dart';
+export 'src/animations/game_animation_triggers.dart';
+export 'src/animations/screen_shake_controller.dart';
+export 'src/animations/animation_constants.dart';
 
 // Blocs — User
 export 'src/blocs/user/user_bloc.dart';

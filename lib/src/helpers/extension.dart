@@ -2,29 +2,26 @@ import 'package:flutter/material.dart';
 
 extension ColorCustome on Color {
   Color getDarker({int percentage = 50}) {
-    int r = (((this.r * 255.0).round() & 0xff) * (100 - percentage) / 100)
-        .round();
-    int g = (((this.g * 255.0).round() & 0xff) * (100 - percentage) / 100)
-        .round();
-    int b = (((this.b * 255.0).round() & 0xff) * (100 - percentage) / 100)
-        .round();
+    int r =
+        (((this.r * 255.0).round() & 0xff) * (100 - percentage) / 100).round();
+    int g =
+        (((this.g * 255.0).round() & 0xff) * (100 - percentage) / 100).round();
+    int b =
+        (((this.b * 255.0).round() & 0xff) * (100 - percentage) / 100).round();
     int a = (this.a * 255.0).round() & 0xff;
     return Color.fromARGB(a, r, g, b);
   }
 
   Color getLighter({int percentage = 50}) {
-    int r =
-        (((this.r * 255.0).round() & 0xff) +
-                ((255 - ((this.r * 255.0).round() & 0xff)) * percentage / 100))
-            .round();
-    int g =
-        (((this.g * 255.0).round() & 0xff) +
-                ((255 - ((this.g * 255.0).round() & 0xff)) * percentage / 100))
-            .round();
-    int b =
-        (((this.b * 255.0).round() & 0xff) +
-                ((255 - ((this.b * 255.0).round() & 0xff)) * percentage / 100))
-            .round();
+    int r = (((this.r * 255.0).round() & 0xff) +
+            ((255 - ((this.r * 255.0).round() & 0xff)) * percentage / 100))
+        .round();
+    int g = (((this.g * 255.0).round() & 0xff) +
+            ((255 - ((this.g * 255.0).round() & 0xff)) * percentage / 100))
+        .round();
+    int b = (((this.b * 255.0).round() & 0xff) +
+            ((255 - ((this.b * 255.0).round() & 0xff)) * percentage / 100))
+        .round();
     int a = (this.a * 255.0).round() & 0xff;
     return Color.fromARGB(a, r, g, b);
   }
@@ -48,12 +45,25 @@ extension ColorCustome on Color {
 }
 
 extension LinearGradientCustom on LinearGradient {
-  getDarker({int percentage = 50}) {
+  LinearGradient getDarker({int percentage = 50}) {
     return LinearGradient(
       begin: begin,
       end: end,
       colors: colors
           .map((color) => color.getDarker(percentage: percentage))
+          .toList(),
+      stops: stops,
+      tileMode: tileMode,
+      transform: transform,
+    );
+  }
+
+  LinearGradient getLighter({int percentage = 50}) {
+    return LinearGradient(
+      begin: begin,
+      end: end,
+      colors: colors
+          .map((color) => color.getLighter(percentage: percentage))
           .toList(),
       stops: stops,
       tileMode: tileMode,
