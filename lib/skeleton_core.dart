@@ -93,3 +93,6 @@ export 'src/services/user_services.dart';
 export 'src/services/setting_services.dart';
 export 'src/services/auth_services.dart';
 export 'src/services/app_version_services.dart';
+
+// Screens
+export 'src/screens/setting_screen.dart';
