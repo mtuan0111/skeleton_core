@@ -20,6 +20,10 @@ export 'src/helpers/extension.dart';
 export 'src/helpers/const.dart';
 export 'src/helpers/app_text_styles.dart';
 export 'src/helpers/helper.dart';
+export 'src/helpers/core_lang.dart';
+
+// Localization
+export 'src/localization/core_localizations.dart';
 
 // Widgets
 export 'src/widgets/template_widgets.dart';
@@ -62,6 +66,15 @@ export 'src/blocs/app_version/app_version_state.dart';
 
 // Blocs — Menu
 export 'src/blocs/menu/menu_bloc.dart';
+
+// Blocs — Tour
+export 'src/blocs/tour/tour_bloc.dart';
+export 'src/blocs/tour/tour_event.dart';
+export 'src/blocs/tour/tour_state.dart';
+
+// Widgets
+export 'src/widgets/loading_widget.dart';
+export 'src/widgets/update_checker_wrapper.dart';
 
 // Services
 export 'src/services/audio_services.dart';

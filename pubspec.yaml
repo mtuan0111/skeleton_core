@@ -51,4 +51,5 @@ dependency_overrides:
   win32: ^5.5.4
 
 flutter:
+  generate: true
   uses-material-design: true
