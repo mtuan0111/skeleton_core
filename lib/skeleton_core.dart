@@ -27,6 +27,7 @@ export 'src/localization/core_localizations.dart';
 
 // Widgets
 export 'src/widgets/template_widgets.dart';
+export 'src/widgets/custom_sliver_app_bar.dart';
 // alert_template.dart and update_notice_dialog.dart are available
 // for direct import but not auto-exported to avoid conflicts with
 // app-specific localized versions.
@@ -66,6 +67,9 @@ export 'src/blocs/app_version/app_version_state.dart';
 
 // Blocs — Menu
 export 'src/blocs/menu/menu_bloc.dart';
+
+// Blocs — TopScore Nav
+export 'src/blocs/top_score_nav/top_score_nav_cubit.dart';
 
 // Blocs — Tour
 export 'src/blocs/tour/tour_bloc.dart';
