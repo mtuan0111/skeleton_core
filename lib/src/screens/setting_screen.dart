@@ -140,7 +140,7 @@ class _SettingScreenState extends State<SettingScreen> {
         labelStyle: AppTextStyles.titleLarge(context),
         hintStyle: AppTextStyles.withColor(
           AppTextStyles.bodyLarge(context),
-          Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
+          Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.5),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
@@ -152,7 +152,8 @@ class _SettingScreenState extends State<SettingScreen> {
             LayoutConfig.layoutBorderRadius,
           ),
           borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.3),
+            color:
+                Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
           ),
         ),
         focusedBorder: OutlineInputBorder(
@@ -181,11 +182,11 @@ class _SettingScreenState extends State<SettingScreen> {
     return Container(
       padding: const EdgeInsets.all(kPaddingL),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         borderRadius: borderRadius ??
             BorderRadius.circular(LayoutConfig.layoutBorderRadius / 5),
         border: Border.all(
-          color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.2),
         ),
       ),
       child: child,
@@ -225,7 +226,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -242,7 +243,7 @@ class _SettingScreenState extends State<SettingScreen> {
             divisions: 10,
             activeColor: Theme.of(context).colorScheme.onPrimary,
             inactiveColor:
-                Theme.of(context).colorScheme.onPrimary.withOpacity(0.3),
+                Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
             onChanged: (val) {
               setState(() {
                 settingBloc.add(ChangedFontSize(fontSize: val.round()));
@@ -291,7 +292,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -308,7 +309,7 @@ class _SettingScreenState extends State<SettingScreen> {
             divisions: 10,
             activeColor: Theme.of(context).colorScheme.onPrimary,
             inactiveColor:
-                Theme.of(context).colorScheme.onPrimary.withOpacity(0.3),
+                Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
             onChanged: (val) {
               settingBloc.add(ChangedVol(vol: val.round()));
             },
@@ -342,7 +343,7 @@ class _SettingScreenState extends State<SettingScreen> {
           const Spacer(),
           Switch(
             value: settingState.isVibrate,
-            activeColor: Theme.of(context).primaryColor,
+            activeThumbColor: Theme.of(context).primaryColor,
             onChanged: (val) {
               settingBloc.add(ChangedIsVibrate(isVibrate: val));
             },
@@ -385,7 +386,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -402,7 +403,7 @@ class _SettingScreenState extends State<SettingScreen> {
             divisions: 8,
             activeColor: Theme.of(context).colorScheme.onPrimary,
             inactiveColor:
-                Theme.of(context).colorScheme.onPrimary.withOpacity(0.3),
+                Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
             onChanged: (val) {
               setState(() {
                 settingBloc.add(
@@ -443,7 +444,7 @@ class _SettingScreenState extends State<SettingScreen> {
           const SizedBox(width: kSpaceML),
           Switch(
             value: settingState.onlyShowMyRecorded,
-            activeColor: Theme.of(context).primaryColor,
+            activeThumbColor: Theme.of(context).primaryColor,
             onChanged: (val) {
               settingBloc.add(
                 ChangedOnlyShowMyRecorded(onlyShowMyRecorded: val),
@@ -484,7 +485,7 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
           const SizedBox(height: kSpaceML),
           DropdownButtonFormField<String>(
-            value: settingState.locale,
+            initialValue: settingState.locale,
             items: languages.entries
                 .map(
                   (lang) => DropdownMenuItem<String>(
@@ -511,8 +512,10 @@ class _SettingScreenState extends State<SettingScreen> {
                   LayoutConfig.layoutBorderRadius,
                 ),
                 borderSide: BorderSide(
-                  color:
-                      Theme.of(context).colorScheme.onPrimary.withOpacity(0.3),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onPrimary
+                      .withValues(alpha: 0.3),
                 ),
               ),
               enabledBorder: OutlineInputBorder(
@@ -520,8 +523,10 @@ class _SettingScreenState extends State<SettingScreen> {
                   LayoutConfig.layoutBorderRadius,
                 ),
                 borderSide: BorderSide(
-                  color:
-                      Theme.of(context).colorScheme.onPrimary.withOpacity(0.3),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onPrimary
+                      .withValues(alpha: 0.3),
                 ),
               ),
               focusedBorder: OutlineInputBorder(

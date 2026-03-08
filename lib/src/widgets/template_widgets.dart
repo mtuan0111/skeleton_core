@@ -424,6 +424,8 @@ class CustomElevatedButton extends StatefulWidget {
   final bool? isActive;
   final LinearGradient? gradient;
   final TextDirection? textDirection;
+  final Widget Function(BuildContext context, BorderRadius borderRadius)?
+      backgroundBuilder;
 
   const CustomElevatedButton({
     Key? key,
@@ -443,6 +445,7 @@ class CustomElevatedButton extends StatefulWidget {
     this.isActive,
     this.gradient,
     this.textDirection,
+    this.backgroundBuilder,
   }) : super(key: key);
 
   @override
@@ -671,6 +674,13 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
                         ),
                     borderRadius: borderRadiusValue,
                   ),
+                  child: widget.backgroundBuilder != null
+                      ? ClipRRect(
+                          borderRadius: borderRadiusValue,
+                          child: widget.backgroundBuilder!(
+                              context, borderRadiusValue),
+                        )
+                      : null,
                 ),
               ),
               Container(
@@ -841,6 +851,8 @@ class AnimatedButton extends StatefulWidget {
   final Color? color;
   final Color? backgroundColor;
   final TextDirection? textDirection;
+  final Widget Function(BuildContext context, BorderRadius borderRadius)?
+      backgroundBuilder;
 
   const AnimatedButton(
     this.context, {
@@ -858,6 +870,7 @@ class AnimatedButton extends StatefulWidget {
     this.color,
     this.backgroundColor,
     this.textDirection,
+    this.backgroundBuilder,
   });
 
   @override
@@ -932,6 +945,7 @@ class _AnimatedButtonState extends State<AnimatedButton> {
           backgroundColor: widget.backgroundColor,
           isActive: widget.isActive,
           textDirection: widget.textDirection,
+          backgroundBuilder: widget.backgroundBuilder,
           onPressed: () {
             onPressed();
 
@@ -1094,6 +1108,8 @@ class OptionCard extends StatelessWidget {
   final IconData icon;
   final Color color;
   final VoidCallback onTap;
+  final Widget Function(BuildContext context, BorderRadius borderRadius)?
+      backgroundBuilder;
 
   const OptionCard({
     super.key,
@@ -1103,6 +1119,7 @@ class OptionCard extends StatelessWidget {
     required this.icon,
     required this.color,
     required this.onTap,
+    this.backgroundBuilder,
   });
 
   @override
@@ -1145,9 +1162,144 @@ class OptionCard extends StatelessWidget {
             iconData: icon,
             shapeAt: RoundedWithShapeAt.topLeft,
             backgroundColor: color,
+            backgroundBuilder: backgroundBuilder,
           ),
         ],
       ),
+    );
+  }
+}
+
+// ============================================================================
+// RankingItem & RankingInfoRow
+// ============================================================================
+
+class RankingItem extends StatelessWidget {
+  const RankingItem({
+    super.key,
+    required this.heroTag,
+    required this.ranking,
+    required this.titleIcon,
+    required this.titleText,
+    required this.infoRows,
+    this.iconData,
+    this.isCurrentUser = false,
+    this.currentUserLabel = 'You',
+  });
+
+  final String heroTag;
+  final int? ranking;
+  final IconData? iconData;
+  final IconData titleIcon;
+  final String titleText;
+  final List<Widget> infoRows;
+  final bool isCurrentUser;
+  final String currentUserLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Hero(
+      tag: heroTag,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 20,
+        children: [
+          if (ranking != null)
+            Expanded(
+              flex: 2,
+              child: RankingSortingWidget(
+                position: ranking!,
+              ),
+            )
+          else
+            Expanded(
+              flex: 2,
+              child: RankingSortingWidget(
+                position: 0,
+                childElement: Icon(iconData),
+              ),
+            ),
+          Expanded(
+            flex: 2,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    RankingInfoRow(
+                      icon: titleIcon,
+                      text: titleText,
+                      style: AppTextStyles.titleLarge(context),
+                    ),
+                    if (isCurrentUser) ...[
+                      const SizedBox(width: kSpaceS),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: kPaddingXS,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.secondary,
+                          borderRadius: BorderRadius.circular(kBorderRadiusS),
+                        ),
+                        child: Text(
+                          currentUserLabel,
+                          style: AppTextStyles.bodySmall(context).copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ]
+                  ],
+                ),
+                ...infoRows,
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class RankingInfoRow extends StatelessWidget {
+  const RankingInfoRow({
+    super.key,
+    required this.icon,
+    required this.text,
+    this.style,
+    this.color,
+  });
+
+  final IconData icon;
+  final String text;
+  final TextStyle? style;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          icon,
+          size: Theme.of(context).textTheme.titleLarge?.fontSize,
+          color: color ?? Theme.of(context).colorScheme.onPrimary,
+        ),
+        const SizedBox(width: kSpaceM),
+        Flexible(
+          fit: FlexFit.loose,
+          child: Text(
+            text,
+            style: (style ?? AppTextStyles.bodyLarge(context)),
+            softWrap: true,
+          ),
+        ),
+      ],
     );
   }
 }

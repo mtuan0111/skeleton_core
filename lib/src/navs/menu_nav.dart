@@ -61,6 +61,7 @@ class _MenuNavState extends State<MenuNav> {
     return BlocBuilder<MenuBloc, MenuState>(
       builder: ((context, navState) => PopScope(
             canPop: false,
+            // ignore: deprecated_member_use
             onPopInvoked: (involked) {
               if (navState is Menu) {
                 SnackBar snackBar = SnackBar(

@@ -21,6 +21,7 @@
         "font_awesome_flutter",
         "intl",
         "lunar",
+        "nested",
         "package_info_plus",
         "qr_flutter",
         "share_plus",
@@ -36,6 +37,13 @@
       "version": "5.15.0",
       "dependencies": [
         "ffi"
+      ]
+    },
+    {
+      "name": "nested",
+      "version": "1.0.0",
+      "dependencies": [
+        "flutter"
       ]
     },
     {
@@ -796,13 +804,6 @@
         "firebase_core_platform_interface",
         "flutter",
         "meta"
-      ]
-    },
-    {
-      "name": "nested",
-      "version": "1.0.0",
-      "dependencies": [
-        "flutter"
       ]
     },
     {

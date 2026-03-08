@@ -231,9 +231,9 @@ class SeasonalTheme {
         const Color(0xFFFF1744), // Vivid red
       ],
       fogColors: [
-        const Color(0xFFFFD700).withOpacity(0.05), // Gold tint
-        const Color(0xFFFF0000).withOpacity(0.02), // Red tint
-        const Color(0xFFFFD700).withOpacity(0.05), // Gold tint
+        const Color(0xFFFFD700).withValues(alpha: 0.05), // Gold tint
+        const Color(0xFFFF0000).withValues(alpha: 0.02), // Red tint
+        const Color(0xFFFFD700).withValues(alpha: 0.05), // Gold tint
       ],
     ),
     ThemeType.valentine: ThemeConfig(
@@ -263,9 +263,9 @@ class SeasonalTheme {
         const Color(0xFFFF69B4),
       ],
       fogColors: [
-        const Color(0xFFFF1744).withOpacity(0.03), // Pink fog
-        const Color(0xFFFFFFFF).withOpacity(0.02), // White fog
-        const Color(0xFFFF1744).withOpacity(0.03), // Pink fog
+        const Color(0xFFFF1744).withValues(alpha: 0.03), // Pink fog
+        const Color(0xFFFFFFFF).withValues(alpha: 0.02), // White fog
+        const Color(0xFFFF1744).withValues(alpha: 0.03), // Pink fog
       ],
     ),
     ThemeType.holi: ThemeConfig(
@@ -288,9 +288,9 @@ class SeasonalTheme {
       enableSnow: false,
       enableFog: true,
       fogColors: [
-        const Color(0xFFFF1493).withOpacity(0.04), // Pink mist
-        const Color(0xFF00CED1).withOpacity(0.03), // Turquoise mist
-        const Color(0xFFFFD700).withOpacity(0.04), // Gold mist
+        const Color(0xFFFF1493).withValues(alpha: 0.04), // Pink mist
+        const Color(0xFF00CED1).withValues(alpha: 0.03), // Turquoise mist
+        const Color(0xFFFFD700).withValues(alpha: 0.04), // Gold mist
       ],
     ),
     ThemeType.easter: ThemeConfig(
@@ -313,9 +313,9 @@ class SeasonalTheme {
       enableSnow: false,
       enableFog: true,
       fogColors: [
-        const Color(0xFF9370DB).withOpacity(0.03),
-        const Color(0xFFFFFFFF).withOpacity(0.04),
-        const Color(0xFFE6E6FA).withOpacity(0.03),
+        const Color(0xFF9370DB).withValues(alpha: 0.03),
+        const Color(0xFFFFFFFF).withValues(alpha: 0.04),
+        const Color(0xFFE6E6FA).withValues(alpha: 0.03),
       ],
     ),
     ThemeType.earthDay: ThemeConfig(
@@ -345,9 +345,9 @@ class SeasonalTheme {
         const Color(0xFF8FBC8F),
       ],
       fogColors: [
-        const Color(0xFF228B22).withOpacity(0.03),
-        const Color(0xFF90EE90).withOpacity(0.02),
-        const Color(0xFF228B22).withOpacity(0.03),
+        const Color(0xFF228B22).withValues(alpha: 0.03),
+        const Color(0xFF90EE90).withValues(alpha: 0.02),
+        const Color(0xFF228B22).withValues(alpha: 0.03),
       ],
     ),
     ThemeType.pride: ThemeConfig(
@@ -396,9 +396,9 @@ class SeasonalTheme {
         const Color(0xFF4B0082),
       ],
       fogColors: [
-        const Color(0xFF9B30FF).withOpacity(0.05), // Purple fog
-        const Color(0xFF000000).withOpacity(0.03), // Dark fog
-        const Color(0xFF9B30FF).withOpacity(0.05), // Purple fog
+        const Color(0xFF9B30FF).withValues(alpha: 0.05), // Purple fog
+        const Color(0xFF000000).withValues(alpha: 0.03), // Dark fog
+        const Color(0xFF9B30FF).withValues(alpha: 0.05), // Purple fog
       ],
     ),
     ThemeType.diwali: ThemeConfig(
@@ -427,9 +427,9 @@ class SeasonalTheme {
         const Color(0xFFFFA500),
       ],
       fogColors: [
-        const Color(0xFFFFD700).withOpacity(0.05), // Gold mist
-        const Color(0xFFFF1493).withOpacity(0.03), // Magenta mist
-        const Color(0xFFFFD700).withOpacity(0.05), // Gold mist
+        const Color(0xFFFFD700).withValues(alpha: 0.05), // Gold mist
+        const Color(0xFFFF1493).withValues(alpha: 0.03), // Magenta mist
+        const Color(0xFFFFD700).withValues(alpha: 0.05), // Gold mist
       ],
     ),
     ThemeType.hanukkah: ThemeConfig(
@@ -452,15 +452,15 @@ class SeasonalTheme {
       enableSnow: true,
       enableFog: true,
       fogColors: [
-        const Color(0xFF0047AB).withOpacity(0.03),
-        const Color(0xFFFFFFFF).withOpacity(0.04),
-        const Color(0xFF0047AB).withOpacity(0.03),
+        const Color(0xFF0047AB).withValues(alpha: 0.03),
+        const Color(0xFFFFFFFF).withValues(alpha: 0.04),
+        const Color(0xFF0047AB).withValues(alpha: 0.03),
       ],
       snowColors: [
         Colors.white,
-        const Color(0xFFE0F7FF).withOpacity(0.9),
-        const Color(0xFFC0C0C0).withOpacity(0.7),
-        const Color(0xFF87CEEB).withOpacity(0.6),
+        const Color(0xFFE0F7FF).withValues(alpha: 0.9),
+        const Color(0xFFC0C0C0).withValues(alpha: 0.7),
+        const Color(0xFF87CEEB).withValues(alpha: 0.6),
       ],
     ),
     ThemeType.christmas: ThemeConfig(
@@ -485,8 +485,8 @@ class SeasonalTheme {
       particleShape: ParticleShape.snowflake,
       snowColors: [
         Colors.white,
-        Colors.white.withOpacity(0.9),
-        Colors.white.withOpacity(0.7),
+        Colors.white.withValues(alpha: 0.9),
+        Colors.white.withValues(alpha: 0.7),
         const Color(0xFFE0F7FF), // Very light blue
       ],
     ),
@@ -510,9 +510,9 @@ class SeasonalTheme {
       enableSnow: false,
       enableFog: true,
       fogColors: [
-        const Color(0xFFDC143C).withOpacity(0.03),
-        const Color(0xFF228B22).withOpacity(0.02),
-        const Color(0xFFDC143C).withOpacity(0.03),
+        const Color(0xFFDC143C).withValues(alpha: 0.03),
+        const Color(0xFF228B22).withValues(alpha: 0.02),
+        const Color(0xFFDC143C).withValues(alpha: 0.03),
       ],
     ),
   };
@@ -638,9 +638,9 @@ class ThemeConfig {
   List<Color> getFogColors() {
     return fogColors ??
         [
-          Colors.white.withOpacity(0.05),
-          Colors.white.withOpacity(0.02),
-          Colors.white.withOpacity(0.05),
+          Colors.white.withValues(alpha: 0.05),
+          Colors.white.withValues(alpha: 0.02),
+          Colors.white.withValues(alpha: 0.05),
         ];
   }
 
@@ -649,8 +649,8 @@ class ThemeConfig {
     return snowColors ??
         [
           Colors.white,
-          Colors.white.withOpacity(0.9),
-          Colors.white.withOpacity(0.7),
+          Colors.white.withValues(alpha: 0.9),
+          Colors.white.withValues(alpha: 0.7),
           const Color(0xFFE0F7FF),
         ];
   }

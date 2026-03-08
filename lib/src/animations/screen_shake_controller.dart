@@ -163,7 +163,7 @@ class _ScreenShakeWidgetState extends State<ScreenShakeWidget>
                 child: IgnorePointer(
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 100),
-                    color: Colors.red.withOpacity(flashOpacity),
+                    color: Colors.red.withValues(alpha: flashOpacity),
                   ),
                 ),
               ),

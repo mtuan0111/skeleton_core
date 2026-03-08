@@ -47,6 +47,7 @@ dependencies:
   uuid: ^4.5.1
   qr_flutter: ^4.1.0
 
+  nested: any
 dependency_overrides:
   win32: ^5.5.4
 

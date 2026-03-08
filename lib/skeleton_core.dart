@@ -96,3 +96,4 @@ export 'src/services/app_version_services.dart';
 
 // Screens
 export 'src/screens/setting_screen.dart';
+export 'src/screens/menu_screen.dart';
