@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'particle_system.dart';
 import 'screen_shake_controller.dart';
 import 'animation_constants.dart';
+import 'particle.dart';
 
 /// Main controller for game animation triggers
 /// Provides three main animation events:
@@ -20,9 +21,26 @@ class GameAnimationTriggers {
   /// Trigger small firework effect when points are scored
   /// Position should be in screen coordinates (e.g., score counter position)
   void onAddPoint(Offset position, {List<Color>? colors}) {
-    particleController.triggerSmallBurst(position, colors: colors);
-    // Add light screen shake for impact (no red flash for positive feedback)
-    shakeController.shake(kShakeLightIntensity, false);
+    // 1. Initial pre-explosion glow flash
+    particleController.trigger([
+      Particle(
+        position: position,
+        velocity: Offset.zero,
+        color:
+            colors != null && colors.isNotEmpty ? colors.first : Colors.white,
+        size: 70.0,
+        maxLifetime: 0.15,
+        shape: ParticleShape.lightning,
+        seed: DateTime.now().microsecondsSinceEpoch,
+      )
+    ]);
+
+    // 2. Delayed burst and shake
+    Future.delayed(const Duration(milliseconds: 150), () {
+      particleController.triggerSmallBurst(position, colors: colors);
+      // Add light screen shake for impact (no red flash for positive feedback)
+      shakeController.shake(kShakeLightIntensity, false);
+    });
   }
 
   /// Trigger large explosion when life is gained
