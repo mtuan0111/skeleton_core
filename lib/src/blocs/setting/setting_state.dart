@@ -5,8 +5,16 @@ class SettingState {
   final BaseSettingModel model;
   final bool isLoading;
 
-  SettingState({BaseSettingModel? model, this.isLoading = true})
-    : model = model ?? BaseSettingModel();
+  /// Transient mute flag — not persisted.
+  /// When true, audio is silenced without changing [vol].
+  /// Toggling back restores the original [vol].
+  final bool isMuted;
+
+  SettingState({
+    BaseSettingModel? model,
+    this.isLoading = true,
+    this.isMuted = false,
+  }) : model = model ?? BaseSettingModel();
 
   SettingState copyWith({
     ThemeMode? themeMode,
@@ -18,6 +26,7 @@ class SettingState {
     bool? onlyShowMyRecorded,
     bool? isLoading,
     BaseSettingModel? model,
+    bool? isMuted,
   }) {
     final currentModel = model ?? this.model;
     return SettingState(
@@ -32,6 +41,7 @@ class SettingState {
             onlyShowMyRecorded ?? currentModel.onlyShowMyRecorded,
       ),
       isLoading: isLoading ?? this.isLoading,
+      isMuted: isMuted ?? this.isMuted,
     );
   }
 

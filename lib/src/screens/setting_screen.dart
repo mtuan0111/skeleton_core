@@ -331,7 +331,9 @@ class _SettingScreenState extends State<SettingScreen> {
       child: Row(
         children: [
           Icon(
-            FontAwesomeIcons.waveSquare,
+            settingState.isVibrate
+                ? FontAwesomeIcons.mobileScreenButton
+                : FontAwesomeIcons.mobile,
             color: Theme.of(context).colorScheme.onPrimary,
             size: kIconSizeM,
           ),

@@ -26,15 +26,25 @@ class AudioServices {
     }
   }
 
+  AudioPlayer? _currentPlayer;
+
   Future<void> playSound(String soundPath) async {
     if (getVolume == 0) {
       return;
     }
-    AudioPlayer().play(
+    final player = AudioPlayer();
+    _currentPlayer = player;
+    player.play(
       AssetSource(pathPrefix + soundPath),
       volume: getVolume,
       mode: PlayerMode.lowLatency,
     );
+  }
+
+  /// Stop any currently-playing audio immediately.
+  Future<void> stopAll() async {
+    await _currentPlayer?.stop();
+    _currentPlayer = null;
   }
 
   Future<void> playTap() {

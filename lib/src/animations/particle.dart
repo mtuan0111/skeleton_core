@@ -464,7 +464,7 @@ class ParticlePainter extends CustomPainter {
           _drawFeather(canvas, particle.size, paint);
           break;
         case ParticleShape.lightning:
-          _drawLightning(canvas, particle.size, paint, particle.seed);
+          // Drawn as a Positioned widget in ParticleOverlayState
           break;
       }
 
@@ -1095,110 +1095,6 @@ class ParticlePainter extends CustomPainter {
       ..color = paint.color.withValues(alpha: paint.color.a * 0.7)
       ..style = PaintingStyle.fill;
     canvas.drawPath(barbPath, barbPaint);
-  }
-
-  void _drawLightning(Canvas canvas, double size, Paint basePaint, int seed) {
-    if (seed == 0) return; // Don't draw if no seed is provided to avoid static
-    final rng = Random(seed);
-
-    // Apply the particle's current opacity
-    double alphaMod = basePaint.color.a;
-
-    final paint = Paint()
-      ..color = basePaint.color.withValues(alpha: 0.3 * alphaMod)
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    int numBolts = 3 + rng.nextInt(3);
-    double bound = size;
-
-    for (int b = 0; b < numBolts; b++) {
-      final path = Path();
-
-      // Start randomly along the top or left edge of the bounding box
-      double startX = -bound + rng.nextDouble() * (bound * 2);
-      double startY = -bound;
-
-      if (rng.nextBool()) {
-        startX = -bound;
-        startY = -bound + rng.nextDouble() * (bound * 2);
-      }
-
-      path.moveTo(startX, startY);
-
-      double currentX = startX;
-      double currentY = startY;
-
-      // Target the opposite general direction
-      double targetX = (startX < 0) ? bound : -bound;
-      double targetY = (startY < 0) ? bound : -bound;
-
-      // Draw jagged lines until we reach roughly the other side
-      while (currentX >= -bound &&
-          currentX <= bound &&
-          currentY >= -bound &&
-          currentY <= bound) {
-        // Scale step according to the size so it looks proportional
-        double step = (0.05 + rng.nextDouble() * 0.15) * (bound * 2);
-        if (step < 2) step = 2; // Ensure step is not too small
-
-        double dirX = targetX - currentX;
-        double dirY = targetY - currentY;
-
-        double length = sqrt(dirX * dirX + dirY * dirY);
-        if (length == 0) length = 1;
-
-        double jaggedX = (rng.nextDouble() - 0.5) * 2.0;
-        double jaggedY = (rng.nextDouble() - 0.5) * 2.0;
-
-        currentX += (dirX / length) * step + jaggedX * step;
-        currentY += (dirY / length) * step + jaggedY * step;
-
-        path.lineTo(currentX, currentY);
-
-        if (rng.nextDouble() < 0.15) {
-          final branchPath = Path();
-          branchPath.moveTo(currentX, currentY);
-          double bX = currentX + (rng.nextDouble() - 0.5) * (bound * 0.6);
-          double bY = currentY + (rng.nextDouble() - 0.5) * (bound * 0.6);
-          branchPath.lineTo(bX, bY);
-
-          final branchPaint = Paint()
-            ..color = basePaint.color.withValues(alpha: 0.15 * alphaMod)
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 0.5 + rng.nextDouble();
-          canvas.drawPath(branchPath, branchPaint);
-        }
-      }
-
-      paint.strokeWidth = 1.0 + rng.nextDouble() * 2.0;
-
-      double blurRadius = rng.nextDouble() * 4.0;
-      if (blurRadius > 0.5) {
-        paint.maskFilter = MaskFilter.blur(BlurStyle.normal, blurRadius);
-      } else {
-        paint.maskFilter = null;
-      }
-
-      canvas.drawPath(path, paint);
-
-      if (paint.strokeWidth > 2.0) {
-        final hsl = HSLColor.fromColor(basePaint.color);
-        final lighterHsl = hsl
-            .withLightness((hsl.lightness + 0.3).clamp(0.0, 1.0))
-            .withSaturation((hsl.saturation - 0.2).clamp(0.0, 1.0));
-        final highlightColor = lighterHsl.toColor();
-
-        double glowBlur = 2.0 + rng.nextDouble() * 4.0;
-        final glowPaint = Paint()
-          ..color = highlightColor.withValues(alpha: 0.6 * alphaMod)
-          ..style = PaintingStyle.stroke
-          ..strokeCap = StrokeCap.round
-          ..strokeWidth = paint.strokeWidth * 0.4
-          ..maskFilter = MaskFilter.blur(BlurStyle.normal, glowBlur);
-        canvas.drawPath(path, glowPaint);
-      }
-    }
   }
 
   @override

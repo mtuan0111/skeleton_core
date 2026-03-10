@@ -43,6 +43,23 @@ class GameAnimationTriggers {
     });
   }
 
+  /// Trigger ONLY the lightning glow effect (no firework explosion)
+  /// Used when a correct answer is given but no level-up occurs
+  void onLightningOnly(Offset position, {List<Color>? colors}) {
+    particleController.trigger([
+      Particle(
+        position: position,
+        velocity: Offset.zero,
+        color:
+            colors != null && colors.isNotEmpty ? colors.first : Colors.white,
+        size: 70.0,
+        maxLifetime: 0.15,
+        shape: ParticleShape.lightning,
+        seed: DateTime.now().microsecondsSinceEpoch,
+      )
+    ]);
+  }
+
   /// Trigger large explosion when life is gained
   /// Position should be in screen coordinates (e.g., heart icon or screen center)
   void onGainLife(Offset position, {List<Color>? colors}) {

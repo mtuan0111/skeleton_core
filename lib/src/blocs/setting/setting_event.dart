@@ -22,6 +22,10 @@ class ChangedIsVibrate extends SettingEvent {
   ChangedIsVibrate({required this.isVibrate});
 }
 
+/// Toggles mute on/off without changing the persisted [vol].
+/// When unmuting, [vol] is restored to the last set value.
+class ToggleMute extends SettingEvent {}
+
 class ChangedFontSize extends SettingEvent {
   final int fontSize;
 

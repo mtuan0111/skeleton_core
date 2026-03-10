@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'screen_shake_controller.dart';
 import 'particle.dart';
@@ -172,6 +173,56 @@ class _ParticleOverlayState extends State<ParticleOverlay>
               ),
             ),
           ),
+        // Lightning sprites (rendered on top of fog, behind regular particles)
+        if (_particleSystem.particles
+            .any((p) => p.shape == ParticleShape.lightning))
+          ..._particleSystem.particles
+              .where((p) => p.shape == ParticleShape.lightning)
+              .map((p) {
+            final rng = Random(p.seed);
+            final alignmentX = rng.nextDouble() * 2.0 - 1.0;
+            final alignmentY = rng.nextDouble() * 2.0 - 1.0;
+            final size = p.size * Random().nextInt(3) + 4;
+            // A lightning particle size is generally the radius, so width/height is size * 2
+            return Positioned(
+              left: p.position.dx - size / 2,
+              top: p.position.dy - size / 2,
+              width: size,
+              height: size,
+              child: Opacity(
+                opacity: p.opacity * 0.6,
+                child: Transform.rotate(
+                  angle: p.rotation,
+                  child: ShaderMask(
+                    shaderCallback: (Rect bounds) {
+                      return const RadialGradient(
+                        center: Alignment.center,
+                        // radius: 0.5,
+                        colors: [
+                          Colors.white,
+                          // Colors.black,
+                          // Colors.transparent,
+                          Colors.transparent
+                        ],
+
+                        stops: [0.3, 1.0],
+                      ).createShader(bounds);
+                    },
+                    blendMode: BlendMode.dstIn,
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/lightening-texture.png',
+                        fit: BoxFit.none,
+                        alignment: Alignment(alignmentX, alignmentY),
+                        color: Colors.white.withValues(alpha: 0.5),
+                        colorBlendMode: BlendMode.hardLight,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }),
         // Regular particles (fireworks, etc.)
         if (_particleSystem.particles.isNotEmpty)
           Positioned.fill(

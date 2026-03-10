@@ -114,8 +114,12 @@ class _SkeletonAppWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        // AudioBloc must be created first so SettingBloc can reference it
+        BlocProvider(create: (_) => AudioBloc()),
         // Core blocs
-        BlocProvider(create: (_) => SettingBloc()),
+        BlocProvider(
+          create: (ctx) => SettingBloc(audioBloc: ctx.read<AudioBloc>()),
+        ),
         BlocProvider(create: (_) => AppVersionBloc()),
         BlocProvider(create: (_) => TourBloc()),
         BlocProvider<MenuBloc>(create: (_) => MenuBloc(Menu())),

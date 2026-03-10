@@ -17,6 +17,7 @@ class AudioBloc extends Bloc<AudioEvent, AudioState> {
     on<PlaySecondTicking>(_onPlaySecondTicking);
     on<PlayNewTings>(_onPlayNewTings);
     on<SetAudioVolume>(_onSetVolume);
+    on<StopAllAudio>(_onStopAll);
   }
 
   Future<void> _onPlayIntro(
@@ -106,5 +107,12 @@ class AudioBloc extends Bloc<AudioEvent, AudioState> {
   ) async {
     _audioServices.setVolume = event.volume;
     emitter(state.copyWith(volume: event.volume));
+  }
+
+  Future<void> _onStopAll(
+    StopAllAudio event,
+    Emitter<AudioState> emitter,
+  ) async {
+    await _audioServices.stopAll();
   }
 }

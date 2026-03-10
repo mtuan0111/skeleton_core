@@ -23,3 +23,6 @@ class SetAudioVolume extends AudioEvent {
 
   SetAudioVolume({required this.volume});
 }
+
+/// Immediately stops any currently-playing audio.
+class StopAllAudio extends AudioEvent {}
