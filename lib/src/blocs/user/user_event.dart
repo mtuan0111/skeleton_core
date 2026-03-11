@@ -13,3 +13,15 @@ class GetGreetingMessage extends UserEvent {
 
   GetGreetingMessage({required this.fetchGreeting});
 }
+
+class ScheduleDailyReminder extends UserEvent {
+  final Future<String> Function() fetchReminder;
+  final Future<String> Function(String message) summarizeToTitle;
+  final Future<void> Function(String title, String body) scheduleNotification;
+
+  ScheduleDailyReminder({
+    required this.fetchReminder,
+    required this.summarizeToTitle,
+    required this.scheduleNotification,
+  });
+}

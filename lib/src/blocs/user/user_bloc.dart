@@ -10,6 +10,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
     on<UsernameChanged>(_onUsernameChanged);
     on<GetGreetingMessage>(_onGetGreetingMessage);
+    on<ScheduleDailyReminder>(_onScheduleDailyReminder);
 
     add(AttempGettingUser());
   }
@@ -42,6 +43,19 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       emitter(state.copyWith(greetingMessage: message));
     } catch (e) {
       // Ignore errors and keep current state (or fallback)
+    }
+  }
+
+  Future<void> _onScheduleDailyReminder(
+    ScheduleDailyReminder event,
+    Emitter<UserState> emitter,
+  ) async {
+    try {
+      final message = await event.fetchReminder();
+      final title = await event.summarizeToTitle(message);
+      await event.scheduleNotification(title, message);
+    } catch (e) {
+      // Ignore errors for scheduling
     }
   }
 }
