@@ -100,7 +100,9 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
     _prefs ??= await SharedPreferences.getInstance();
     _prefs!.setBool(PreferencesKey.IS_VIBRATE, event.isVibrate);
     // Sync to game-scoped VibrationBloc
-    vibrationBloc?.add(SetVibrationEnabled(enabled: event.isVibrate));
+    if (vibrationBloc?.isClosed == false) {
+      vibrationBloc!.add(SetVibrationEnabled(enabled: event.isVibrate));
+    }
     emitter(state.copyWith(isVibrate: event.isVibrate));
   }
 
@@ -111,10 +113,12 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
     final newMuted = !state.isMuted;
     final targetVolume = newMuted ? 0.0 : state.vol / 10;
     // Sync volume to AudioBloc (which owns the real playback AudioServices)
-    audioBloc?.add(SetAudioVolume(volume: targetVolume));
-    // Stop any currently playing audio when muting
-    if (newMuted) {
-      audioBloc?.add(StopAllAudio());
+    if (audioBloc?.isClosed == false) {
+      audioBloc!.add(SetAudioVolume(volume: targetVolume));
+      // Stop any currently playing audio when muting
+      if (newMuted) {
+        audioBloc!.add(StopAllAudio());
+      }
     }
     // Also update our own AudioServices for any sounds SettingBloc plays
     _audioServices.setVolume = targetVolume;
