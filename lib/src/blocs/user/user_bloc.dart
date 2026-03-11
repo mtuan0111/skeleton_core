@@ -9,6 +9,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<AttempGettingUser>(_onAttempGettingUser);
 
     on<UsernameChanged>(_onUsernameChanged);
+    on<GetGreetingMessage>(_onGetGreetingMessage);
 
     add(AttempGettingUser());
   }
@@ -29,6 +30,18 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   ) async {
     if (await _userServices.saveUsername(event.newUsername)) {
       emitter(await _userServices.getUserSession());
+    }
+  }
+
+  Future<void> _onGetGreetingMessage(
+    GetGreetingMessage event,
+    Emitter<UserState> emitter,
+  ) async {
+    try {
+      final message = await event.fetchGreeting();
+      emitter(state.copyWith(greetingMessage: message));
+    } catch (e) {
+      // Ignore errors and keep current state (or fallback)
     }
   }
 }

@@ -14,6 +14,7 @@ class MenuScreen extends StatefulWidget {
   final String title;
   final String? subtitle;
   final Widget? headerIcon;
+  final Widget? greetingMessage;
   final List<Widget> menuItems;
   final Widget? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
@@ -23,6 +24,7 @@ class MenuScreen extends StatefulWidget {
     required this.title,
     this.subtitle,
     this.headerIcon,
+    this.greetingMessage,
     required this.menuItems,
     this.floatingActionButton,
     this.floatingActionButtonLocation,
@@ -118,6 +120,10 @@ class _MenuScreenState extends State<MenuScreen> {
                       ),
                     ),
                   ),
+                  if (widget.greetingMessage != null)
+                    SliverToBoxAdapter(
+                      child: widget.greetingMessage!,
+                    ),
                   if (SeasonalTheme.current != ThemeType.defaultTheme)
                     SliverToBoxAdapter(
                       child: Padding(

@@ -7,3 +7,9 @@ class UsernameChanged extends UserEvent {
 
   UsernameChanged({required this.newUsername});
 }
+
+class GetGreetingMessage extends UserEvent {
+  final Future<String> Function() fetchGreeting;
+
+  GetGreetingMessage({required this.fetchGreeting});
+}
