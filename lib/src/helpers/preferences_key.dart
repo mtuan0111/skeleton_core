@@ -13,6 +13,7 @@ class PreferencesKey {
   static const FONT_SIZE = "font_size";
   static const VOL = "vol";
   static const IS_VIBRATE = "is_variant";
+  static const IS_MUTED = "is_muted";
   static const LOCALE = "locale";
   static const THEME_MODE = "theme_mode";
 }

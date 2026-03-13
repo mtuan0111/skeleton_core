@@ -50,6 +50,7 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
         locale: _prefs!.getString(PreferencesKey.LOCALE),
         vol: _prefs!.getInt(PreferencesKey.VOL),
         isVibrate: _prefs!.getBool(PreferencesKey.IS_VIBRATE) ?? true,
+        isMuted: _prefs!.getBool(PreferencesKey.IS_MUTED) ?? false,
         fontSize: _prefs!.getInt(PreferencesKey.FONT_SIZE),
         numberOfTopBoard: _prefs!.getInt(PreferencesKey.NUMBER_OF_TOP_BOARD),
         onlyShowMyRecorded:
@@ -57,6 +58,13 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
         isLoading: false,
       ),
     );
+
+    // Sync mute state to AudioBloc on load
+    final savedMuted = _prefs!.getBool(PreferencesKey.IS_MUTED) ?? false;
+    if (savedMuted && audioBloc?.isClosed == false) {
+      final targetVolume = 0.0;
+      audioBloc!.add(SetAudioVolume(volume: targetVolume));
+    }
   }
 
   Future<void> _onChangedThemeMode(
@@ -110,7 +118,10 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
     ToggleMute event,
     Emitter<SettingState> emitter,
   ) async {
+    _prefs ??= await SharedPreferences.getInstance();
     final newMuted = !state.isMuted;
+    _prefs!.setBool(PreferencesKey.IS_MUTED, newMuted);
+
     final targetVolume = newMuted ? 0.0 : state.vol / 10;
     // Sync volume to AudioBloc (which owns the real playback AudioServices)
     if (audioBloc?.isClosed == false) {
