@@ -70,6 +70,11 @@ class SkeletonApp {
   /// Whether to show debug banner.
   final bool debugShowCheckedModeBanner;
 
+  /// Optional: override the initial menu state.
+  /// Defaults to `Menu()` (show the main menu). Pass `Play()` or
+  /// `InstantStart()` to skip straight into the game screen on launch.
+  final MenuState? initialMenuState;
+
   const SkeletonApp({
     required this.title,
     required this.localizationsDelegates,
@@ -80,6 +85,7 @@ class SkeletonApp {
     this.updateCheckerBuilder,
     this.appBlocProviders,
     this.onInit,
+    this.initialMenuState,
     this.debugShowCheckedModeBanner = false,
   });
 
@@ -122,7 +128,8 @@ class _SkeletonAppWidget extends StatelessWidget {
         ),
         BlocProvider(create: (_) => AppVersionBloc()),
         BlocProvider(create: (_) => TourBloc()),
-        BlocProvider<MenuBloc>(create: (_) => MenuBloc(Menu())),
+        BlocProvider<MenuBloc>(
+            create: (_) => MenuBloc(config.initialMenuState ?? Menu())),
         BlocProvider(create: (_) => UserBloc(UnAuthenticatedUser())),
         // App-specific blocs (their create callbacks can access
         // core blocs above via context.read<...>())
