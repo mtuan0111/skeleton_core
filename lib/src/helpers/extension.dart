@@ -34,13 +34,18 @@ extension ColorCustome on Color {
     return Color.fromARGB(a, r, g, b);
   }
 
+  // /// Returns a simple contrast color (black or white) based on luminance
+  // Color getContrastColor() {
+  //   return computeLuminance() > 0.5 ? Colors.black87 : Colors.white;
+  // }
+
   /// Returns a smart contrasting color based on the luminance of this color.
   Color getSmartColor(BuildContext context) {
     final luminance = computeLuminance();
     final theme = Theme.of(context);
     return luminance > 0.5
-        ? theme.colorScheme.onSurface
-        : theme.scaffoldBackgroundColor;
+        ? theme.colorScheme.onPrimary.getDarker(percentage: 80)
+        : theme.colorScheme.onPrimary.getLighter();
   }
 }
 

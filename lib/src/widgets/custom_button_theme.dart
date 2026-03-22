@@ -8,16 +8,22 @@ class CustomButtonThemeData {
   /// Optional override that completely replaces the visual layers of every
   /// [CustomElevatedButton] in the scope.  Receives the same arguments as
   /// the per-widget `buttonRenderer` parameter, including the resolved
-  /// [backgroundColor] and [isPressed] state.
+  /// [backgroundColor], [isPressed] state, and [isClickable] (whether
+  /// [onPressed] is non-null).
   final Widget Function(
     BuildContext context,
     BorderRadius borderRadius,
     Color backgroundColor,
     Color darkerColor,
     bool isPressed,
+    bool isClickable,
   )? buttonRenderer;
 
-  const CustomButtonThemeData({this.buttonRenderer});
+  /// Optional default text style for all [CustomElevatedButton] widgets in
+  /// the scope.  Per-widget `style` overrides take priority.
+  final TextStyle? textStyle;
+
+  const CustomButtonThemeData({this.buttonRenderer, this.textStyle});
 }
 
 /// An [InheritedWidget] that configures the default style for all
@@ -54,5 +60,6 @@ class CustomButtonTheme extends InheritedWidget {
 
   @override
   bool updateShouldNotify(CustomButtonTheme oldWidget) =>
-      data.buttonRenderer != oldWidget.data.buttonRenderer;
+      data.buttonRenderer != oldWidget.data.buttonRenderer ||
+      data.textStyle != oldWidget.data.textStyle;
 }

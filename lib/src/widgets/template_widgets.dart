@@ -196,7 +196,15 @@ class RankingSortingWidget extends StatelessWidget {
     required this.position,
     this.childElement,
     this.size,
+    this.decorationBuilder,
+    this.centerBuilder,
   });
+
+  /// Optional builder to override the default wing decorations.
+  final Widget Function(BuildContext context, int position)? decorationBuilder;
+
+  /// Optional builder to override the central circle decoration entirely.
+  final Widget Function(BuildContext context, int position, Widget? childElement)? centerBuilder;
 
   Color _getPositionColor(ThemeData theme) {
     return switch (position) {
@@ -259,6 +267,9 @@ class RankingSortingWidget extends StatelessWidget {
       alignment: Alignment.center,
       clipBehavior: Clip.none,
       children: [
+        if (decorationBuilder != null)
+          decorationBuilder!(context, position)
+        else ...[
         if (position == 1)
           Positioned(
             child: _buildWingPair(
@@ -313,84 +324,88 @@ class RankingSortingWidget extends StatelessWidget {
               ),
             ),
           ),
-        Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.center,
-          children: [
-            Container(
-              width: baseSize,
-              height: baseSize,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [fillColor, darkerFillColor],
-                ),
-                borderRadius: BorderRadius.circular(baseSize * 0.35),
-                boxShadow: [
-                  BoxShadow(
-                    color: darkerFillColor.withValues(alpha: .4),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: baseSize - _innerContainerPadding,
-              height: baseSize - _innerContainerPadding,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomLeft,
-                  colors: [fillColor, darkerFillColor],
-                ),
-                borderRadius: BorderRadius.circular(baseSize * 0.3),
-                boxShadow: [
-                  BoxShadow(
-                    color: darkerFillColor.withValues(alpha: .2),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: childElement ??
-                  Text(
-                    position.toString(),
-                    style: (position.toString().length == 1
-                        ? AppTextStyles.displayMedium(context)
-                        : AppTextStyles.displaySmall(context)),
-                    textAlign: TextAlign.center,
-                  ),
-            ),
-            Container(
-              width: baseSize - _highlightBorderPadding,
-              height: baseSize - _highlightBorderPadding,
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(width: 2, color: fillColor.getLighter()),
-                  right: BorderSide(width: 1, color: fillColor.getLighter()),
-                ),
-                borderRadius: BorderRadius.circular(baseSize * 0.3),
-              ),
-            ),
-            Opacity(
-              opacity: _shadowOpacity,
-              child: Container(
-                width: baseSize - _shadowBorderPadding,
-                height: baseSize - _shadowBorderPadding,
+        ],
+        if (centerBuilder != null)
+          centerBuilder!(context, position, childElement)
+        else
+          Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: baseSize,
+                height: baseSize,
                 decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(width: 2, color: fillColor.getLighter()),
-                    left: BorderSide(width: 3, color: fillColor.getLighter()),
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [fillColor, darkerFillColor],
                   ),
                   borderRadius: BorderRadius.circular(baseSize * 0.35),
+                  boxShadow: [
+                    BoxShadow(
+                      color: darkerFillColor.withValues(alpha: .4),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
-        ),
+              Container(
+                width: baseSize - _innerContainerPadding,
+                height: baseSize - _innerContainerPadding,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomLeft,
+                    colors: [fillColor, darkerFillColor],
+                  ),
+                  borderRadius: BorderRadius.circular(baseSize * 0.3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: darkerFillColor.withValues(alpha: .2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: childElement ??
+                    Text(
+                      position.toString(),
+                      style: (position.toString().length == 1
+                          ? AppTextStyles.displayMedium(context)
+                          : AppTextStyles.displaySmall(context)),
+                      textAlign: TextAlign.center,
+                    ),
+              ),
+              Container(
+                width: baseSize - _highlightBorderPadding,
+                height: baseSize - _highlightBorderPadding,
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(width: 2, color: fillColor.getLighter()),
+                    right: BorderSide(width: 1, color: fillColor.getLighter()),
+                  ),
+                  borderRadius: BorderRadius.circular(baseSize * 0.3),
+                ),
+              ),
+              Opacity(
+                opacity: _shadowOpacity,
+                child: Container(
+                  width: baseSize - _shadowBorderPadding,
+                  height: baseSize - _shadowBorderPadding,
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(width: 2, color: fillColor.getLighter()),
+                      left: BorderSide(width: 3, color: fillColor.getLighter()),
+                    ),
+                    borderRadius: BorderRadius.circular(baseSize * 0.35),
+                  ),
+                ),
+              ),
+            ],
+          ),
       ],
     );
   }
@@ -429,7 +444,8 @@ class CustomElevatedButton extends StatefulWidget {
 
   /// Optional override: completely replaces the visual layers of the button.
   /// When provided, receives [context], [borderRadius], [backgroundColor],
-  /// [darkerColor], and [isPressed] so the renderer can react to press state.
+  /// [darkerColor], [isPressed] and [isClickable] so the renderer can react
+  /// to press state and whether the button is interactive.
   /// The ElevatedButton interaction shell is still used for hit-testing.
   final Widget Function(
     BuildContext context,
@@ -437,6 +453,7 @@ class CustomElevatedButton extends StatefulWidget {
     Color backgroundColor,
     Color darkerColor,
     bool isPressed,
+    bool isClickable,
   )? buttonRenderer;
 
   const CustomElevatedButton({
@@ -539,6 +556,7 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
 
   TextStyle getTextStyle(BuildContext context) {
     return widget.style ??
+        CustomButtonTheme.of(context)?.textStyle ??
         Theme.of(context).textTheme.displayLarge!.copyWith(
               fontSize: getFontSize(context),
               color: getPressedColor(context),
@@ -556,6 +574,8 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
 
     final backgroundColor =
         widget.backgroundColor ?? Theme.of(context).primaryColor;
+
+    // return Colors.red;
     return backgroundColor.getSmartColor(context);
   }
 
@@ -603,7 +623,7 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
     if (widget.iconData != null) {
       iconWidget = Icon(
         widget.iconData,
-        color: getPressedColor(context),
+        color: getColor(context),
         size: getFontSize(context),
       );
     }
@@ -662,6 +682,7 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
                   backgroundColor,
                   darkerBackgroundColor,
                   isPressed,
+                  isClickale,
                 ),
               ),
               // ElevatedButton shell for interaction only
@@ -1216,7 +1237,10 @@ class OptionCard extends StatelessWidget {
                 children: [
                   CustomElevatedButton(
                     text: description,
-                    style: AppTextStyles.bodyLarge(context),
+                    style: (CustomButtonTheme.of(context)?.textStyle ?? AppTextStyles.bodyLarge(context)).copyWith(
+                      color: Colors.black54.getSmartColor(context),
+                      fontSize: AppTextStyles.bodyLarge(context).fontSize,
+                    ),
                     buttonSize: ButtonSize.smallest,
                     shapeAt: RoundedWithShapeAt.topRight,
                     backgroundColor: Colors.black54,
@@ -1226,6 +1250,10 @@ class OptionCard extends StatelessWidget {
                     right: 10,
                     child: CustomElevatedButton(
                       text: title,
+                      style: (CustomButtonTheme.of(context)?.textStyle ?? AppTextStyles.bodyLarge(context)).copyWith(
+                        color: Colors.grey.getSmartColor(context),
+                        fontSize: AppTextStyles.bodyLarge(context).fontSize,
+                      ),
                       buttonSize: ButtonSize.small,
                       shapeAt: RoundedWithShapeAt.bottomRight,
                       backgroundColor: Colors.grey,
@@ -1240,6 +1268,7 @@ class OptionCard extends StatelessWidget {
             context,
             onPressed: onTap,
             iconData: icon,
+            color: color.getSmartColor(context),
             shapeAt: RoundedWithShapeAt.topLeft,
             backgroundColor: color,
             backgroundBuilder: backgroundBuilder,
@@ -1265,6 +1294,8 @@ class RankingItem extends StatelessWidget {
     this.iconData,
     this.isCurrentUser = false,
     this.currentUserLabel = 'You',
+    this.decorationBuilder,
+    this.centerBuilder,
   });
 
   final String heroTag;
@@ -1275,6 +1306,8 @@ class RankingItem extends StatelessWidget {
   final List<Widget> infoRows;
   final bool isCurrentUser;
   final String currentUserLabel;
+  final Widget Function(BuildContext context, int position)? decorationBuilder;
+  final Widget Function(BuildContext context, int position, Widget? childElement)? centerBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -1290,6 +1323,8 @@ class RankingItem extends StatelessWidget {
               flex: 2,
               child: RankingSortingWidget(
                 position: ranking!,
+                decorationBuilder: decorationBuilder,
+                centerBuilder: centerBuilder,
               ),
             )
           else
@@ -1298,6 +1333,8 @@ class RankingItem extends StatelessWidget {
               child: RankingSortingWidget(
                 position: 0,
                 childElement: Icon(iconData),
+                decorationBuilder: decorationBuilder,
+                centerBuilder: centerBuilder,
               ),
             ),
           Expanded(
