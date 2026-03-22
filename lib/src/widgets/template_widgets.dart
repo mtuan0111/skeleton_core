@@ -427,6 +427,18 @@ class CustomElevatedButton extends StatefulWidget {
   final Widget Function(BuildContext context, BorderRadius borderRadius)?
       backgroundBuilder;
 
+  /// Optional override: completely replaces the visual layers of the button.
+  /// When provided, receives [context], [borderRadius], [backgroundColor],
+  /// [darkerColor], and [isPressed] so the renderer can react to press state.
+  /// The ElevatedButton interaction shell is still used for hit-testing.
+  final Widget Function(
+    BuildContext context,
+    BorderRadius borderRadius,
+    Color backgroundColor,
+    Color darkerColor,
+    bool isPressed,
+  )? buttonRenderer;
+
   const CustomElevatedButton({
     Key? key,
     this.onPressed,
@@ -446,6 +458,7 @@ class CustomElevatedButton extends StatefulWidget {
     this.gradient,
     this.textDirection,
     this.backgroundBuilder,
+    this.buttonRenderer,
   }) : super(key: key);
 
   @override
@@ -622,6 +635,73 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
         : getBackgroundColor(context);
     final darkerBackgroundColor = backgroundColor.getDarker();
     final borderRadiusValue = getBorderRadius(widget.shapeAt);
+
+    // ── Resolve renderer: per-widget first, then theme fallback ─────────
+    final resolvedRenderer =
+        widget.buttonRenderer ?? CustomButtonTheme.of(context)?.buttonRenderer;
+
+    if (resolvedRenderer != null) {
+      return AnimatedOpacity(
+        opacity: widget.opacity,
+        duration: const Duration(milliseconds: 10),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minWidth: widget.minWidth ?? 50,
+            minHeight: widget.minHeight ?? 50,
+          ),
+          child: Stack(
+            clipBehavior: Clip.none,
+            fit: StackFit.passthrough,
+            alignment: Alignment.center,
+            children: [
+              // Custom visual layer
+              Positioned.fill(
+                child: resolvedRenderer(
+                  context,
+                  borderRadiusValue,
+                  backgroundColor,
+                  darkerBackgroundColor,
+                  isPressed,
+                ),
+              ),
+              // ElevatedButton shell for interaction only
+              Container(
+                child: ElevatedButton(
+                  style: LayoutConfig.elevatedButtonStyle.copyWith(
+                    backgroundColor: WidgetStateProperty.all(
+                      Colors.transparent,
+                    ),
+                    shadowColor: WidgetStateProperty.all(Colors.transparent),
+                    shape: WidgetStateProperty.all(
+                      RoundedRectangleBorder(borderRadius: borderRadiusValue),
+                    ),
+                    padding: WidgetStateProperty.all(
+                      EdgeInsets.symmetric(
+                        vertical: getPaddingSize(),
+                        horizontal: getPaddingSize(),
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (widget.onPressed == null) return;
+                    widget.onPressed?.call();
+                    if (mounted) setState(() => isPressed = true);
+                    Future.delayed(
+                      const Duration(milliseconds: kAnimationDurationFast),
+                      () {
+                        if (mounted) setState(() => isPressed = false);
+                      },
+                    );
+                  },
+                  child: children(context),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    // ── Default rendering ─────────────────────────────────────────────────
 
     return AnimatedOpacity(
       opacity: widget.opacity,

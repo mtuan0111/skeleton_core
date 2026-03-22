@@ -30,6 +30,7 @@ export 'src/localization/core_localizations.dart';
 
 // Widgets
 export 'src/widgets/template_widgets.dart';
+export 'src/widgets/custom_button_theme.dart';
 export 'src/widgets/custom_sliver_app_bar.dart';
 // alert_template.dart and update_notice_dialog.dart are available
 // for direct import but not auto-exported to avoid conflicts with

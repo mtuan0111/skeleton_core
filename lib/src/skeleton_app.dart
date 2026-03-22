@@ -75,6 +75,21 @@ class SkeletonApp {
   /// `InstantStart()` to skip straight into the game screen on launch.
   final MenuState? initialMenuState;
 
+  /// Optional: configures a default visual style for all [CustomElevatedButton]
+  /// widgets in the app.  When set, every button adopts this renderer unless
+  /// a per-widget `buttonRenderer` override is provided.
+  ///
+  /// Example:
+  /// ```dart
+  /// SkeletonApp(
+  ///   buttonTheme: CustomButtonThemeData(
+  ///     buttonRenderer: (ctx, br, bg, darker, pressed) => myPainter(),
+  ///   ),
+  ///   ...
+  /// )
+  /// ```
+  final CustomButtonThemeData? buttonTheme;
+
   const SkeletonApp({
     required this.title,
     required this.localizationsDelegates,
@@ -86,6 +101,7 @@ class SkeletonApp {
     this.appBlocProviders,
     this.onInit,
     this.initialMenuState,
+    this.buttonTheme,
     this.debugShowCheckedModeBanner = false,
   });
 
@@ -172,10 +188,20 @@ class _SkeletonAppWidget extends StatelessWidget {
           content = config.tourWrapperBuilder!(innerContext, content);
         }
 
-        return Container(
+        Widget home = Container(
           decoration: LayoutConfig(innerContext).gradientDecoration,
           child: content,
         );
+
+        // Wrap with CustomButtonTheme when a default button style is set
+        if (config.buttonTheme != null) {
+          home = CustomButtonTheme(
+            data: config.buttonTheme!,
+            child: home,
+          );
+        }
+
+        return home;
       },
     );
   }
