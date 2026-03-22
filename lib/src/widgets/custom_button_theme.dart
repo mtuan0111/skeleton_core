@@ -17,6 +17,7 @@ class CustomButtonThemeData {
     Color darkerColor,
     bool isPressed,
     bool isClickable,
+    int contentSeed,
   )? buttonRenderer;
 
   /// Optional default text style for all [CustomElevatedButton] widgets in

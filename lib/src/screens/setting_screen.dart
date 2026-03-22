@@ -15,6 +15,7 @@ class SettingScreen extends StatefulWidget {
     super.key,
     required this.title,
     this.additionalSettingsBuilder,
+    this.settingContainerBuilder,
     this.onNumberOfTopBoardChanged,
   });
 
@@ -24,6 +25,11 @@ class SettingScreen extends StatefulWidget {
   /// after the common settings. Receives the current [SettingState].
   final List<Widget> Function(BuildContext context, SettingState settingState)?
       additionalSettingsBuilder;
+
+  /// Optional builder to customise the appearance of each setting's container.
+  final Widget Function(
+          BuildContext context, Widget child, BorderRadius borderRadius)?
+      settingContainerBuilder;
 
   /// Optional callback when the number of top board changes,
   /// so apps can sync their TurnRecordedListBloc.
@@ -128,49 +134,67 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
+  TextStyle _getSettingTextStyle(BuildContext context) {
+    final textColor = Theme.of(context).primaryColor.getSmartColor(context);
+    final buttonStyle = CustomButtonTheme.of(context)?.textStyle;
+    return (buttonStyle ?? AppTextStyles.titleLarge(context)).copyWith(color: textColor);
+  }
+
+  TextStyle _getSettingValueTextStyle(BuildContext context) {
+    final buttonStyle = CustomButtonTheme.of(context)?.textStyle;
+    return (buttonStyle ?? AppTextStyles.bodyLargeBold(context)).copyWith(
+       fontWeight: FontWeight.bold,
+    );
+  }
+
   Widget _buildUsernameField(BuildContext context, UserState userState) {
-    return TextFormField(
-      decoration: InputDecoration(
-        prefixIcon: Icon(
-          Icons.person,
-          color: Theme.of(context).colorScheme.onPrimary,
-        ),
-        labelText: coreLang(context).name,
-        hintText: coreLang(context).anonymous,
-        labelStyle: AppTextStyles.titleLarge(context),
-        hintStyle: AppTextStyles.withColor(
-          AppTextStyles.bodyLarge(context),
-          Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.5),
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(
-            LayoutConfig.layoutBorderRadius,
+    final textColor = Theme.of(context).primaryColor.getSmartColor(context);
+    return _buildSettingContainer(
+      context: context,
+      borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.person, color: textColor, size: kIconSizeM),
+              const SizedBox(width: kSpaceML),
+              Expanded(
+                child: Text(
+                  coreLang(context).name,
+                  style: _getSettingTextStyle(context),
+                ),
+              ),
+            ],
           ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(
-            LayoutConfig.layoutBorderRadius,
+          const SizedBox(height: kSpaceM),
+          TextFormField(
+            decoration: InputDecoration(
+              hintText: coreLang(context).anonymous,
+              hintStyle: AppTextStyles.withColor(
+                AppTextStyles.bodyLarge(context),
+                textColor.withValues(alpha: 0.5),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+                borderSide: BorderSide(color: textColor.withValues(alpha: 0.3)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+                borderSide: BorderSide(color: textColor, width: 2),
+              ),
+            ),
+            style: _getSettingTextStyle(context),
+            initialValue: userState.model.username,
+            onChanged: (value) {
+              userBloc.add(UsernameChanged(newUsername: value));
+            },
           ),
-          borderSide: BorderSide(
-            color:
-                Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(
-            LayoutConfig.layoutBorderRadius,
-          ),
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.onPrimary,
-            width: 2,
-          ),
-        ),
+        ],
       ),
-      style: AppTextStyles.titleLarge(context),
-      initialValue: userState.model.username,
-      onChanged: (value) {
-        userBloc.add(UsernameChanged(newUsername: value));
-      },
     );
   }
 
@@ -179,14 +203,20 @@ class _SettingScreenState extends State<SettingScreen> {
     required Widget child,
     BorderRadius? borderRadius,
   }) {
+    final currentRadius = borderRadius ??
+        BorderRadius.circular(LayoutConfig.layoutBorderRadius / 5);
+
+    if (widget.settingContainerBuilder != null) {
+      return widget.settingContainerBuilder!(context, child, currentRadius);
+    }
+
     return Container(
       padding: const EdgeInsets.all(kPaddingL),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.1),
-        borderRadius: borderRadius ??
-            BorderRadius.circular(LayoutConfig.layoutBorderRadius / 5),
+        borderRadius: currentRadius,
         border: Border.all(
-          color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.2),
+          color: Theme.of(context).primaryColor.getSmartColor(context).withValues(alpha: 0.2),
         ),
       ),
       child: child,
@@ -209,14 +239,14 @@ class _SettingScreenState extends State<SettingScreen> {
             children: [
               Icon(
                 FontAwesomeIcons.textWidth,
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).primaryColor.getSmartColor(context),
                 size: kIconSizeM,
               ),
               const SizedBox(width: kSpaceML),
               Expanded(
                 child: Text(
                   coreLang(context).fontSize,
-                  style: AppTextStyles.titleLarge(context),
+                  style: AppTextStyles.titleLarge(context).copyWith(color: Theme.of(context).primaryColor.getSmartColor(context)),
                 ),
               ),
               const SizedBox(width: kSpaceML),
@@ -231,7 +261,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
                 child: Text(
                   settingState.fontSize.toString(),
-                  style: AppTextStyles.bodyLargeBold(context),
+                  style: _getSettingValueTextStyle(context),
                 ),
               ),
             ],
@@ -241,9 +271,9 @@ class _SettingScreenState extends State<SettingScreen> {
             min: 0,
             max: 10,
             divisions: 10,
-            activeColor: Theme.of(context).colorScheme.onPrimary,
+            activeColor: Theme.of(context).primaryColor.getSmartColor(context),
             inactiveColor:
-                Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
+                Theme.of(context).primaryColor.getSmartColor(context).withValues(alpha: 0.3),
             onChanged: (val) {
               setState(() {
                 settingBloc.add(ChangedFontSize(fontSize: val.round()));
@@ -277,13 +307,13 @@ class _SettingScreenState extends State<SettingScreen> {
                         : settingState.vol > 0
                             ? FontAwesomeIcons.volumeOff
                             : FontAwesomeIcons.volumeXmark,
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).primaryColor.getSmartColor(context),
                 size: kIconSizeM,
               ),
               const SizedBox(width: kSpaceML),
               Text(
                 coreLang(context).volume,
-                style: AppTextStyles.titleLarge(context),
+                style: AppTextStyles.titleLarge(context).copyWith(color: Theme.of(context).primaryColor.getSmartColor(context)),
               ),
               const Spacer(),
               Container(
@@ -297,7 +327,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
                 child: Text(
                   settingState.vol.toString(),
-                  style: AppTextStyles.bodyLargeBold(context),
+                  style: _getSettingValueTextStyle(context),
                 ),
               ),
             ],
@@ -307,9 +337,9 @@ class _SettingScreenState extends State<SettingScreen> {
             min: 0,
             max: 10,
             divisions: 10,
-            activeColor: Theme.of(context).colorScheme.onPrimary,
+            activeColor: Theme.of(context).primaryColor.getSmartColor(context),
             inactiveColor:
-                Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
+                Theme.of(context).primaryColor.getSmartColor(context).withValues(alpha: 0.3),
             onChanged: (val) {
               settingBloc.add(ChangedVol(vol: val.round()));
             },
@@ -334,13 +364,13 @@ class _SettingScreenState extends State<SettingScreen> {
             settingState.isVibrate
                 ? FontAwesomeIcons.mobileScreenButton
                 : FontAwesomeIcons.mobile,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Theme.of(context).primaryColor.getSmartColor(context),
             size: kIconSizeM,
           ),
           const SizedBox(width: kSpaceML),
           Text(
             coreLang(context).vibrate,
-            style: AppTextStyles.titleLarge(context),
+            style: AppTextStyles.titleLarge(context).copyWith(color: Theme.of(context).primaryColor.getSmartColor(context)),
           ),
           const Spacer(),
           Switch(
@@ -372,14 +402,14 @@ class _SettingScreenState extends State<SettingScreen> {
             children: [
               Icon(
                 FontAwesomeIcons.ribbon,
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).primaryColor.getSmartColor(context),
                 size: kIconSizeM,
               ),
               const SizedBox(width: kSpaceML),
               Expanded(
                 child: Text(
                   coreLang(context).topScore,
-                  style: AppTextStyles.titleLarge(context),
+                  style: AppTextStyles.titleLarge(context).copyWith(color: Theme.of(context).primaryColor.getSmartColor(context)),
                 ),
               ),
               Container(
@@ -393,7 +423,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
                 child: Text(
                   settingState.numberOfTopBoard.toString(),
-                  style: AppTextStyles.bodyLargeBold(context),
+                  style: _getSettingValueTextStyle(context),
                 ),
               ),
             ],
@@ -403,9 +433,9 @@ class _SettingScreenState extends State<SettingScreen> {
             min: 20,
             max: 100,
             divisions: 8,
-            activeColor: Theme.of(context).colorScheme.onPrimary,
+            activeColor: Theme.of(context).primaryColor.getSmartColor(context),
             inactiveColor:
-                Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3),
+                Theme.of(context).primaryColor.getSmartColor(context).withValues(alpha: 0.3),
             onChanged: (val) {
               setState(() {
                 settingBloc.add(
@@ -433,14 +463,14 @@ class _SettingScreenState extends State<SettingScreen> {
         children: [
           Icon(
             FontAwesomeIcons.userCheck,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Theme.of(context).primaryColor.getSmartColor(context),
             size: kIconSizeM,
           ),
           const SizedBox(width: kSpaceML),
           Expanded(
             child: Text(
               coreLang(context).personal,
-              style: AppTextStyles.titleLarge(context),
+              style: AppTextStyles.titleLarge(context).copyWith(color: Theme.of(context).primaryColor.getSmartColor(context)),
             ),
           ),
           const SizedBox(width: kSpaceML),
@@ -475,13 +505,13 @@ class _SettingScreenState extends State<SettingScreen> {
             children: [
               Icon(
                 FontAwesomeIcons.language,
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).primaryColor.getSmartColor(context),
                 size: kIconSizeM,
               ),
               const SizedBox(width: kSpaceML),
               Text(
                 coreLang(context).language,
-                style: AppTextStyles.titleLarge(context),
+                style: AppTextStyles.titleLarge(context).copyWith(color: Theme.of(context).primaryColor.getSmartColor(context)),
               ),
             ],
           ),
@@ -494,7 +524,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     value: lang.key,
                     child: Text(
                       lang.value,
-                      style: AppTextStyles.bodyLarge(context),
+                      style: _getSettingTextStyle(context),
                     ),
                   ),
                 )
@@ -536,13 +566,13 @@ class _SettingScreenState extends State<SettingScreen> {
                   LayoutConfig.layoutBorderRadius,
                 ),
                 borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).primaryColor.getSmartColor(context),
                   width: 2,
                 ),
               ),
             ),
             dropdownColor: Theme.of(context).primaryColor,
-            style: AppTextStyles.bodyLarge(context),
+            style: _getSettingTextStyle(context),
           ),
         ],
       ),

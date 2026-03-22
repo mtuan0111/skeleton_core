@@ -204,7 +204,8 @@ class RankingSortingWidget extends StatelessWidget {
   final Widget Function(BuildContext context, int position)? decorationBuilder;
 
   /// Optional builder to override the central circle decoration entirely.
-  final Widget Function(BuildContext context, int position, Widget? childElement)? centerBuilder;
+  final Widget Function(
+      BuildContext context, int position, Widget? childElement)? centerBuilder;
 
   Color _getPositionColor(ThemeData theme) {
     return switch (position) {
@@ -270,60 +271,60 @@ class RankingSortingWidget extends StatelessWidget {
         if (decorationBuilder != null)
           decorationBuilder!(context, position)
         else ...[
-        if (position == 1)
-          Positioned(
-            child: _buildWingPair(
-              baseSize: baseSize,
-              fillColor: fillColor,
-              width: wingRadius,
-              height: baseSize,
-              margin: EdgeInsets.only(bottom: baseSize / 2),
-              leftRadius: BorderRadius.only(
-                topRight: Radius.circular(wingRadius),
-                bottomLeft: Radius.circular(baseSize),
-              ),
-              rightRadius: BorderRadius.only(
-                topLeft: Radius.circular(wingRadius),
-                bottomRight: Radius.circular(baseSize),
-              ),
-            ),
-          ),
-        if (position <= 2)
-          Positioned(
-            child: _buildWingPair(
-              baseSize: baseSize,
-              fillColor: fillColor,
-              width: baseSize / 2,
-              height: wingRadius,
-              margin: EdgeInsets.only(top: baseSize / 2),
-              leftRadius: BorderRadius.only(
-                topLeft: Radius.circular(wingRadius),
-                bottomRight: Radius.circular(baseSize),
-              ),
-              rightRadius: BorderRadius.only(
-                topRight: Radius.circular(wingRadius),
-                bottomLeft: Radius.circular(baseSize),
+          if (position == 1)
+            Positioned(
+              child: _buildWingPair(
+                baseSize: baseSize,
+                fillColor: fillColor,
+                width: wingRadius,
+                height: baseSize,
+                margin: EdgeInsets.only(bottom: baseSize / 2),
+                leftRadius: BorderRadius.only(
+                  topRight: Radius.circular(wingRadius),
+                  bottomLeft: Radius.circular(baseSize),
+                ),
+                rightRadius: BorderRadius.only(
+                  topLeft: Radius.circular(wingRadius),
+                  bottomRight: Radius.circular(baseSize),
+                ),
               ),
             ),
-          ),
-        if (position <= 3)
-          Positioned(
-            child: _buildWingPair(
-              baseSize: baseSize,
-              fillColor: fillColor,
-              width: baseSize * 1.2,
-              height: wingRadius,
-              margin: EdgeInsets.zero,
-              leftRadius: BorderRadius.only(
-                topRight: Radius.circular(wingRadius),
-                bottomLeft: Radius.circular(wingRadius),
-              ),
-              rightRadius: BorderRadius.only(
-                topLeft: Radius.circular(wingRadius),
-                bottomRight: Radius.circular(wingRadius),
+          if (position <= 2)
+            Positioned(
+              child: _buildWingPair(
+                baseSize: baseSize,
+                fillColor: fillColor,
+                width: baseSize / 2,
+                height: wingRadius,
+                margin: EdgeInsets.only(top: baseSize / 2),
+                leftRadius: BorderRadius.only(
+                  topLeft: Radius.circular(wingRadius),
+                  bottomRight: Radius.circular(baseSize),
+                ),
+                rightRadius: BorderRadius.only(
+                  topRight: Radius.circular(wingRadius),
+                  bottomLeft: Radius.circular(baseSize),
+                ),
               ),
             ),
-          ),
+          if (position <= 3)
+            Positioned(
+              child: _buildWingPair(
+                baseSize: baseSize,
+                fillColor: fillColor,
+                width: baseSize * 1.2,
+                height: wingRadius,
+                margin: EdgeInsets.zero,
+                leftRadius: BorderRadius.only(
+                  topRight: Radius.circular(wingRadius),
+                  bottomLeft: Radius.circular(wingRadius),
+                ),
+                rightRadius: BorderRadius.only(
+                  topLeft: Radius.circular(wingRadius),
+                  bottomRight: Radius.circular(wingRadius),
+                ),
+              ),
+            ),
         ],
         if (centerBuilder != null)
           centerBuilder!(context, position, childElement)
@@ -397,7 +398,8 @@ class RankingSortingWidget extends StatelessWidget {
                   height: baseSize - _shadowBorderPadding,
                   decoration: BoxDecoration(
                     border: Border(
-                      bottom: BorderSide(width: 2, color: fillColor.getLighter()),
+                      bottom:
+                          BorderSide(width: 2, color: fillColor.getLighter()),
                       left: BorderSide(width: 3, color: fillColor.getLighter()),
                     ),
                     borderRadius: BorderRadius.circular(baseSize * 0.35),
@@ -454,6 +456,7 @@ class CustomElevatedButton extends StatefulWidget {
     Color darkerColor,
     bool isPressed,
     bool isClickable,
+    int contentSeed,
   )? buttonRenderer;
 
   const CustomElevatedButton({
@@ -655,6 +658,8 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
         : getBackgroundColor(context);
     final darkerBackgroundColor = backgroundColor.getDarker();
     final borderRadiusValue = getBorderRadius(widget.shapeAt);
+    final int contentSeed =
+        Object.hash(widget.text, widget.iconData, widget.child?.hashCode);
 
     // ── Resolve renderer: per-widget first, then theme fallback ─────────
     final resolvedRenderer =
@@ -683,6 +688,7 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
                   darkerBackgroundColor,
                   isPressed,
                   isClickale,
+                  contentSeed,
                 ),
               ),
               // ElevatedButton shell for interaction only
@@ -925,6 +931,29 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
                     ),
                   ),
                 ),
+              // Organic moss patch randomly generated based on button color
+              Positioned.fill(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final int sizeSeed = constraints.maxWidth.toInt() ^
+                        (constraints.maxHeight * 10).toInt();
+
+                    return IgnorePointer(
+                      child: CustomPaint(
+                        painter: VectorMossPainter(
+                          seed: backgroundColor.toARGB32() ^
+                              sizeSeed ^
+                              contentSeed,
+                          isButtonOverlay: true,
+                          objectSize:
+                              Size(constraints.maxWidth, constraints.maxHeight),
+                          mossRatio: 0.20,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -1237,7 +1266,9 @@ class OptionCard extends StatelessWidget {
                 children: [
                   CustomElevatedButton(
                     text: description,
-                    style: (CustomButtonTheme.of(context)?.textStyle ?? AppTextStyles.bodyLarge(context)).copyWith(
+                    style: (CustomButtonTheme.of(context)?.textStyle ??
+                            AppTextStyles.bodyLarge(context))
+                        .copyWith(
                       color: Colors.black54.getSmartColor(context),
                       fontSize: AppTextStyles.bodyLarge(context).fontSize,
                     ),
@@ -1250,7 +1281,9 @@ class OptionCard extends StatelessWidget {
                     right: 10,
                     child: CustomElevatedButton(
                       text: title,
-                      style: (CustomButtonTheme.of(context)?.textStyle ?? AppTextStyles.bodyLarge(context)).copyWith(
+                      style: (CustomButtonTheme.of(context)?.textStyle ??
+                              AppTextStyles.bodyLarge(context))
+                          .copyWith(
                         color: Colors.grey.getSmartColor(context),
                         fontSize: AppTextStyles.bodyLarge(context).fontSize,
                       ),
@@ -1307,7 +1340,8 @@ class RankingItem extends StatelessWidget {
   final bool isCurrentUser;
   final String currentUserLabel;
   final Widget Function(BuildContext context, int position)? decorationBuilder;
-  final Widget Function(BuildContext context, int position, Widget? childElement)? centerBuilder;
+  final Widget Function(
+      BuildContext context, int position, Widget? childElement)? centerBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -1419,4 +1453,152 @@ class RankingInfoRow extends StatelessWidget {
       ],
     );
   }
+}
+
+/// A reusable painter that rendering a stylized organic vector moss patch
+/// following the wood-style.md geometric rules (draped top, lobed bottom,
+/// shadow clipping, spherical highlights).
+///
+/// The Moss draws bounded by the given `size`. The `blobs` parameter dictates
+/// the number of undulating bottom lobes. A stable `rng` must be provided to
+/// randomize the droop of the lobes and the highlight placement without
+/// causing jitter across repaints.
+class VectorMossPainter extends CustomPainter {
+  final int seed;
+  final int? blobs;
+  final bool isButtonOverlay;
+  final Size objectSize;
+  final double mossRatio;
+
+  VectorMossPainter({
+    int? seed,
+    this.blobs,
+    this.isButtonOverlay = false,
+    required this.objectSize,
+    this.mossRatio = 0.1,
+  }) : seed = seed ?? math.Random().nextInt(1000000);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rng = math.Random(seed);
+
+    int patchCount = 1;
+
+    if (isButtonOverlay) {
+      // ~60% chance for a button to grow moss
+      if (rng.nextDouble() > 0.6) return;
+      if (objectSize.width < 50) return; // skip tiny buttons
+
+      // Total target width for moss patches
+      double targetTotalWidth = objectSize.width * mossRatio;
+
+      // Each patch is roughly 30 pixels wide on average: (20 + rand * 20)
+      patchCount = (targetTotalWidth / 30.0).round();
+      if (patchCount < 1) patchCount = 1;
+
+      // Cap at a reasonable maximum
+      patchCount = math.min(patchCount, (objectSize.width / 40.0).ceil());
+    }
+
+    final Color mossBase = const Color(0xFF5D8A41);
+    final Color mossHighlight = const Color(0xFF8DC05B);
+    final Color mossShadow = const Color(0xFF3B5B28);
+    final Color outlineColor = const Color(0xFF3E2312);
+
+    for (int p = 0; p < patchCount; p++) {
+      double drawWidth = size.width;
+      double drawHeight = size.height;
+      double dx = 0.0;
+      double dy = 0.0;
+
+      if (isButtonOverlay) {
+        drawWidth = 20.0 + rng.nextDouble() * 20.0;
+        drawHeight = 10.0 + rng.nextDouble() * 5.0;
+        dx = 5.0 + rng.nextDouble() * (objectSize.width - drawWidth - 10.0);
+        dy = -1.0;
+      }
+
+      final int calculatedBlobs =
+          (drawWidth / (8 + rng.nextDouble() * 4)).round();
+      final int blobCount = blobs ?? math.max(2, calculatedBlobs);
+
+      canvas.save();
+      canvas.translate(dx, dy);
+
+      final double width = drawWidth;
+      final double height = drawHeight;
+
+      final Path basePath = Path();
+      basePath.moveTo(0, 0);
+
+      // Top edge draped over log
+      basePath.quadraticBezierTo(width / 2, -2, width, 2);
+
+      // Bulbous lobed bottom edges
+      double stepX = width / blobCount;
+      double currentX = width;
+      for (int i = 0; i < blobCount; i++) {
+        double nextX = width - (i + 1) * stepX;
+        double cy = height + rng.nextDouble() * 8; // Bulging down
+        basePath.quadraticBezierTo(currentX - stepX / 2, cy, nextX,
+            (i == blobCount - 1 ? 0 : height * 0.4));
+        currentX = nextX;
+      }
+      basePath.close();
+
+      canvas.drawPath(
+          basePath,
+          Paint()
+            ..color = mossBase
+            ..style = PaintingStyle.fill);
+
+      canvas.save();
+      canvas.clipPath(basePath);
+
+      // Shadow (bottom part)
+      final Path shadowPath = Path();
+      shadowPath.moveTo(-10, height * 0.6);
+      shadowPath.quadraticBezierTo(
+          width / 2, height * 0.3, width + 10, height * 0.6);
+      shadowPath.lineTo(width + 10, height + 20);
+      shadowPath.lineTo(-10, height + 20);
+      shadowPath.close();
+      canvas.drawPath(
+          shadowPath,
+          Paint()
+            ..color = mossShadow
+            ..style = PaintingStyle.fill);
+
+      // Highlights (rounded clusters on upper surfaces)
+      for (int i = 0; i < blobCount; i++) {
+        if (rng.nextDouble() > 0.7) continue; // Randomly skip some
+        final Path hl = Path();
+        double hx = stepX * i + stepX * 0.1;
+        double hy = rng.nextDouble() * 3;
+        double hw = stepX * 0.6 + rng.nextDouble() * stepX * 0.3;
+        double hh = height * 0.4 + rng.nextDouble() * 2;
+        hl.addOval(Rect.fromLTWH(hx, hy, hw, hh));
+        canvas.drawPath(
+            hl,
+            Paint()
+              ..color = mossHighlight
+              ..style = PaintingStyle.fill);
+      }
+      canvas.restore();
+
+      canvas.drawPath(
+          basePath,
+          Paint()
+            ..strokeWidth = 2.0
+            ..color = outlineColor
+            ..style = PaintingStyle.stroke
+            ..strokeJoin = StrokeJoin.round);
+
+      canvas.restore(); // restore translate
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant VectorMossPainter oldDelegate) =>
+      oldDelegate.blobs != blobs || oldDelegate.seed != seed;
 }
