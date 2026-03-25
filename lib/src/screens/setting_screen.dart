@@ -17,6 +17,10 @@ class SettingScreen extends StatefulWidget {
     this.additionalSettingsBuilder,
     this.settingContainerBuilder,
     this.onNumberOfTopBoardChanged,
+    this.backgroundDecoration,
+    this.backgroundWrapper,
+    this.backgroundColor,
+    this.fontFamily,
   });
 
   final String title;
@@ -34,6 +38,18 @@ class SettingScreen extends StatefulWidget {
   /// Optional callback when the number of top board changes,
   /// so apps can sync their TurnRecordedListBloc.
   final void Function(int numberOfTopBoard)? onNumberOfTopBoardChanged;
+
+  final BoxDecoration? backgroundDecoration;
+  final Widget Function(Widget child)? backgroundWrapper;
+
+  /// The dominant background color behind the settings content.
+  /// Used to compute a contrasting text/icon color via [getSmartColor].
+  /// Falls back to the theme's primary color if null.
+  final Color? backgroundColor;
+
+  /// Optional font family to apply to all setting label text.
+  /// When set, overrides the font family from [AppTextStyles.titleLarge].
+  final String? fontFamily;
 
   @override
   State<SettingScreen> createState() => _SettingScreenState();
@@ -54,101 +70,97 @@ class _SettingScreenState extends State<SettingScreen> {
           widget.onNumberOfTopBoardChanged!(settingState.numberOfTopBoard);
         }
 
-        return Scaffold(
-          body: Container(
-            decoration: LayoutConfig(context).gradientDecoration,
-            child: CustomScrollView(
-              slivers: [
-                CustomSliverAppBar(
-                  title: screenTitle,
-                  onBackPressed: () {
-                    context.read<MenuBloc>().add(ShowMenu());
-                  },
-                  expandedHeight: 100,
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
-                  ),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate(
-                      [
-                        SafeArea(
-                          top: false,
-                          child: DeviceWrapper(
-                            child: BlocBuilder<UserBloc, UserState>(
-                              builder: (context, userState) {
-                                return Form(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      // Username field
-                                      _buildUsernameField(context, userState),
-                                      const SizedBox(height: kSpace2XL),
-                                      // Font size slider
-                                      _buildFontSizeSlider(
-                                          context, settingState),
-                                      const SizedBox(height: kSpaceL),
-                                      // Volume slider
-                                      _buildVolumeSlider(context, settingState),
-                                      const SizedBox(height: kSpaceL),
-                                      // Vibrate toggle
-                                      _buildVibrateToggle(
-                                          context, settingState),
-                                      const SizedBox(height: kSpaceL),
-                                      // Top scores slider
-                                      _buildTopScoresSlider(
-                                          context, settingState),
-                                      const SizedBox(height: kSpaceL),
-                                      // Only show my recorded toggle
-                                      _buildOnlyMyRecordsToggle(
-                                          context, settingState),
-                                      const SizedBox(height: kSpaceL),
-                                      // Language dropdown
-                                      _buildLanguageDropdown(
-                                          context, settingState),
-                                      const SizedBox(height: kSpace2XL),
-                                      // App-specific additional settings
-                                      if (widget.additionalSettingsBuilder !=
-                                          null)
-                                        ...widget.additionalSettingsBuilder!(
-                                            context, settingState),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+        final scrollBody = CustomScrollView(
+          slivers: [
+            CustomSliverAppBar(
+              title: screenTitle,
+              onBackPressed: () {
+                context.read<MenuBloc>().add(ShowMenu());
+              },
+              expandedHeight: 100,
             ),
-          ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 20,
+              ),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate(
+                  [
+                    SafeArea(
+                      top: false,
+                      child: DeviceWrapper(
+                        child: BlocBuilder<UserBloc, UserState>(
+                          builder: (context, userState) {
+                            return Form(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  _buildUsernameField(context, userState),
+                                  const SizedBox(height: kSpace2XL),
+                                  _buildFontSizeSlider(context, settingState),
+                                  const SizedBox(height: kSpaceL),
+                                  _buildVolumeSlider(context, settingState),
+                                  const SizedBox(height: kSpaceL),
+                                  _buildVibrateToggle(context, settingState),
+                                  const SizedBox(height: kSpaceL),
+                                  _buildTopScoresSlider(context, settingState),
+                                  const SizedBox(height: kSpaceL),
+                                  _buildOnlyMyRecordsToggle(
+                                      context, settingState),
+                                  const SizedBox(height: kSpaceL),
+                                  _buildLanguageDropdown(context, settingState),
+                                  const SizedBox(height: kSpace2XL),
+                                  if (widget.additionalSettingsBuilder != null)
+                                    ...widget.additionalSettingsBuilder!(
+                                        context, settingState),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+
+        return Scaffold(
+          body: widget.backgroundWrapper != null
+              ? widget.backgroundWrapper!(scrollBody)
+              : Container(
+                  decoration: widget.backgroundDecoration ??
+                      LayoutConfig(context).gradientDecoration,
+                  child: scrollBody,
+                ),
         );
       },
     );
   }
 
   TextStyle _getSettingTextStyle(BuildContext context) {
-    final textColor = Theme.of(context).primaryColor.getSmartColor(context);
+    final bg = widget.backgroundColor ?? Theme.of(context).primaryColor;
+    final textColor = bg.getSmartColor(context);
     final buttonStyle = CustomButtonTheme.of(context)?.textStyle;
-    return (buttonStyle ?? AppTextStyles.titleLarge(context)).copyWith(color: textColor);
+    return (buttonStyle ?? AppTextStyles.displayLarge(context)).copyWith(
+      fontFamily: widget.fontFamily,
+      color: textColor,
+    );
   }
 
   TextStyle _getSettingValueTextStyle(BuildContext context) {
     final buttonStyle = CustomButtonTheme.of(context)?.textStyle;
     return (buttonStyle ?? AppTextStyles.bodyLargeBold(context)).copyWith(
-       fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.bold,
     );
   }
 
   Widget _buildUsernameField(BuildContext context, UserState userState) {
-    final textColor = Theme.of(context).primaryColor.getSmartColor(context);
+    final bg = widget.backgroundColor ?? Theme.of(context).primaryColor;
+    final textColor = bg.getSmartColor(context);
     return _buildSettingContainer(
       context: context,
       borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius),
@@ -173,17 +185,20 @@ class _SettingScreenState extends State<SettingScreen> {
               hintText: coreLang(context).anonymous,
               hintStyle: AppTextStyles.withColor(
                 AppTextStyles.bodyLarge(context),
-                textColor.withValues(alpha: 0.5),
+                textColor,
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+                borderRadius:
+                    BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+                borderRadius:
+                    BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
                 borderSide: BorderSide(color: textColor.withValues(alpha: 0.3)),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+                borderRadius:
+                    BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
                 borderSide: BorderSide(color: textColor, width: 2),
               ),
             ),
@@ -216,7 +231,10 @@ class _SettingScreenState extends State<SettingScreen> {
         color: Colors.white.withValues(alpha: 0.1),
         borderRadius: currentRadius,
         border: Border.all(
-          color: Theme.of(context).primaryColor.getSmartColor(context).withValues(alpha: 0.2),
+          color: Theme.of(context)
+              .primaryColor
+              .getSmartColor(context)
+              .withValues(alpha: 0.2),
         ),
       ),
       child: child,
@@ -224,14 +242,10 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Widget _buildFontSizeSlider(BuildContext context, SettingState settingState) {
+    final textColor = _getSettingTextStyle(context).color!;
     return _buildSettingContainer(
       context: context,
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
-        topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-        bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
-        bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-      ),
+      borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -239,14 +253,14 @@ class _SettingScreenState extends State<SettingScreen> {
             children: [
               Icon(
                 FontAwesomeIcons.textWidth,
-                color: Theme.of(context).primaryColor.getSmartColor(context),
+                color: textColor,
                 size: kIconSizeM,
               ),
               const SizedBox(width: kSpaceML),
               Expanded(
                 child: Text(
                   coreLang(context).fontSize,
-                  style: AppTextStyles.titleLarge(context).copyWith(color: Theme.of(context).primaryColor.getSmartColor(context)),
+                  style: _getSettingTextStyle(context),
                 ),
               ),
               const SizedBox(width: kSpaceML),
@@ -271,9 +285,8 @@ class _SettingScreenState extends State<SettingScreen> {
             min: 0,
             max: 10,
             divisions: 10,
-            activeColor: Theme.of(context).primaryColor.getSmartColor(context),
-            inactiveColor:
-                Theme.of(context).primaryColor.getSmartColor(context).withValues(alpha: 0.3),
+            activeColor: textColor,
+            inactiveColor: textColor.withValues(alpha: 0.3),
             onChanged: (val) {
               setState(() {
                 settingBloc.add(ChangedFontSize(fontSize: val.round()));
@@ -286,6 +299,7 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Widget _buildVolumeSlider(BuildContext context, SettingState settingState) {
+    final textColor = _getSettingTextStyle(context).color!;
     return _buildSettingContainer(
       context: context,
       borderRadius: BorderRadius.only(
@@ -307,28 +321,22 @@ class _SettingScreenState extends State<SettingScreen> {
                         : settingState.vol > 0
                             ? FontAwesomeIcons.volumeOff
                             : FontAwesomeIcons.volumeXmark,
-                color: Theme.of(context).primaryColor.getSmartColor(context),
+                color: textColor,
                 size: kIconSizeM,
               ),
               const SizedBox(width: kSpaceML),
-              Text(
-                coreLang(context).volume,
-                style: AppTextStyles.titleLarge(context).copyWith(color: Theme.of(context).primaryColor.getSmartColor(context)),
-              ),
+              Text(coreLang(context).volume,
+                  style: _getSettingTextStyle(context)),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
-                  settingState.vol.toString(),
-                  style: _getSettingValueTextStyle(context),
-                ),
+                child: Text(settingState.vol.toString(),
+                    style: _getSettingValueTextStyle(context)),
               ),
             ],
           ),
@@ -337,9 +345,8 @@ class _SettingScreenState extends State<SettingScreen> {
             min: 0,
             max: 10,
             divisions: 10,
-            activeColor: Theme.of(context).primaryColor.getSmartColor(context),
-            inactiveColor:
-                Theme.of(context).primaryColor.getSmartColor(context).withValues(alpha: 0.3),
+            activeColor: textColor,
+            inactiveColor: textColor.withValues(alpha: 0.3),
             onChanged: (val) {
               settingBloc.add(ChangedVol(vol: val.round()));
             },
@@ -350,6 +357,7 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Widget _buildVibrateToggle(BuildContext context, SettingState settingState) {
+    final textColor = _getSettingTextStyle(context).color!;
     return _buildSettingContainer(
       context: context,
       borderRadius: BorderRadius.only(
@@ -364,14 +372,11 @@ class _SettingScreenState extends State<SettingScreen> {
             settingState.isVibrate
                 ? FontAwesomeIcons.mobileScreenButton
                 : FontAwesomeIcons.mobile,
-            color: Theme.of(context).primaryColor.getSmartColor(context),
+            color: textColor,
             size: kIconSizeM,
           ),
           const SizedBox(width: kSpaceML),
-          Text(
-            coreLang(context).vibrate,
-            style: AppTextStyles.titleLarge(context).copyWith(color: Theme.of(context).primaryColor.getSmartColor(context)),
-          ),
+          Text(coreLang(context).vibrate, style: _getSettingTextStyle(context)),
           const Spacer(),
           Switch(
             value: settingState.isVibrate,
@@ -387,6 +392,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
   Widget _buildTopScoresSlider(
       BuildContext context, SettingState settingState) {
+    final textColor = _getSettingTextStyle(context).color!;
     return _buildSettingContainer(
       context: context,
       borderRadius: BorderRadius.only(
@@ -400,31 +406,21 @@ class _SettingScreenState extends State<SettingScreen> {
         children: [
           Row(
             children: [
-              Icon(
-                FontAwesomeIcons.ribbon,
-                color: Theme.of(context).primaryColor.getSmartColor(context),
-                size: kIconSizeM,
-              ),
+              Icon(FontAwesomeIcons.ribbon, color: textColor, size: kIconSizeM),
               const SizedBox(width: kSpaceML),
               Expanded(
-                child: Text(
-                  coreLang(context).topScore,
-                  style: AppTextStyles.titleLarge(context).copyWith(color: Theme.of(context).primaryColor.getSmartColor(context)),
-                ),
+                child: Text(coreLang(context).topScore,
+                    style: _getSettingTextStyle(context)),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
-                  settingState.numberOfTopBoard.toString(),
-                  style: _getSettingValueTextStyle(context),
-                ),
+                child: Text(settingState.numberOfTopBoard.toString(),
+                    style: _getSettingValueTextStyle(context)),
               ),
             ],
           ),
@@ -433,9 +429,8 @@ class _SettingScreenState extends State<SettingScreen> {
             min: 20,
             max: 100,
             divisions: 8,
-            activeColor: Theme.of(context).primaryColor.getSmartColor(context),
-            inactiveColor:
-                Theme.of(context).primaryColor.getSmartColor(context).withValues(alpha: 0.3),
+            activeColor: textColor,
+            inactiveColor: textColor.withValues(alpha: 0.3),
             onChanged: (val) {
               setState(() {
                 settingBloc.add(
@@ -451,6 +446,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
   Widget _buildOnlyMyRecordsToggle(
       BuildContext context, SettingState settingState) {
+    final textColor = _getSettingTextStyle(context).color!;
     return _buildSettingContainer(
       context: context,
       borderRadius: BorderRadius.only(
@@ -461,17 +457,11 @@ class _SettingScreenState extends State<SettingScreen> {
       ),
       child: Row(
         children: [
-          Icon(
-            FontAwesomeIcons.userCheck,
-            color: Theme.of(context).primaryColor.getSmartColor(context),
-            size: kIconSizeM,
-          ),
+          Icon(FontAwesomeIcons.userCheck, color: textColor, size: kIconSizeM),
           const SizedBox(width: kSpaceML),
           Expanded(
-            child: Text(
-              coreLang(context).personal,
-              style: AppTextStyles.titleLarge(context).copyWith(color: Theme.of(context).primaryColor.getSmartColor(context)),
-            ),
+            child: Text(coreLang(context).personal,
+                style: _getSettingTextStyle(context)),
           ),
           const SizedBox(width: kSpaceML),
           Switch(
@@ -490,6 +480,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
   Widget _buildLanguageDropdown(
       BuildContext context, SettingState settingState) {
+    final textColor = _getSettingTextStyle(context).color!;
     return _buildSettingContainer(
       context: context,
       borderRadius: BorderRadius.only(
@@ -503,16 +494,11 @@ class _SettingScreenState extends State<SettingScreen> {
         children: [
           Row(
             children: [
-              Icon(
-                FontAwesomeIcons.language,
-                color: Theme.of(context).primaryColor.getSmartColor(context),
-                size: kIconSizeM,
-              ),
+              Icon(FontAwesomeIcons.language,
+                  color: textColor, size: kIconSizeM),
               const SizedBox(width: kSpaceML),
-              Text(
-                coreLang(context).language,
-                style: AppTextStyles.titleLarge(context).copyWith(color: Theme.of(context).primaryColor.getSmartColor(context)),
-              ),
+              Text(coreLang(context).language,
+                  style: _getSettingTextStyle(context)),
             ],
           ),
           const SizedBox(height: kSpaceML),

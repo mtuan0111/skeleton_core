@@ -18,6 +18,10 @@ class MenuScreen extends StatefulWidget {
   final List<Widget> menuItems;
   final Widget? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
+  final BoxDecoration? backgroundDecoration;
+  /// Optional: fully replaces the Container+decoration background.
+  /// Receives the scrollable body as a child to wrap.
+  final Widget Function(Widget child)? backgroundWrapper;
 
   const MenuScreen({
     super.key,
@@ -28,6 +32,8 @@ class MenuScreen extends StatefulWidget {
     required this.menuItems,
     this.floatingActionButton,
     this.floatingActionButtonLocation,
+    this.backgroundDecoration,
+    this.backgroundWrapper,
   });
 
   @override
@@ -54,140 +60,128 @@ class _MenuScreenState extends State<MenuScreen> {
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, userState) {
         return Scaffold(
-          body: Container(
-            decoration: LayoutConfig(context).gradientDecoration,
-            child: SafeArea(
-              child: CustomScrollView(
-                slivers: [
-                  SliverAppBar(
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    surfaceTintColor: Colors.transparent,
-                    pinned: true,
-                    flexibleSpace: widget.headerIcon == null
-                        ? const Center(child: MainLogo())
-                        : Center(
-                            child: SingleChildScrollView(
-                              physics: const NeverScrollableScrollPhysics(),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  widget.headerIcon!,
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    widget.title,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineLarge
-                                        ?.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 32,
-                                        ),
-                                  ),
-                                  if (widget.subtitle != null) ...[
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      widget.subtitle!,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge
-                                          ?.copyWith(color: Colors.white70),
-                                    ),
-                                  ]
-                                ],
-                              ),
-                            ),
-                          ),
-                    expandedHeight: widget.headerIcon == null ? 240 : 220,
-                    toolbarHeight: widget.headerIcon == null ? 80 : 80,
-                  ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 20,
-                      ),
-                      child: Center(
-                        child: Text(
-                          userState.username != null
-                              ? coreLang(context)
-                                  .welcomeUser(userState.username!)
-                              : coreLang(context).welcome,
-                          style: AppTextStyles.titleLarge(context),
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (widget.greetingMessage != null)
-                    SliverToBoxAdapter(
-                      child: widget.greetingMessage!,
-                    ),
-                  if (SeasonalTheme.current != ThemeType.defaultTheme)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          bottom: 10,
-                          left: 20,
-                          right: 20,
-                        ),
-                        child: Center(
-                          child: Text(
-                            _getHolidayMessage(context),
-                            style: AppTextStyles.bodyLargeMedium(context),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ),
-                  SliverPadding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 20,
-                      horizontal: 32,
-                    ),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
-                            child: widget.menuItems[index],
-                          );
-                        },
-                        childCount: widget.menuItems.length,
-                      ),
-                    ),
-                  ),
-                  if (_version?.isNotEmpty ?? false)
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Container(
-                        margin: const EdgeInsets.all(kPaddingM),
-                        alignment: Alignment.bottomCenter,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              "${coreLang(context).version}: ",
-                              style: AppTextStyles.bodyLarge(context),
-                            ),
-                            Text(
-                              _version ?? "",
-                              style: AppTextStyles.bodyLarge(context),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
+          body: widget.backgroundWrapper != null
+              ? widget.backgroundWrapper!(_buildScrollBody(context, userState))
+              : Container(
+                  decoration: widget.backgroundDecoration ?? LayoutConfig(context).gradientDecoration,
+                  child: _buildScrollBody(context, userState),
+                ),
           floatingActionButton: widget.floatingActionButton,
           floatingActionButtonLocation: widget.floatingActionButtonLocation,
         );
       },
+    );
+  }
+
+  Widget _buildScrollBody(BuildContext context, UserState userState) {
+    return SafeArea(
+      child: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            pinned: true,
+            flexibleSpace: widget.headerIcon == null
+                ? const Center(child: MainLogo())
+                : Center(
+                    child: SingleChildScrollView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          widget.headerIcon!,
+                          const SizedBox(height: 8),
+                          Text(
+                            widget.title,
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineLarge
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 32,
+                                ),
+                          ),
+                          if (widget.subtitle != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              widget.subtitle!,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(color: Colors.white70),
+                            ),
+                          ]
+                        ],
+                      ),
+                    ),
+                  ),
+            expandedHeight: widget.headerIcon == null ? 240 : 220,
+            toolbarHeight: widget.headerIcon == null ? 80 : 80,
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: Text(
+                  userState.username != null
+                      ? coreLang(context).welcomeUser(userState.username!)
+                      : coreLang(context).welcome,
+                  style: AppTextStyles.titleLarge(context),
+                ),
+              ),
+            ),
+          ),
+          if (widget.greetingMessage != null)
+            SliverToBoxAdapter(child: widget.greetingMessage!),
+          if (SeasonalTheme.current != ThemeType.defaultTheme)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10, left: 20, right: 20),
+                child: Center(
+                  child: Text(
+                    _getHolidayMessage(context),
+                    style: AppTextStyles.bodyLargeMedium(context),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 32),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: widget.menuItems[index],
+                ),
+                childCount: widget.menuItems.length,
+              ),
+            ),
+          ),
+          if (_version?.isNotEmpty ?? false)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Container(
+                margin: const EdgeInsets.all(kPaddingM),
+                alignment: Alignment.bottomCenter,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text("${coreLang(context).version}: ",
+                        style: AppTextStyles.bodyLarge(context)),
+                    Text(_version ?? "",
+                        style: AppTextStyles.bodyLarge(context)),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 

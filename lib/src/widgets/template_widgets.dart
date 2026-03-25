@@ -1469,6 +1469,7 @@ class VectorMossPainter extends CustomPainter {
   final bool isButtonOverlay;
   final Size objectSize;
   final double mossRatio;
+  final int extraMoss;
 
   VectorMossPainter({
     int? seed,
@@ -1476,6 +1477,7 @@ class VectorMossPainter extends CustomPainter {
     this.isButtonOverlay = false,
     required this.objectSize,
     this.mossRatio = 0.1,
+    this.extraMoss = 0,
   }) : seed = seed ?? math.Random().nextInt(1000000);
 
   @override
@@ -1496,8 +1498,11 @@ class VectorMossPainter extends CustomPainter {
       patchCount = (targetTotalWidth / 30.0).round();
       if (patchCount < 1) patchCount = 1;
 
-      // Cap at a reasonable maximum
-      patchCount = math.min(patchCount, (objectSize.width / 40.0).ceil());
+      patchCount += extraMoss;
+
+      // Cap at a reasonable maximum to leave some breathing room
+      int maxAllowed = (objectSize.width / 30.0).ceil();
+      patchCount = math.min(patchCount, maxAllowed);
     }
 
     final Color mossBase = const Color(0xFF5D8A41);
@@ -1512,9 +1517,22 @@ class VectorMossPainter extends CustomPainter {
       double dy = 0.0;
 
       if (isButtonOverlay) {
+        double segmentWidth = objectSize.width / patchCount;
         drawWidth = 20.0 + rng.nextDouble() * 20.0;
+        
+        // Ensure the patch doesn't exceed its designated segment width
+        if (drawWidth > segmentWidth - 2.0) {
+            drawWidth = math.max(10.0, segmentWidth - 2.0);
+        }
+        
         drawHeight = 10.0 + rng.nextDouble() * 5.0;
-        dx = 5.0 + rng.nextDouble() * (objectSize.width - drawWidth - 10.0);
+        
+        // Constrain dx strictly within the current segment 'p'
+        double segmentStart = p * segmentWidth;
+        double maxDx = segmentWidth - drawWidth;
+        if (maxDx < 0) maxDx = 0;
+        
+        dx = segmentStart + rng.nextDouble() * maxDx;
         dy = -1.0;
       }
 
@@ -1534,13 +1552,20 @@ class VectorMossPainter extends CustomPainter {
       // Top edge draped over log
       basePath.quadraticBezierTo(width / 2, -2, width, 2);
 
-      // Bulbous lobed bottom edges
-      double stepX = width / blobCount;
+      // Generate random widths for each blob
+      List<double> blobWeights =
+          List.generate(blobCount, (index) => 1 + rng.nextDouble());
+      double totalWeight = blobWeights.fold(0.0, (sum, weight) => sum + weight);
+      List<double> blobWidths =
+          blobWeights.map((w) => width * (w / totalWeight)).toList();
+
+      // Bulbous lobed bottom edges (drawn right to left to match path flow)
       double currentX = width;
       for (int i = 0; i < blobCount; i++) {
-        double nextX = width - (i + 1) * stepX;
-        double cy = height + rng.nextDouble() * 8; // Bulging down
-        basePath.quadraticBezierTo(currentX - stepX / 2, cy, nextX,
+        double bWidth = blobWidths[blobCount - 1 - i];
+        double nextX = currentX - bWidth;
+        double cy = height + rng.nextDouble() * 20; // Bulging down
+        basePath.quadraticBezierTo(currentX - bWidth / 2, cy, nextX,
             (i == blobCount - 1 ? 0 : height * 0.4));
         currentX = nextX;
       }
@@ -1570,19 +1595,23 @@ class VectorMossPainter extends CustomPainter {
             ..style = PaintingStyle.fill);
 
       // Highlights (rounded clusters on upper surfaces)
+      double hlCurrentX = 0;
       for (int i = 0; i < blobCount; i++) {
-        if (rng.nextDouble() > 0.7) continue; // Randomly skip some
-        final Path hl = Path();
-        double hx = stepX * i + stepX * 0.1;
-        double hy = rng.nextDouble() * 3;
-        double hw = stepX * 0.6 + rng.nextDouble() * stepX * 0.3;
-        double hh = height * 0.4 + rng.nextDouble() * 2;
-        hl.addOval(Rect.fromLTWH(hx, hy, hw, hh));
-        canvas.drawPath(
-            hl,
-            Paint()
-              ..color = mossHighlight
-              ..style = PaintingStyle.fill);
+        double bWidth = blobWidths[i];
+        if (rng.nextDouble() <= 0.7) {
+          final Path hl = Path();
+          double hx = hlCurrentX + bWidth * 0.1;
+          double hy = rng.nextDouble() * 3;
+          double hw = bWidth * 0.6 + rng.nextDouble() * bWidth * 0.3;
+          double hh = height * 0.4 + rng.nextDouble() * 2;
+          hl.addOval(Rect.fromLTWH(hx, hy, hw, hh));
+          canvas.drawPath(
+              hl,
+              Paint()
+                ..color = mossHighlight
+                ..style = PaintingStyle.fill);
+        }
+        hlCurrentX += bWidth;
       }
       canvas.restore();
 
