@@ -201,7 +201,7 @@ class _SettingScreenState extends State<SettingScreen> {
             // borderSide: BorderSide(color: textColor, width: 2),
           ),
         ),
-        style: _getSettingTextStyle(context),
+        // style: _getSettingTextStyle(context),
         initialValue: userState.model.username,
         onChanged: (value) {
           userBloc.add(UsernameChanged(newUsername: value));
@@ -690,7 +690,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 value: lang.key,
                 child: Text(
                   lang.value,
-                  style: _getSettingTextStyle(context),
+                  // style: _getSettingTextStyle(context),
                 ),
               ),
             )
@@ -701,44 +701,24 @@ class _SettingScreenState extends State<SettingScreen> {
           }
         },
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
+          hintText: coreLang(context).anonymous,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(
-              LayoutConfig.layoutBorderRadius,
-            ),
-            borderSide: BorderSide(
-              color: Theme.of(context)
-                  .colorScheme
-                  .onPrimary
-                  .withValues(alpha: 0.3),
-            ),
+            borderRadius:
+                BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(
-              LayoutConfig.layoutBorderRadius,
-            ),
-            borderSide: BorderSide(
-              color: Theme.of(context)
-                  .colorScheme
-                  .onPrimary
-                  .withValues(alpha: 0.3),
-            ),
+            borderRadius:
+                BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+            // borderSide: BorderSide(color: textColor.withValues(alpha: 0.3)),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(
-              LayoutConfig.layoutBorderRadius,
-            ),
-            borderSide: BorderSide(
-              color: Theme.of(context).primaryColor.getSmartColor(context),
-              width: 2,
-            ),
+            borderRadius:
+                BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+            // borderSide: BorderSide(color: textColor, width: 2),
           ),
         ),
         dropdownColor: Theme.of(context).primaryColor,
-        style: _getSettingTextStyle(context),
+        // style: _getSettingTextStyle(context),
       ),
     );
 

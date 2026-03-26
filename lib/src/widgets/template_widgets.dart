@@ -459,6 +459,17 @@ class CustomElevatedButton extends StatefulWidget {
     int contentSeed,
   )? buttonRenderer;
 
+  /// Optional overlay renderer drawn on top of the button content.
+  final Widget Function(
+    BuildContext context,
+    BorderRadius borderRadius,
+    Color backgroundColor,
+    Color darkerColor,
+    bool isPressed,
+    bool isClickable,
+    int contentSeed,
+  )? overlayBuilder;
+
   const CustomElevatedButton({
     Key? key,
     this.onPressed,
@@ -479,6 +490,7 @@ class CustomElevatedButton extends StatefulWidget {
     this.textDirection,
     this.backgroundBuilder,
     this.buttonRenderer,
+    this.overlayBuilder,
   }) : super(key: key);
 
   @override
@@ -662,8 +674,9 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
         Object.hash(widget.text, widget.iconData, widget.child?.hashCode);
 
     // ── Resolve renderer: per-widget first, then theme fallback ─────────
-    final resolvedRenderer =
-        widget.buttonRenderer ?? CustomButtonTheme.of(context)?.buttonRenderer;
+    final theme = CustomButtonTheme.of(context);
+    final resolvedRenderer = widget.buttonRenderer ?? theme?.buttonRenderer;
+    final resolvedOverlay = widget.overlayBuilder ?? theme?.overlayBuilder;
 
     if (resolvedRenderer != null) {
       return AnimatedOpacity(
@@ -692,37 +705,50 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
                 ),
               ),
               // ElevatedButton shell for interaction only
-              Container(
-                child: ElevatedButton(
-                  style: LayoutConfig.elevatedButtonStyle.copyWith(
-                    backgroundColor: WidgetStateProperty.all(
-                      Colors.transparent,
-                    ),
-                    shadowColor: WidgetStateProperty.all(Colors.transparent),
-                    shape: WidgetStateProperty.all(
-                      RoundedRectangleBorder(borderRadius: borderRadiusValue),
-                    ),
-                    padding: WidgetStateProperty.all(
-                      EdgeInsets.symmetric(
-                        vertical: getPaddingSize(),
-                        horizontal: getPaddingSize(),
-                      ),
+              ElevatedButton(
+                style: LayoutConfig.elevatedButtonStyle.copyWith(
+                  backgroundColor: WidgetStateProperty.all(
+                    Colors.transparent,
+                  ),
+                  shadowColor: WidgetStateProperty.all(Colors.transparent),
+                  shape: WidgetStateProperty.all(
+                    RoundedRectangleBorder(borderRadius: borderRadiusValue),
+                  ),
+                  padding: WidgetStateProperty.all(
+                    EdgeInsets.symmetric(
+                      vertical: getPaddingSize(),
+                      horizontal: getPaddingSize(),
                     ),
                   ),
-                  onPressed: () {
-                    if (widget.onPressed == null) return;
-                    widget.onPressed?.call();
-                    if (mounted) setState(() => isPressed = true);
-                    Future.delayed(
-                      const Duration(milliseconds: kAnimationDurationFast),
-                      () {
-                        if (mounted) setState(() => isPressed = false);
-                      },
-                    );
-                  },
-                  child: children(context),
                 ),
+                onPressed: () {
+                  if (widget.onPressed == null) return;
+                  widget.onPressed?.call();
+                  if (mounted) setState(() => isPressed = true);
+                  Future.delayed(
+                    const Duration(milliseconds: kAnimationDurationFast),
+                    () {
+                      if (mounted) setState(() => isPressed = false);
+                    },
+                  );
+                },
+                child: children(context),
               ),
+              // Optional overlay (e.g. moss)
+              if (resolvedOverlay != null)
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: resolvedOverlay(
+                      context,
+                      borderRadiusValue,
+                      backgroundColor,
+                      darkerBackgroundColor,
+                      isPressed,
+                      isClickale,
+                      contentSeed,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -931,29 +957,21 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
                     ),
                   ),
                 ),
-              // Organic moss patch randomly generated based on button color
-              Positioned.fill(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final int sizeSeed = constraints.maxWidth.toInt() ^
-                        (constraints.maxHeight * 10).toInt();
-
-                    return IgnorePointer(
-                      child: CustomPaint(
-                        painter: VectorMossPainter(
-                          seed: backgroundColor.toARGB32() ^
-                              sizeSeed ^
-                              contentSeed,
-                          isButtonOverlay: true,
-                          objectSize:
-                              Size(constraints.maxWidth, constraints.maxHeight),
-                          mossRatio: 0.20,
-                        ),
-                      ),
-                    );
-                  },
+              // Optional overlay (e.g. moss)
+              if (resolvedOverlay != null)
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: resolvedOverlay(
+                      context,
+                      borderRadiusValue,
+                      backgroundColor,
+                      darkerBackgroundColor,
+                      isPressed,
+                      isClickale,
+                      contentSeed,
+                    ),
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -1453,181 +1471,4 @@ class RankingInfoRow extends StatelessWidget {
       ],
     );
   }
-}
-
-/// A reusable painter that rendering a stylized organic vector moss patch
-/// following the wood-style.md geometric rules (draped top, lobed bottom,
-/// shadow clipping, spherical highlights).
-///
-/// The Moss draws bounded by the given `size`. The `blobs` parameter dictates
-/// the number of undulating bottom lobes. A stable `rng` must be provided to
-/// randomize the droop of the lobes and the highlight placement without
-/// causing jitter across repaints.
-class VectorMossPainter extends CustomPainter {
-  final int seed;
-  final int? blobs;
-  final bool isButtonOverlay;
-  final Size objectSize;
-  final double mossRatio;
-  final int extraMoss;
-
-  VectorMossPainter({
-    int? seed,
-    this.blobs,
-    this.isButtonOverlay = false,
-    required this.objectSize,
-    this.mossRatio = 0.1,
-    this.extraMoss = 0,
-  }) : seed = seed ?? math.Random().nextInt(1000000);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rng = math.Random(seed);
-
-    int patchCount = 1;
-
-    if (isButtonOverlay) {
-      // ~60% chance for a button to grow moss
-      if (rng.nextDouble() > 0.6) return;
-      if (objectSize.width < 50) return; // skip tiny buttons
-
-      // Total target width for moss patches
-      double targetTotalWidth = objectSize.width * mossRatio;
-
-      // Each patch is roughly 30 pixels wide on average: (20 + rand * 20)
-      patchCount = (targetTotalWidth / 30.0).round();
-      if (patchCount < 1) patchCount = 1;
-
-      patchCount += extraMoss;
-
-      // Cap at a reasonable maximum to leave some breathing room
-      int maxAllowed = (objectSize.width / 30.0).ceil();
-      patchCount = math.min(patchCount, maxAllowed);
-    }
-
-    final Color mossBase = const Color(0xFF5D8A41);
-    final Color mossHighlight = const Color(0xFF8DC05B);
-    final Color mossShadow = const Color(0xFF3B5B28);
-    final Color outlineColor = const Color(0xFF3E2312);
-
-    for (int p = 0; p < patchCount; p++) {
-      double drawWidth = size.width;
-      double drawHeight = size.height;
-      double dx = 0.0;
-      double dy = 0.0;
-
-      if (isButtonOverlay) {
-        double segmentWidth = objectSize.width / patchCount;
-        drawWidth = 20.0 + rng.nextDouble() * 20.0;
-        
-        // Ensure the patch doesn't exceed its designated segment width
-        if (drawWidth > segmentWidth - 2.0) {
-            drawWidth = math.max(10.0, segmentWidth - 2.0);
-        }
-        
-        drawHeight = 10.0 + rng.nextDouble() * 5.0;
-        
-        // Constrain dx strictly within the current segment 'p'
-        double segmentStart = p * segmentWidth;
-        double maxDx = segmentWidth - drawWidth;
-        if (maxDx < 0) maxDx = 0;
-        
-        dx = segmentStart + rng.nextDouble() * maxDx;
-        dy = -1.0;
-      }
-
-      final int calculatedBlobs =
-          (drawWidth / (8 + rng.nextDouble() * 4)).round();
-      final int blobCount = blobs ?? math.max(2, calculatedBlobs);
-
-      canvas.save();
-      canvas.translate(dx, dy);
-
-      final double width = drawWidth;
-      final double height = drawHeight;
-
-      final Path basePath = Path();
-      basePath.moveTo(0, 0);
-
-      // Top edge draped over log
-      basePath.quadraticBezierTo(width / 2, -2, width, 2);
-
-      // Generate random widths for each blob
-      List<double> blobWeights =
-          List.generate(blobCount, (index) => 1 + rng.nextDouble());
-      double totalWeight = blobWeights.fold(0.0, (sum, weight) => sum + weight);
-      List<double> blobWidths =
-          blobWeights.map((w) => width * (w / totalWeight)).toList();
-
-      // Bulbous lobed bottom edges (drawn right to left to match path flow)
-      double currentX = width;
-      for (int i = 0; i < blobCount; i++) {
-        double bWidth = blobWidths[blobCount - 1 - i];
-        double nextX = currentX - bWidth;
-        double cy = height + rng.nextDouble() * 20; // Bulging down
-        basePath.quadraticBezierTo(currentX - bWidth / 2, cy, nextX,
-            (i == blobCount - 1 ? 0 : height * 0.4));
-        currentX = nextX;
-      }
-      basePath.close();
-
-      canvas.drawPath(
-          basePath,
-          Paint()
-            ..color = mossBase
-            ..style = PaintingStyle.fill);
-
-      canvas.save();
-      canvas.clipPath(basePath);
-
-      // Shadow (bottom part)
-      final Path shadowPath = Path();
-      shadowPath.moveTo(-10, height * 0.6);
-      shadowPath.quadraticBezierTo(
-          width / 2, height * 0.3, width + 10, height * 0.6);
-      shadowPath.lineTo(width + 10, height + 20);
-      shadowPath.lineTo(-10, height + 20);
-      shadowPath.close();
-      canvas.drawPath(
-          shadowPath,
-          Paint()
-            ..color = mossShadow
-            ..style = PaintingStyle.fill);
-
-      // Highlights (rounded clusters on upper surfaces)
-      double hlCurrentX = 0;
-      for (int i = 0; i < blobCount; i++) {
-        double bWidth = blobWidths[i];
-        if (rng.nextDouble() <= 0.7) {
-          final Path hl = Path();
-          double hx = hlCurrentX + bWidth * 0.1;
-          double hy = rng.nextDouble() * 3;
-          double hw = bWidth * 0.6 + rng.nextDouble() * bWidth * 0.3;
-          double hh = height * 0.4 + rng.nextDouble() * 2;
-          hl.addOval(Rect.fromLTWH(hx, hy, hw, hh));
-          canvas.drawPath(
-              hl,
-              Paint()
-                ..color = mossHighlight
-                ..style = PaintingStyle.fill);
-        }
-        hlCurrentX += bWidth;
-      }
-      canvas.restore();
-
-      canvas.drawPath(
-          basePath,
-          Paint()
-            ..strokeWidth = 2.0
-            ..color = outlineColor
-            ..style = PaintingStyle.stroke
-            ..strokeJoin = StrokeJoin.round);
-
-      canvas.restore(); // restore translate
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant VectorMossPainter oldDelegate) =>
-      oldDelegate.blobs != blobs || oldDelegate.seed != seed;
 }

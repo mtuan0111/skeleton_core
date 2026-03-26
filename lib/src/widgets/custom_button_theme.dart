@@ -24,7 +24,23 @@ class CustomButtonThemeData {
   /// the scope.  Per-widget `style` overrides take priority.
   final TextStyle? textStyle;
 
-  const CustomButtonThemeData({this.buttonRenderer, this.textStyle});
+  /// Optional overlay renderer that is drawn on top of the button's content.
+  /// Receives the same arguments as [buttonRenderer].
+  final Widget Function(
+    BuildContext context,
+    BorderRadius borderRadius,
+    Color backgroundColor,
+    Color darkerColor,
+    bool isPressed,
+    bool isClickable,
+    int contentSeed,
+  )? overlayBuilder;
+
+  const CustomButtonThemeData({
+    this.buttonRenderer,
+    this.textStyle,
+    this.overlayBuilder,
+  });
 }
 
 /// An [InheritedWidget] that configures the default style for all
@@ -61,6 +77,7 @@ class CustomButtonTheme extends InheritedWidget {
 
   @override
   bool updateShouldNotify(CustomButtonTheme oldWidget) =>
-      data.buttonRenderer != oldWidget.data.buttonRenderer ||
-      data.textStyle != oldWidget.data.textStyle;
+    data.buttonRenderer != oldWidget.data.buttonRenderer ||
+    data.textStyle != oldWidget.data.textStyle ||
+    data.overlayBuilder != oldWidget.data.overlayBuilder;
 }
