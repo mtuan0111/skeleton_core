@@ -493,9 +493,7 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget _buildVibrateToggle(BuildContext context, SettingState settingState) {
     return _buildField(
       context,
-      iconData: settingState.isVibrate
-          ? FontAwesomeIcons.mobileScreenButton
-          : FontAwesomeIcons.mobile,
+      iconData: FontAwesomeIcons.mobileVibrate,
       title: coreLang(context).vibrate,
       child: Switch(
         value: settingState.isVibrate,
