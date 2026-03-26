@@ -32,8 +32,11 @@ class SettingScreen extends StatefulWidget {
 
   /// Optional builder to customise the appearance of each setting's container.
   final Widget Function(
-          BuildContext context, Widget child, BorderRadius borderRadius)?
-      settingContainerBuilder;
+      BuildContext context,
+      Widget child,
+      BorderRadius borderRadius,
+      String title,
+      IconData? iconData)? settingContainerBuilder;
 
   /// Optional callback when the number of top board changes,
   /// so apps can sync their TurnRecordedListBloc.
@@ -158,410 +161,669 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  Widget _buildUsernameField(BuildContext context, UserState userState) {
+  Widget _buildField(
+    BuildContext context, {
+    required String title,
+    required Widget child,
+    IconData? iconData,
+  }) {
     final bg = widget.backgroundColor ?? Theme.of(context).primaryColor;
-    final textColor = bg.getSmartColor(context);
+
     return _buildSettingContainer(
       context: context,
       borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.person, color: textColor, size: kIconSizeM),
-              const SizedBox(width: kSpaceML),
-              Expanded(
-                child: Text(
-                  coreLang(context).name,
-                  style: _getSettingTextStyle(context),
-                ),
-              ),
-            ],
+      icon: iconData,
+      title: title,
+      child: child,
+    );
+  }
+
+  Widget _buildUsernameField(BuildContext context, UserState userState) {
+    return _buildField(
+      context,
+      iconData: Icons.person,
+      title: coreLang(context).name,
+      child: TextFormField(
+        decoration: InputDecoration(
+          hintText: coreLang(context).anonymous,
+          border: OutlineInputBorder(
+            borderRadius:
+                BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
           ),
-          const SizedBox(height: kSpaceM),
-          TextFormField(
-            decoration: InputDecoration(
-              hintText: coreLang(context).anonymous,
-              hintStyle: AppTextStyles.withColor(
-                AppTextStyles.bodyLarge(context),
-                textColor,
-              ),
-              border: OutlineInputBorder(
-                borderRadius:
-                    BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius:
-                    BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
-                borderSide: BorderSide(color: textColor.withValues(alpha: 0.3)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius:
-                    BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
-                borderSide: BorderSide(color: textColor, width: 2),
-              ),
-            ),
-            style: _getSettingTextStyle(context),
-            initialValue: userState.model.username,
-            onChanged: (value) {
-              userBloc.add(UsernameChanged(newUsername: value));
-            },
+          enabledBorder: OutlineInputBorder(
+            borderRadius:
+                BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+            // borderSide: BorderSide(color: textColor.withValues(alpha: 0.3)),
           ),
-        ],
+          focusedBorder: OutlineInputBorder(
+            borderRadius:
+                BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+            // borderSide: BorderSide(color: textColor, width: 2),
+          ),
+        ),
+        style: _getSettingTextStyle(context),
+        initialValue: userState.model.username,
+        onChanged: (value) {
+          userBloc.add(UsernameChanged(newUsername: value));
+        },
       ),
     );
+    // final bg = widget.backgroundColor ?? Theme.of(context).primaryColor;
+    // final textColor = bg.getSmartColor(context);
+    // return _buildSettingContainer(
+    //   context: context,
+    //   borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius),
+    //   child: Column(
+    //     crossAxisAlignment: CrossAxisAlignment.start,
+    //     children: [
+    //       Row(
+    //         children: [
+    //           Icon(Icons.person, color: textColor, size: kIconSizeM),
+    //           const SizedBox(width: kSpaceML),
+    //           Expanded(
+    //             child: Text(
+    //               coreLang(context).name,
+    //               style: _getSettingTextStyle(context),
+    //             ),
+    //           ),
+    //         ],
+    //       ),
+    //       const SizedBox(height: kSpaceM),
+    //       TextFormField(
+    //         decoration: InputDecoration(
+    //           hintText: coreLang(context).anonymous,
+    //           hintStyle: AppTextStyles.withColor(
+    //             AppTextStyles.bodyLarge(context),
+    //             textColor,
+    //           ),
+    //           border: OutlineInputBorder(
+    //             borderRadius:
+    //                 BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+    //           ),
+    //           enabledBorder: OutlineInputBorder(
+    //             borderRadius:
+    //                 BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+    //             borderSide: BorderSide(color: textColor.withValues(alpha: 0.3)),
+    //           ),
+    //           focusedBorder: OutlineInputBorder(
+    //             borderRadius:
+    //                 BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+    //             borderSide: BorderSide(color: textColor, width: 2),
+    //           ),
+    //         ),
+    //         style: _getSettingTextStyle(context),
+    //         initialValue: userState.model.username,
+    //         onChanged: (value) {
+    //           userBloc.add(UsernameChanged(newUsername: value));
+    //         },
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   Widget _buildSettingContainer({
     required BuildContext context,
     required Widget child,
+    required String title,
+    IconData? icon,
     BorderRadius? borderRadius,
   }) {
     final currentRadius = borderRadius ??
         BorderRadius.circular(LayoutConfig.layoutBorderRadius / 5);
 
     if (widget.settingContainerBuilder != null) {
-      return widget.settingContainerBuilder!(context, child, currentRadius);
+      return widget.settingContainerBuilder!(
+        context,
+        child,
+        currentRadius,
+        title,
+        icon,
+      );
     }
 
-    return Container(
-      padding: const EdgeInsets.all(kPaddingL),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.1),
-        borderRadius: currentRadius,
-        border: Border.all(
-          color: Theme.of(context)
-              .primaryColor
-              .getSmartColor(context)
-              .withValues(alpha: 0.2),
+    return DefaultTextStyle(
+      style: _getSettingTextStyle(context),
+      child: Container(
+        padding: const EdgeInsets.all(kPaddingL),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.1),
+          borderRadius: currentRadius,
+          border: Border.all(
+            color: Theme.of(context)
+                .primaryColor
+                .getSmartColor(context)
+                .withValues(alpha: 0.2),
+          ),
         ),
+        child: child,
       ),
-      child: child,
     );
   }
 
   Widget _buildFontSizeSlider(BuildContext context, SettingState settingState) {
-    final textColor = _getSettingTextStyle(context).color!;
-    return _buildSettingContainer(
-      context: context,
-      borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                FontAwesomeIcons.textWidth,
-                color: textColor,
-                size: kIconSizeM,
+    return _buildField(context,
+        iconData: Icons.format_size,
+        title: coreLang(context).fontSize,
+        child: Row(
+          children: [
+            Expanded(
+              child: Slider(
+                value: settingState.fontSize.toDouble(),
+                min: 0,
+                max: 10,
+                divisions: 10,
+                // activeColor: textColor,
+                // inactiveColor: textColor.withValues(alpha: 0.3),
+                onChanged: (val) {
+                  setState(() {
+                    settingBloc.add(ChangedFontSize(fontSize: val.round()));
+                  });
+                },
               ),
-              const SizedBox(width: kSpaceML),
-              Expanded(
-                child: Text(
-                  coreLang(context).fontSize,
-                  style: _getSettingTextStyle(context),
-                ),
+            ),
+            const SizedBox(width: kSpaceML),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
               ),
-              const SizedBox(width: kSpaceML),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  settingState.fontSize.toString(),
-                  style: _getSettingValueTextStyle(context),
-                ),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(12),
               ),
-            ],
-          ),
-          Slider(
-            value: settingState.fontSize.toDouble(),
-            min: 0,
-            max: 10,
-            divisions: 10,
-            activeColor: textColor,
-            inactiveColor: textColor.withValues(alpha: 0.3),
-            onChanged: (val) {
-              setState(() {
-                settingBloc.add(ChangedFontSize(fontSize: val.round()));
-              });
-            },
-          ),
-        ],
-      ),
-    );
+              child: Text(
+                settingState.fontSize.toString(),
+                style: _getSettingValueTextStyle(context),
+              ),
+            ),
+          ],
+        ));
+    // final textColor = _getSettingTextStyle(context).color!;
+    // return _buildSettingContainer(
+    //   context: context,
+    //   borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius),
+    //   child: Column(
+    //     crossAxisAlignment: CrossAxisAlignment.start,
+    //     children: [
+    //       Row(
+    //         children: [
+    //           Icon(
+    //             FontAwesomeIcons.textWidth,
+    //             color: textColor,
+    //             size: kIconSizeM,
+    //           ),
+    //           const SizedBox(width: kSpaceML),
+    //           Expanded(
+    //             child: Text(
+    //               coreLang(context).fontSize,
+    //               style: _getSettingTextStyle(context),
+    //             ),
+    //           ),
+    //           const SizedBox(width: kSpaceML),
+    //           Container(
+    //             padding: const EdgeInsets.symmetric(
+    //               horizontal: 12,
+    //               vertical: 6,
+    //             ),
+    //             decoration: BoxDecoration(
+    //               color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+    //               borderRadius: BorderRadius.circular(12),
+    //             ),
+    //             child: Text(
+    //               settingState.fontSize.toString(),
+    //               style: _getSettingValueTextStyle(context),
+    //             ),
+    //           ),
+    //         ],
+    //       ),
+    //       Slider(
+    //         value: settingState.fontSize.toDouble(),
+    //         min: 0,
+    //         max: 10,
+    //         divisions: 10,
+    //         activeColor: textColor,
+    //         inactiveColor: textColor.withValues(alpha: 0.3),
+    //         onChanged: (val) {
+    //           setState(() {
+    //             settingBloc.add(ChangedFontSize(fontSize: val.round()));
+    //           });
+    //         },
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   Widget _buildVolumeSlider(BuildContext context, SettingState settingState) {
-    final textColor = _getSettingTextStyle(context).color!;
-    return _buildSettingContainer(
-      context: context,
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
-        topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-        bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
-        bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return _buildField(
+      context,
+      iconData: settingState.vol > 7
+          ? FontAwesomeIcons.volumeHigh
+          : settingState.vol > 3
+              ? FontAwesomeIcons.volumeLow
+              : FontAwesomeIcons.volumeOff,
+      title: coreLang(context).volume,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Icon(
-                settingState.vol > 7
-                    ? FontAwesomeIcons.volumeHigh
-                    : settingState.vol > 4
-                        ? FontAwesomeIcons.volumeLow
-                        : settingState.vol > 0
-                            ? FontAwesomeIcons.volumeOff
-                            : FontAwesomeIcons.volumeXmark,
-                color: textColor,
-                size: kIconSizeM,
-              ),
-              const SizedBox(width: kSpaceML),
-              Text(coreLang(context).volume,
-                  style: _getSettingTextStyle(context)),
-              const Spacer(),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(settingState.vol.toString(),
-                    style: _getSettingValueTextStyle(context)),
-              ),
-            ],
+          Expanded(
+            child: Slider(
+              value: settingState.vol.toDouble(),
+              min: 0,
+              max: 10,
+              divisions: 10,
+              // activeColor: textColor,
+              // inactiveColor: textColor.withValues(alpha: 0.3),
+              onChanged: (val) {
+                setState(() {
+                  settingBloc.add(ChangedVol(vol: val.round()));
+                });
+              },
+            ),
           ),
-          Slider(
-            value: settingState.vol.toDouble(),
-            min: 0,
-            max: 10,
-            divisions: 10,
-            activeColor: textColor,
-            inactiveColor: textColor.withValues(alpha: 0.3),
-            onChanged: (val) {
-              settingBloc.add(ChangedVol(vol: val.round()));
-            },
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(settingState.vol.toString(),
+                style: _getSettingValueTextStyle(context)),
           ),
         ],
       ),
     );
+    // final textColor = _getSettingTextStyle(context).color!;
+    // return _buildSettingContainer(
+    //   context: context,
+    //   borderRadius: BorderRadius.only(
+    //     topLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
+    //     topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
+    //     bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
+    //     bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
+    //   ),
+    //   child: Column(
+    //     crossAxisAlignment: CrossAxisAlignment.start,
+    //     children: [
+    //       Row(
+    //         children: [
+    //           Icon(
+    //             settingState.vol > 7
+    //                 ? FontAwesomeIcons.volumeHigh
+    //                 : settingState.vol > 4
+    //                     ? FontAwesomeIcons.volumeLow
+    //                     : settingState.vol > 0
+    //                         ? FontAwesomeIcons.volumeOff
+    //                         : FontAwesomeIcons.volumeXmark,
+    //             color: textColor,
+    //             size: kIconSizeM,
+    //           ),
+    //           const SizedBox(width: kSpaceML),
+    //           Text(coreLang(context).volume,
+    //               style: _getSettingTextStyle(context)),
+    //           const Spacer(),
+    //           Container(
+    //             padding:
+    //                 const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    //             decoration: BoxDecoration(
+    //               color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+    //               borderRadius: BorderRadius.circular(12),
+    //             ),
+    //             child: Text(settingState.vol.toString(),
+    //                 style: _getSettingValueTextStyle(context)),
+    //           ),
+    //         ],
+    //       ),
+    //       Slider(
+    //         value: settingState.vol.toDouble(),
+    //         min: 0,
+    //         max: 10,
+    //         divisions: 10,
+    //         activeColor: textColor,
+    //         inactiveColor: textColor.withValues(alpha: 0.3),
+    //         onChanged: (val) {
+    //           settingBloc.add(ChangedVol(vol: val.round()));
+    //         },
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   Widget _buildVibrateToggle(BuildContext context, SettingState settingState) {
-    final textColor = _getSettingTextStyle(context).color!;
-    return _buildSettingContainer(
-      context: context,
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
-        topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-        bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
-        bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            settingState.isVibrate
-                ? FontAwesomeIcons.mobileScreenButton
-                : FontAwesomeIcons.mobile,
-            color: textColor,
-            size: kIconSizeM,
-          ),
-          const SizedBox(width: kSpaceML),
-          Text(coreLang(context).vibrate, style: _getSettingTextStyle(context)),
-          const Spacer(),
-          Switch(
-            value: settingState.isVibrate,
-            activeThumbColor: Theme.of(context).primaryColor,
-            onChanged: (val) {
-              settingBloc.add(ChangedIsVibrate(isVibrate: val));
-            },
-          ),
-        ],
+    return _buildField(
+      context,
+      iconData: settingState.isVibrate
+          ? FontAwesomeIcons.mobileScreenButton
+          : FontAwesomeIcons.mobile,
+      title: coreLang(context).vibrate,
+      child: Switch(
+        value: settingState.isVibrate,
+        onChanged: (val) {
+          // settingBloc.add(ChangedVibrate(isVibrate: val));
+          settingBloc.add(ChangedIsVibrate(isVibrate: val));
+        },
       ),
     );
+
+    // final textColor = _getSettingTextStyle(context).color!;
+    // return _buildSettingContainer(
+    //   context: context,
+    //   borderRadius: BorderRadius.only(
+    //     topLeft: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
+    //     topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
+    //     bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
+    //     bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius),
+    //   ),
+    //   child: Row(
+    //     children: [
+    //       Icon(
+    //         settingState.isVibrate
+    //             ? FontAwesomeIcons.mobileScreenButton
+    //             : FontAwesomeIcons.mobile,
+    //         color: textColor,
+    //         size: kIconSizeM,
+    //       ),
+    //       const SizedBox(width: kSpaceML),
+    //       Text(coreLang(context).vibrate, style: _getSettingTextStyle(context)),
+    //       const Spacer(),
+    //       Switch(
+    //         value: settingState.isVibrate,
+    //         activeThumbColor: Theme.of(context).primaryColor,
+    //         onChanged: (val) {
+    //           settingBloc.add(ChangedIsVibrate(isVibrate: val));
+    //         },
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   Widget _buildTopScoresSlider(
       BuildContext context, SettingState settingState) {
-    final textColor = _getSettingTextStyle(context).color!;
-    return _buildSettingContainer(
-      context: context,
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
-        topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-        bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
-        bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return _buildField(
+      context,
+      iconData: FontAwesomeIcons.ribbon,
+      title: coreLang(context).topScore,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Icon(FontAwesomeIcons.ribbon, color: textColor, size: kIconSizeM),
-              const SizedBox(width: kSpaceML),
-              Expanded(
-                child: Text(coreLang(context).topScore,
-                    style: _getSettingTextStyle(context)),
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(settingState.numberOfTopBoard.toString(),
-                    style: _getSettingValueTextStyle(context)),
-              ),
-            ],
+          Expanded(
+            child: Slider(
+              value: settingState.numberOfTopBoard.toDouble(),
+              min: 20,
+              max: 100,
+              divisions: 8,
+              onChanged: (val) {
+                setState(() {
+                  settingBloc.add(
+                    ChangedNumberOfTopBoard(numberOfTopBoard: val.round()),
+                  );
+                });
+              },
+            ),
           ),
-          Slider(
-            value: settingState.numberOfTopBoard.toDouble(),
-            min: 20,
-            max: 100,
-            divisions: 8,
-            activeColor: textColor,
-            inactiveColor: textColor.withValues(alpha: 0.3),
-            onChanged: (val) {
-              setState(() {
-                settingBloc.add(
-                  ChangedNumberOfTopBoard(numberOfTopBoard: val.round()),
-                );
-              });
-            },
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(settingState.numberOfTopBoard.toString(),
+                style: _getSettingValueTextStyle(context)),
           ),
         ],
       ),
     );
+
+    // final textColor = _getSettingTextStyle(context).color!;
+    // return _buildSettingContainer(
+    //   context: context,
+    //   borderRadius: BorderRadius.only(
+    //     topLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
+    //     topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
+    //     bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
+    //     bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
+    //   ),
+    //   child: Column(
+    //     crossAxisAlignment: CrossAxisAlignment.start,
+    //     children: [
+    //       Row(
+    //         children: [
+    //           Icon(FontAwesomeIcons.ribbon, color: textColor, size: kIconSizeM),
+    //           const SizedBox(width: kSpaceML),
+    //           Expanded(
+    //             child: Text(coreLang(context).topScore,
+    //                 style: _getSettingTextStyle(context)),
+    //           ),
+    //           Container(
+    //             padding:
+    //                 const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    //             decoration: BoxDecoration(
+    //               color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+    //               borderRadius: BorderRadius.circular(12),
+    //             ),
+    //             child: Text(settingState.numberOfTopBoard.toString(),
+    //                 style: _getSettingValueTextStyle(context)),
+    //           ),
+    //         ],
+    //       ),
+    //       Slider(
+    //         value: settingState.numberOfTopBoard.toDouble(),
+    //         min: 20,
+    //         max: 100,
+    //         divisions: 8,
+    //         activeColor: textColor,
+    //         inactiveColor: textColor.withValues(alpha: 0.3),
+    //         onChanged: (val) {
+    //           setState(() {
+    //             settingBloc.add(
+    //               ChangedNumberOfTopBoard(numberOfTopBoard: val.round()),
+    //             );
+    //           });
+    //         },
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   Widget _buildOnlyMyRecordsToggle(
       BuildContext context, SettingState settingState) {
-    final textColor = _getSettingTextStyle(context).color!;
-    return _buildSettingContainer(
-      context: context,
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
-        topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-        bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
-        bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-      ),
-      child: Row(
-        children: [
-          Icon(FontAwesomeIcons.userCheck, color: textColor, size: kIconSizeM),
-          const SizedBox(width: kSpaceML),
-          Expanded(
-            child: Text(coreLang(context).personal,
-                style: _getSettingTextStyle(context)),
-          ),
-          const SizedBox(width: kSpaceML),
-          Switch(
-            value: settingState.onlyShowMyRecorded,
-            activeThumbColor: Theme.of(context).primaryColor,
-            onChanged: (val) {
-              settingBloc.add(
-                ChangedOnlyShowMyRecorded(onlyShowMyRecorded: val),
-              );
-            },
-          ),
-        ],
+    return _buildField(
+      context,
+      iconData: FontAwesomeIcons.userCheck,
+      title: coreLang(context).personal,
+      child: Switch(
+        value: settingState.onlyShowMyRecorded,
+        activeThumbColor: Theme.of(context).primaryColor,
+        onChanged: (val) {
+          settingBloc.add(
+            ChangedOnlyShowMyRecorded(onlyShowMyRecorded: val),
+          );
+        },
       ),
     );
+
+    // final textColor = _getSettingTextStyle(context).color!;
+    // return _buildSettingContainer(
+    //   context: context,
+    //   borderRadius: BorderRadius.only(
+    //     topLeft: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
+    //     topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
+    //     bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
+    //     bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius),
+    //   ),
+    //   child: Row(
+    //     children: [
+    //       Icon(FontAwesomeIcons.userCheck, color: textColor, size: kIconSizeM),
+    //       const SizedBox(width: kSpaceML),
+    //       Expanded(
+    //         child: Text(coreLang(context).personal,
+    //             style: _getSettingTextStyle(context)),
+    //       ),
+    //       const SizedBox(width: kSpaceML),
+    //       Switch(
+    //         value: settingState.onlyShowMyRecorded,
+    //         activeThumbColor: Theme.of(context).primaryColor,
+    //         onChanged: (val) {
+    //           settingBloc.add(
+    //             ChangedOnlyShowMyRecorded(onlyShowMyRecorded: val),
+    //           );
+    //         },
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   Widget _buildLanguageDropdown(
       BuildContext context, SettingState settingState) {
-    final textColor = _getSettingTextStyle(context).color!;
-    return _buildSettingContainer(
-      context: context,
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
-        topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-        bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
-        bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(FontAwesomeIcons.language,
-                  color: textColor, size: kIconSizeM),
-              const SizedBox(width: kSpaceML),
-              Text(coreLang(context).language,
-                  style: _getSettingTextStyle(context)),
-            ],
+    return _buildField(
+      context,
+      iconData: FontAwesomeIcons.language,
+      title: coreLang(context).language,
+      child: DropdownButtonFormField<String>(
+        initialValue: settingState.locale,
+        items: languages.entries
+            .map(
+              (lang) => DropdownMenuItem<String>(
+                value: lang.key,
+                child: Text(
+                  lang.value,
+                  style: _getSettingTextStyle(context),
+                ),
+              ),
+            )
+            .toList(),
+        onChanged: (val) {
+          if (val != null) {
+            settingBloc.add(ChangedLocale(locale: val));
+          }
+        },
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
           ),
-          const SizedBox(height: kSpaceML),
-          DropdownButtonFormField<String>(
-            initialValue: settingState.locale,
-            items: languages.entries
-                .map(
-                  (lang) => DropdownMenuItem<String>(
-                    value: lang.key,
-                    child: Text(
-                      lang.value,
-                      style: _getSettingTextStyle(context),
-                    ),
-                  ),
-                )
-                .toList(),
-            onChanged: (val) {
-              if (val != null) {
-                settingBloc.add(ChangedLocale(locale: val));
-              }
-            },
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  LayoutConfig.layoutBorderRadius,
-                ),
-                borderSide: BorderSide(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onPrimary
-                      .withValues(alpha: 0.3),
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  LayoutConfig.layoutBorderRadius,
-                ),
-                borderSide: BorderSide(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onPrimary
-                      .withValues(alpha: 0.3),
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(
-                  LayoutConfig.layoutBorderRadius,
-                ),
-                borderSide: BorderSide(
-                  color: Theme.of(context).primaryColor.getSmartColor(context),
-                  width: 2,
-                ),
-              ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              LayoutConfig.layoutBorderRadius,
             ),
-            dropdownColor: Theme.of(context).primaryColor,
-            style: _getSettingTextStyle(context),
+            borderSide: BorderSide(
+              color: Theme.of(context)
+                  .colorScheme
+                  .onPrimary
+                  .withValues(alpha: 0.3),
+            ),
           ),
-        ],
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              LayoutConfig.layoutBorderRadius,
+            ),
+            borderSide: BorderSide(
+              color: Theme.of(context)
+                  .colorScheme
+                  .onPrimary
+                  .withValues(alpha: 0.3),
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              LayoutConfig.layoutBorderRadius,
+            ),
+            borderSide: BorderSide(
+              color: Theme.of(context).primaryColor.getSmartColor(context),
+              width: 2,
+            ),
+          ),
+        ),
+        dropdownColor: Theme.of(context).primaryColor,
+        style: _getSettingTextStyle(context),
       ),
     );
+
+    // final textColor = _getSettingTextStyle(context).color!;
+    // return _buildSettingContainer(
+    //   context: context,
+    //   borderRadius: BorderRadius.only(
+    //     topLeft: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
+    //     topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
+    //     bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
+    //     bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius),
+    //   ),
+    //   child: Column(
+    //     crossAxisAlignment: CrossAxisAlignment.start,
+    //     children: [
+    //       Row(
+    //         children: [
+    //           Icon(FontAwesomeIcons.language,
+    //               color: textColor, size: kIconSizeM),
+    //           const SizedBox(width: kSpaceML),
+    //           Text(coreLang(context).language,
+    //               style: _getSettingTextStyle(context)),
+    //         ],
+    //       ),
+    //       const SizedBox(height: kSpaceML),
+    //       DropdownButtonFormField<String>(
+    //         initialValue: settingState.locale,
+    //         items: languages.entries
+    //             .map(
+    //               (lang) => DropdownMenuItem<String>(
+    //                 value: lang.key,
+    //                 child: Text(
+    //                   lang.value,
+    //                   style: _getSettingTextStyle(context),
+    //                 ),
+    //               ),
+    //             )
+    //             .toList(),
+    //         onChanged: (val) {
+    //           if (val != null) {
+    //             settingBloc.add(ChangedLocale(locale: val));
+    //           }
+    //         },
+    //         decoration: InputDecoration(
+    //           contentPadding: const EdgeInsets.symmetric(
+    //             horizontal: 16,
+    //             vertical: 12,
+    //           ),
+    //           border: OutlineInputBorder(
+    //             borderRadius: BorderRadius.circular(
+    //               LayoutConfig.layoutBorderRadius,
+    //             ),
+    //             borderSide: BorderSide(
+    //               color: Theme.of(context)
+    //                   .colorScheme
+    //                   .onPrimary
+    //                   .withValues(alpha: 0.3),
+    //             ),
+    //           ),
+    //           enabledBorder: OutlineInputBorder(
+    //             borderRadius: BorderRadius.circular(
+    //               LayoutConfig.layoutBorderRadius,
+    //             ),
+    //             borderSide: BorderSide(
+    //               color: Theme.of(context)
+    //                   .colorScheme
+    //                   .onPrimary
+    //                   .withValues(alpha: 0.3),
+    //             ),
+    //           ),
+    //           focusedBorder: OutlineInputBorder(
+    //             borderRadius: BorderRadius.circular(
+    //               LayoutConfig.layoutBorderRadius,
+    //             ),
+    //             borderSide: BorderSide(
+    //               color: Theme.of(context).primaryColor.getSmartColor(context),
+    //               width: 2,
+    //             ),
+    //           ),
+    //         ),
+    //         dropdownColor: Theme.of(context).primaryColor,
+    //         style: _getSettingTextStyle(context),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 }
