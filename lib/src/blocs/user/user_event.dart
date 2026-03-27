@@ -25,3 +25,9 @@ class ScheduleDailyReminder extends UserEvent {
     required this.scheduleNotification,
   });
 }
+
+class LevelCleared extends UserEvent {
+  final int level;
+
+  LevelCleared({required this.level});
+}

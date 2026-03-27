@@ -16,4 +16,5 @@ class PreferencesKey {
   static const IS_MUTED = "is_muted";
   static const LOCALE = "locale";
   static const THEME_MODE = "theme_mode";
+  static const CLEARED_LEVELS = "cleared_levels";
 }

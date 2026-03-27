@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:skeleton_core/src/blocs/user/user_state.dart';
 import 'package:skeleton_core/src/helpers/preferences_key.dart';
 import 'package:skeleton_core/src/models/user_model.dart';
@@ -18,6 +20,15 @@ class UserServices {
 
   Future<UserState> getUserSession() async {
     final username = _prefs?.getString(PreferencesKey.USERNAME);
+    final clearedLevelsJson = _prefs?.getString(PreferencesKey.CLEARED_LEVELS);
+    List<int> clearedLevels = [];
+    if (clearedLevelsJson != null) {
+      try {
+        clearedLevels = List<int>.from(jsonDecode(clearedLevelsJson));
+      } catch (e) {
+        print('Error decoding clearedLevels: $e');
+      }
+    }
 
     String? userId;
     bool isAnonymous = true;
@@ -36,6 +47,7 @@ class UserServices {
       username: username,
       firebaseUserId: userId,
       isAnonymous: isAnonymous,
+      clearedLevels: clearedLevels,
     );
 
     return AuthenticatedUser(model: userModel);
@@ -43,6 +55,12 @@ class UserServices {
 
   Future<bool> saveUsername(String newUsername) async {
     return _prefs!.setString(PreferencesKey.USERNAME, newUsername);
+  }
+
+  Future<bool> saveClearedLevel(int level, List<int> currentLevels) async {
+    if (currentLevels.contains(level)) return true;
+    final newList = [...currentLevels, level];
+    return _prefs!.setString(PreferencesKey.CLEARED_LEVELS, jsonEncode(newList));
   }
 
   /// Initialize anonymous authentication (works offline)

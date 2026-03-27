@@ -11,6 +11,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<UsernameChanged>(_onUsernameChanged);
     on<GetGreetingMessage>(_onGetGreetingMessage);
     on<ScheduleDailyReminder>(_onScheduleDailyReminder);
+    on<LevelCleared>(_onLevelCleared);
 
     add(AttempGettingUser());
   }
@@ -56,6 +57,16 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       await event.scheduleNotification(title, message);
     } catch (e) {
       // Ignore errors for scheduling
+    }
+  }
+
+  Future<void> _onLevelCleared(
+    LevelCleared event,
+    Emitter<UserState> emitter,
+  ) async {
+    if (await _userServices.saveClearedLevel(
+        event.level, state.model.clearedLevels)) {
+      emitter(await _userServices.getUserSession());
     }
   }
 }
