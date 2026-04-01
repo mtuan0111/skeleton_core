@@ -167,6 +167,13 @@ class _SkeletonAppWidget extends StatelessWidget {
               supportedLocales: config.supportedLocales,
               theme: config.themeBuilder(context, state),
               themeMode: state.themeMode,
+              builder: (innerContext, child) {
+                if (config.buttonTheme == null) return child!;
+                return CustomButtonTheme(
+                  data: config.buttonTheme!,
+                  child: child!,
+                );
+              },
               home: _buildHome(context),
             );
           },
@@ -188,20 +195,10 @@ class _SkeletonAppWidget extends StatelessWidget {
           content = config.tourWrapperBuilder!(innerContext, content);
         }
 
-        Widget home = Container(
+        return Container(
           decoration: LayoutConfig(innerContext).gradientDecoration,
           child: content,
         );
-
-        // Wrap with CustomButtonTheme when a default button style is set
-        if (config.buttonTheme != null) {
-          home = CustomButtonTheme(
-            data: config.buttonTheme!,
-            child: home,
-          );
-        }
-
-        return home;
       },
     );
   }

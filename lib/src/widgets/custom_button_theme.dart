@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skeleton_core/skeleton_core.dart';
 
 /// Data class holding the default visual style for [CustomElevatedButton].
 ///

@@ -68,10 +68,25 @@ class AlertTemplate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = CustomButtonTheme.of(context);
+
+    final resolvedBackgroundColor = backgroundColor ??
+        theme?.dialogBackgroundColor ??
+        Colors.transparent; // Default to transparent if no theme
+
+    final resolvedTitleBackgroundColor = titleBackgroundColor ??
+        theme?.dialogTitleBackgroundColor; // Can be null (standard button)
+
+    final resolvedTitleShapeAt = titleShapeAt ??
+        theme?.dialogTitleShapeAt ??
+        RoundedWithShapeAt.topLeft;
+
+    final resolvedBodyWrapper = bodyWrapper ?? theme?.dialogBodyWrapper;
+
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
       child: Dialog(
-        backgroundColor: Colors.transparent,
+        backgroundColor: resolvedBackgroundColor,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -85,28 +100,31 @@ class AlertTemplate extends StatelessWidget {
                         child: Row(
                           children: [
                             Expanded(
-                                child: CustomElevatedButton(
-                                  text: title,
-                                  buttonSize: ButtonSize.small,
-                                  shapeAt: titleShapeAt,
-                                  buttonRadius: titleRadius,
-                                  color: titleBackgroundColor != null
-                                      ? titleBackgroundColor!.getSmartColor(context)
-                                      : Theme.of(context).colorScheme.onPrimary,
-                                  backgroundColor: titleBackgroundColor,
-                                  gradient: titleGradient ??
-                                      (titleBackgroundColor == null
-                                          ? LinearGradient(
-                                              begin: Alignment.topCenter,
-                                              end: Alignment.bottomCenter,
-                                              colors: [
-                                                Theme.of(context).primaryColor,
-                                                Theme.of(context)
-                                                    .secondaryHeaderColor,
-                                              ],
-                                            )
-                                          : null),
-                                ),
+                              child: CustomElevatedButton(
+                                text: title,
+                                buttonSize: ButtonSize.small,
+                                shapeAt: resolvedTitleShapeAt,
+                                buttonRadius: titleRadius,
+                                color: resolvedTitleBackgroundColor != null
+                                    ? resolvedTitleBackgroundColor
+                                        .getSmartColor(context)
+                                    : Theme.of(context).colorScheme.onPrimary,
+                                backgroundColor: resolvedTitleBackgroundColor,
+                                gradient: titleGradient ??
+                                    (resolvedTitleBackgroundColor == null &&
+                                            theme?.dialogTitleBackgroundColor ==
+                                                null
+                                        ? LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Theme.of(context).primaryColor,
+                                              Theme.of(context)
+                                                  .secondaryHeaderColor,
+                                            ],
+                                          )
+                                        : null),
+                              ),
                             ),
                           ],
                         ),
@@ -116,51 +134,43 @@ class AlertTemplate extends StatelessWidget {
                 ),
               ],
             ),
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                // Main dialog content
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 30),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+            Flexible(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 20),
+                  child: Row(
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: bodyWrapper != null
-                                ? bodyWrapper!(context, _buildBodyContent(context))
-                                : CustomElevatedButton(
-                                    backgroundColor: backgroundColor ??
-                                        Theme.of(context)
-                                            .scaffoldBackgroundColor,
-                                    shapeAt: RoundedWithShapeAt.topRight,
-                                    child: _buildBodyContent(context),
-                                  ),
-                          ),
-                        ],
+                      Expanded(
+                        child: resolvedBodyWrapper != null
+                            ? resolvedBodyWrapper(
+                                context, _buildBodyContent(context))
+                            : CustomElevatedButton(
+                                backgroundColor: backgroundColor ??
+                                    theme?.dialogBackgroundColor ??
+                                    Theme.of(context).scaffoldBackgroundColor,
+                                shapeAt: RoundedWithShapeAt.topRight,
+                                child: _buildBodyContent(context),
+                              ),
                       ),
                     ],
                   ),
                 ),
-
-                Positioned(
-                    bottom: 0,
-                    left: 20,
-                    right: 20,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        if (negativeButtonLabel != null)
-                          Expanded(child: _buildNegativeButton(context)),
-                        if (negativeButtonLabel != null &&
-                            possitiveButtonLabel != null)
-                          const SizedBox(width: kSpaceM),
-                        if (possitiveButtonLabel != null)
-                          Expanded(child: _buildPossitiveButton(context)),
-                      ],
-                    ))
-              ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  if (negativeButtonLabel != null)
+                    Expanded(child: _buildNegativeButton(context)),
+                  if (negativeButtonLabel != null &&
+                      possitiveButtonLabel != null)
+                    const SizedBox(width: kSpaceM),
+                  if (possitiveButtonLabel != null)
+                    Expanded(child: _buildPossitiveButton(context)),
+                ],
+              ),
             ),
           ],
         ),
