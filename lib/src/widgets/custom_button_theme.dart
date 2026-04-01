@@ -36,10 +36,20 @@ class CustomButtonThemeData {
     int contentSeed,
   )? overlayBuilder;
 
+  // Dialog-specific defaults for AlertTemplate
+  final Color? dialogBackgroundColor;
+  final Color? dialogTitleBackgroundColor;
+  final RoundedWithShapeAt? dialogTitleShapeAt;
+  final Widget Function(BuildContext context, Widget child)? dialogBodyWrapper;
+
   const CustomButtonThemeData({
     this.buttonRenderer,
     this.textStyle,
     this.overlayBuilder,
+    this.dialogBackgroundColor,
+    this.dialogTitleBackgroundColor,
+    this.dialogTitleShapeAt,
+    this.dialogBodyWrapper,
   });
 }
 
@@ -77,7 +87,12 @@ class CustomButtonTheme extends InheritedWidget {
 
   @override
   bool updateShouldNotify(CustomButtonTheme oldWidget) =>
-    data.buttonRenderer != oldWidget.data.buttonRenderer ||
-    data.textStyle != oldWidget.data.textStyle ||
-    data.overlayBuilder != oldWidget.data.overlayBuilder;
+      data.buttonRenderer != oldWidget.data.buttonRenderer ||
+      data.textStyle != oldWidget.data.textStyle ||
+      data.overlayBuilder != oldWidget.data.overlayBuilder ||
+      data.dialogBackgroundColor != oldWidget.data.dialogBackgroundColor ||
+      data.dialogTitleBackgroundColor !=
+          oldWidget.data.dialogTitleBackgroundColor ||
+      data.dialogTitleShapeAt != oldWidget.data.dialogTitleShapeAt ||
+      data.dialogBodyWrapper != oldWidget.data.dialogBodyWrapper;
 }

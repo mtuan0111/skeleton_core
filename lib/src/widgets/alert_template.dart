@@ -17,11 +17,14 @@ class AlertTemplate extends StatelessWidget {
   final String? negativeButtonLabel;
   final VoidCallback? onNegativeButtonPressed;
 
-  /// Default label for positive button when [possitiveButtonLabel] is null.
-  final String defaultPositiveLabel;
-
-  /// Default label for negative button when [negativeButtonLabel] is null.
-  final String defaultNegativeLabel;
+  // New properties for better customization
+  final Color? backgroundColor;
+  final Color? titleBackgroundColor;
+  final LinearGradient? titleGradient;
+  final TextStyle? messageStyle;
+  final Widget Function(BuildContext context, Widget child)? bodyWrapper;
+  final RoundedWithShapeAt? titleShapeAt;
+  final double? titleRadius;
 
   const AlertTemplate({
     super.key,
@@ -32,13 +35,18 @@ class AlertTemplate extends StatelessWidget {
     this.onPossitiveButtonPressed,
     this.negativeButtonLabel,
     this.onNegativeButtonPressed,
-    this.defaultPositiveLabel = 'Yes',
-    this.defaultNegativeLabel = 'No',
+    this.backgroundColor,
+    this.titleBackgroundColor,
+    this.titleGradient,
+    this.messageStyle,
+    this.bodyWrapper,
+    this.titleShapeAt = RoundedWithShapeAt.topLeft,
+    this.titleRadius,
   });
 
   Widget _buildPossitiveButton(BuildContext context) {
     return CustomElevatedButton(
-      text: possitiveButtonLabel ?? defaultPositiveLabel,
+      text: possitiveButtonLabel ?? coreLang(context).yes,
       onPressed: onPossitiveButtonPressed ?? () => Navigator.of(context).pop(),
       color: Theme.of(context).colorScheme.onPrimary,
       backgroundColor: Theme.of(context).primaryColor,
@@ -49,7 +57,7 @@ class AlertTemplate extends StatelessWidget {
 
   Widget _buildNegativeButton(BuildContext context) {
     return CustomElevatedButton(
-      text: negativeButtonLabel ?? defaultNegativeLabel,
+      text: negativeButtonLabel ?? coreLang(context).no,
       onPressed: onNegativeButtonPressed ?? () => Navigator.of(context).pop(),
       color: Theme.of(context).colorScheme.onError,
       backgroundColor: Theme.of(context).colorScheme.error,
@@ -77,20 +85,28 @@ class AlertTemplate extends StatelessWidget {
                         child: Row(
                           children: [
                             Expanded(
-                              child: CustomElevatedButton(
-                                text: title,
-                                buttonSize: ButtonSize.small,
-                                shapeAt: RoundedWithShapeAt.topLeft,
-                                color: Theme.of(context).colorScheme.onPrimary,
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Theme.of(context).primaryColor,
-                                    Theme.of(context).secondaryHeaderColor,
-                                  ],
+                                child: CustomElevatedButton(
+                                  text: title,
+                                  buttonSize: ButtonSize.small,
+                                  shapeAt: titleShapeAt,
+                                  buttonRadius: titleRadius,
+                                  color: titleBackgroundColor != null
+                                      ? titleBackgroundColor!.getSmartColor(context)
+                                      : Theme.of(context).colorScheme.onPrimary,
+                                  backgroundColor: titleBackgroundColor,
+                                  gradient: titleGradient ??
+                                      (titleBackgroundColor == null
+                                          ? LinearGradient(
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                              colors: [
+                                                Theme.of(context).primaryColor,
+                                                Theme.of(context)
+                                                    .secondaryHeaderColor,
+                                              ],
+                                            )
+                                          : null),
                                 ),
-                              ),
                             ),
                           ],
                         ),
@@ -112,31 +128,15 @@ class AlertTemplate extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: CustomElevatedButton(
-                              backgroundColor:
-                                  Theme.of(context).scaffoldBackgroundColor,
-                              shapeAt: RoundedWithShapeAt.topRight,
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0)
-                                    .copyWith(top: 10),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (content != null) content!,
-                                    if (message != null)
-                                      Text(
-                                        message!,
-                                        style: AppTextStyles.withColor(
-                                            AppTextStyles.bodyLarge(context),
-                                            Theme.of(context)
-                                                .colorScheme
-                                                .primary
-                                                .getDarker()),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                            child: bodyWrapper != null
+                                ? bodyWrapper!(context, _buildBodyContent(context))
+                                : CustomElevatedButton(
+                                    backgroundColor: backgroundColor ??
+                                        Theme.of(context)
+                                            .scaffoldBackgroundColor,
+                                    shapeAt: RoundedWithShapeAt.topRight,
+                                    child: _buildBodyContent(context),
+                                  ),
                           ),
                         ],
                       ),
@@ -164,6 +164,25 @@ class AlertTemplate extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildBodyContent(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0).copyWith(top: 10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (content != null) content!,
+          if (message != null)
+            Text(
+              message!,
+              style: messageStyle ??
+                  AppTextStyles.withColor(AppTextStyles.bodyLarge(context),
+                      Theme.of(context).colorScheme.primary.getDarker()),
+            ),
+        ],
       ),
     );
   }
