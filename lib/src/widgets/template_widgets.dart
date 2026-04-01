@@ -1395,7 +1395,8 @@ class RankingItem extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                Stack(
+                  clipBehavior: Clip.none,
                   children: [
                     RankingInfoRow(
                       icon: titleIcon,
@@ -1403,21 +1404,24 @@ class RankingItem extends StatelessWidget {
                       style: AppTextStyles.titleLarge(context),
                     ),
                     if (isCurrentUser) ...[
-                      const SizedBox(width: kSpaceS),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: kPaddingXS,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary,
-                          borderRadius: BorderRadius.circular(kBorderRadiusS),
-                        ),
-                        child: Text(
-                          currentUserLabel,
-                          style: AppTextStyles.bodySmall(context).copyWith(
-                            color: Theme.of(context).colorScheme.onSecondary,
-                            fontWeight: FontWeight.bold,
+                      Positioned(
+                        top: -20,
+                        right: -30,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: kPaddingXS,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.secondary,
+                            borderRadius: BorderRadius.circular(kBorderRadiusS),
+                          ),
+                          child: Text(
+                            currentUserLabel,
+                            style: AppTextStyles.bodySmall(context).copyWith(
+                              color: Theme.of(context).colorScheme.onSecondary,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
