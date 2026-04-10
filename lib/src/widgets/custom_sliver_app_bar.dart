@@ -101,9 +101,8 @@ class CustomSliverAppBar extends StatelessWidget {
           (onBackPressed != null
               ? Opacity(
                   opacity: opacity,
-                  child: IconButton(
+                  child: BackButton(
                     onPressed: onBackPressed,
-                    icon: const Icon(FontAwesomeIcons.chevronLeft),
                   ),
                 )
               : null),

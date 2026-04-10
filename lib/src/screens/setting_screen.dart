@@ -161,14 +161,56 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
+  InputDecoration _buildInputDecoration(BuildContext context, String hintText) {
+    final builder = CustomButtonTheme.of(context)?.inputDecorationBuilder;
+    if (builder != null) {
+      return builder(context, hintText);
+    }
+    return InputDecoration(
+      hintText: hintText,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+      ),
+      filled: true,
+      fillColor: Colors.white,
+    );
+  }
+
+  Widget _buildWrappedInput(BuildContext context, Widget child) {
+    final builder = CustomButtonTheme.of(context)?.inputWrapperBuilder;
+    if (builder != null) {
+      return builder(context, child);
+    }
+    return child;
+  }
+
+  Widget _buildValueChip(BuildContext context, Widget child) {
+    final builder = CustomButtonTheme.of(context)?.valueWrapperBuilder;
+    if (builder != null) {
+      return builder(context, child);
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: child,
+    );
+  }
+
   Widget _buildField(
     BuildContext context, {
     required String title,
     required Widget child,
     IconData? iconData,
   }) {
-    final bg = widget.backgroundColor ?? Theme.of(context).primaryColor;
-
     return _buildSettingContainer(
       context: context,
       borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius),
@@ -179,87 +221,28 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Widget _buildUsernameField(BuildContext context, UserState userState) {
+    final textStyle =
+        CustomButtonTheme.of(context)?.inputTextStyleBuilder?.call(context);
+
     return _buildField(
       context,
       iconData: Icons.person,
       title: coreLang(context).name,
-      child: TextFormField(
-        decoration: InputDecoration(
-          hintText: coreLang(context).anonymous,
-          border: OutlineInputBorder(
-            borderRadius:
-                BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius:
-                BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
-            // borderSide: BorderSide(color: textColor.withValues(alpha: 0.3)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius:
-                BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
-            // borderSide: BorderSide(color: textColor, width: 2),
-          ),
+      child: _buildWrappedInput(
+        context,
+        TextFormField(
+          initialValue: userState.model.username,
+          onChanged: (value) {
+            userBloc.add(UsernameChanged(newUsername: value));
+          },
+          style: textStyle,
+          decoration: CustomButtonTheme.of(context)
+                  ?.inputDecorationBuilder
+                  ?.call(context, coreLang(context).anonymous) ??
+              _buildInputDecoration(context, coreLang(context).anonymous),
         ),
-        // style: _getSettingTextStyle(context),
-        initialValue: userState.model.username,
-        onChanged: (value) {
-          userBloc.add(UsernameChanged(newUsername: value));
-        },
       ),
     );
-    // final bg = widget.backgroundColor ?? Theme.of(context).primaryColor;
-    // final textColor = bg.getSmartColor(context);
-    // return _buildSettingContainer(
-    //   context: context,
-    //   borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius),
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: [
-    //       Row(
-    //         children: [
-    //           Icon(Icons.person, color: textColor, size: kIconSizeM),
-    //           const SizedBox(width: kSpaceML),
-    //           Expanded(
-    //             child: Text(
-    //               coreLang(context).name,
-    //               style: _getSettingTextStyle(context),
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //       const SizedBox(height: kSpaceM),
-    //       TextFormField(
-    //         decoration: InputDecoration(
-    //           hintText: coreLang(context).anonymous,
-    //           hintStyle: AppTextStyles.withColor(
-    //             AppTextStyles.bodyLarge(context),
-    //             textColor,
-    //           ),
-    //           border: OutlineInputBorder(
-    //             borderRadius:
-    //                 BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
-    //           ),
-    //           enabledBorder: OutlineInputBorder(
-    //             borderRadius:
-    //                 BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
-    //             borderSide: BorderSide(color: textColor.withValues(alpha: 0.3)),
-    //           ),
-    //           focusedBorder: OutlineInputBorder(
-    //             borderRadius:
-    //                 BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
-    //             borderSide: BorderSide(color: textColor, width: 2),
-    //           ),
-    //         ),
-    //         style: _getSettingTextStyle(context),
-    //         initialValue: userState.model.username,
-    //         onChanged: (value) {
-    //           userBloc.add(UsernameChanged(newUsername: value));
-    //         },
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 
   Widget _buildSettingContainer({
@@ -305,94 +288,34 @@ class _SettingScreenState extends State<SettingScreen> {
     return _buildField(context,
         iconData: Icons.format_size,
         title: coreLang(context).fontSize,
-        child: Row(
+        child: _buildWrappedInput(context, Row(
           children: [
             Expanded(
-              child: Slider(
-                value: settingState.fontSize.toDouble(),
-                min: 0,
-                max: 10,
-                divisions: 10,
-                // activeColor: textColor,
-                // inactiveColor: textColor.withValues(alpha: 0.3),
-                onChanged: (val) {
-                  setState(() {
-                    settingBloc.add(ChangedFontSize(fontSize: val.round()));
-                  });
-                },
+              child: _buildThemedSlider(
+                context,
+                Slider(
+                  value: settingState.fontSize.toDouble(),
+                  min: 0,
+                  max: 10,
+                  divisions: 10,
+                  onChanged: (val) {
+                    setState(() {
+                      settingBloc.add(ChangedFontSize(fontSize: val.round()));
+                    });
+                  },
+                ),
               ),
             ),
             const SizedBox(width: kSpaceML),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 6,
-              ),
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                settingState.fontSize.toString(),
-                style: _getSettingValueTextStyle(context),
-              ),
+            _buildValueChip(
+              context,
+                Text(
+                  settingState.fontSize.toString(),
+                  style: _getSettingValueTextStyle(context),
+                ),
             ),
           ],
-        ));
-    // final textColor = _getSettingTextStyle(context).color!;
-    // return _buildSettingContainer(
-    //   context: context,
-    //   borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius),
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: [
-    //       Row(
-    //         children: [
-    //           Icon(
-    //             FontAwesomeIcons.textWidth,
-    //             color: textColor,
-    //             size: kIconSizeM,
-    //           ),
-    //           const SizedBox(width: kSpaceML),
-    //           Expanded(
-    //             child: Text(
-    //               coreLang(context).fontSize,
-    //               style: _getSettingTextStyle(context),
-    //             ),
-    //           ),
-    //           const SizedBox(width: kSpaceML),
-    //           Container(
-    //             padding: const EdgeInsets.symmetric(
-    //               horizontal: 12,
-    //               vertical: 6,
-    //             ),
-    //             decoration: BoxDecoration(
-    //               color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
-    //               borderRadius: BorderRadius.circular(12),
-    //             ),
-    //             child: Text(
-    //               settingState.fontSize.toString(),
-    //               style: _getSettingValueTextStyle(context),
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //       Slider(
-    //         value: settingState.fontSize.toDouble(),
-    //         min: 0,
-    //         max: 10,
-    //         divisions: 10,
-    //         activeColor: textColor,
-    //         inactiveColor: textColor.withValues(alpha: 0.3),
-    //         onChanged: (val) {
-    //           setState(() {
-    //             settingBloc.add(ChangedFontSize(fontSize: val.round()));
-    //           });
-    //         },
-    //       ),
-    //     ],
-    //   ),
-    // );
+        )));
   }
 
   Widget _buildVolumeSlider(BuildContext context, SettingState settingState) {
@@ -404,90 +327,32 @@ class _SettingScreenState extends State<SettingScreen> {
               ? FontAwesomeIcons.volumeLow
               : FontAwesomeIcons.volumeOff,
       title: coreLang(context).volume,
-      child: Row(
+      child: _buildWrappedInput(context, Row(
         children: [
           Expanded(
-            child: Slider(
-              value: settingState.vol.toDouble(),
-              min: 0,
-              max: 10,
-              divisions: 10,
-              // activeColor: textColor,
-              // inactiveColor: textColor.withValues(alpha: 0.3),
-              onChanged: (val) {
-                setState(() {
-                  settingBloc.add(ChangedVol(vol: val.round()));
-                });
-              },
+            child: _buildThemedSlider(
+              context,
+              Slider(
+                value: settingState.vol.toDouble(),
+                min: 0,
+                max: 10,
+                divisions: 10,
+                onChanged: (val) {
+                  setState(() {
+                    settingBloc.add(ChangedVol(vol: val.round()));
+                  });
+                },
+              ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(settingState.vol.toString(),
+          _buildValueChip(
+            context,
+            Text(settingState.vol.toString(),
                 style: _getSettingValueTextStyle(context)),
           ),
         ],
-      ),
+      )),
     );
-    // final textColor = _getSettingTextStyle(context).color!;
-    // return _buildSettingContainer(
-    //   context: context,
-    //   borderRadius: BorderRadius.only(
-    //     topLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
-    //     topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-    //     bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
-    //     bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
-    //   ),
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: [
-    //       Row(
-    //         children: [
-    //           Icon(
-    //             settingState.vol > 7
-    //                 ? FontAwesomeIcons.volumeHigh
-    //                 : settingState.vol > 4
-    //                     ? FontAwesomeIcons.volumeLow
-    //                     : settingState.vol > 0
-    //                         ? FontAwesomeIcons.volumeOff
-    //                         : FontAwesomeIcons.volumeXmark,
-    //             color: textColor,
-    //             size: kIconSizeM,
-    //           ),
-    //           const SizedBox(width: kSpaceML),
-    //           Text(coreLang(context).volume,
-    //               style: _getSettingTextStyle(context)),
-    //           const Spacer(),
-    //           Container(
-    //             padding:
-    //                 const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-    //             decoration: BoxDecoration(
-    //               color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
-    //               borderRadius: BorderRadius.circular(12),
-    //             ),
-    //             child: Text(settingState.vol.toString(),
-    //                 style: _getSettingValueTextStyle(context)),
-    //           ),
-    //         ],
-    //       ),
-    //       Slider(
-    //         value: settingState.vol.toDouble(),
-    //         min: 0,
-    //         max: 10,
-    //         divisions: 10,
-    //         activeColor: textColor,
-    //         inactiveColor: textColor.withValues(alpha: 0.3),
-    //         onChanged: (val) {
-    //           settingBloc.add(ChangedVol(vol: val.round()));
-    //         },
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 
   Widget _buildVibrateToggle(BuildContext context, SettingState settingState) {
@@ -495,46 +360,16 @@ class _SettingScreenState extends State<SettingScreen> {
       context,
       iconData: FontAwesomeIcons.mobileVibrate,
       title: coreLang(context).vibrate,
-      child: Switch(
-        value: settingState.isVibrate,
-        onChanged: (val) {
-          // settingBloc.add(ChangedVibrate(isVibrate: val));
-          settingBloc.add(ChangedIsVibrate(isVibrate: val));
-        },
-      ),
+      child: _buildWrappedInput(context, _buildThemedSwitch(
+        context,
+        Switch(
+          value: settingState.isVibrate,
+          onChanged: (val) {
+            settingBloc.add(ChangedIsVibrate(isVibrate: val));
+          },
+        ),
+      )),
     );
-
-    // final textColor = _getSettingTextStyle(context).color!;
-    // return _buildSettingContainer(
-    //   context: context,
-    //   borderRadius: BorderRadius.only(
-    //     topLeft: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
-    //     topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-    //     bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
-    //     bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-    //   ),
-    //   child: Row(
-    //     children: [
-    //       Icon(
-    //         settingState.isVibrate
-    //             ? FontAwesomeIcons.mobileScreenButton
-    //             : FontAwesomeIcons.mobile,
-    //         color: textColor,
-    //         size: kIconSizeM,
-    //       ),
-    //       const SizedBox(width: kSpaceML),
-    //       Text(coreLang(context).vibrate, style: _getSettingTextStyle(context)),
-    //       const Spacer(),
-    //       Switch(
-    //         value: settingState.isVibrate,
-    //         activeThumbColor: Theme.of(context).primaryColor,
-    //         onChanged: (val) {
-    //           settingBloc.add(ChangedIsVibrate(isVibrate: val));
-    //         },
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 
   Widget _buildTopScoresSlider(
@@ -543,86 +378,34 @@ class _SettingScreenState extends State<SettingScreen> {
       context,
       iconData: FontAwesomeIcons.ribbon,
       title: coreLang(context).topScore,
-      child: Row(
+      child: _buildWrappedInput(context, Row(
         children: [
           Expanded(
-            child: Slider(
-              value: settingState.numberOfTopBoard.toDouble(),
-              min: 20,
-              max: 100,
-              divisions: 8,
-              onChanged: (val) {
-                setState(() {
-                  settingBloc.add(
-                    ChangedNumberOfTopBoard(numberOfTopBoard: val.round()),
-                  );
-                });
-              },
+            child: _buildThemedSlider(
+              context,
+              Slider(
+                value: settingState.numberOfTopBoard.toDouble(),
+                min: 20,
+                max: 100,
+                divisions: 8,
+                onChanged: (val) {
+                  setState(() {
+                    settingBloc.add(
+                      ChangedNumberOfTopBoard(numberOfTopBoard: val.round()),
+                    );
+                  });
+                },
+              ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(settingState.numberOfTopBoard.toString(),
+          _buildValueChip(
+            context,
+            Text(settingState.numberOfTopBoard.toString(),
                 style: _getSettingValueTextStyle(context)),
           ),
         ],
-      ),
+      )),
     );
-
-    // final textColor = _getSettingTextStyle(context).color!;
-    // return _buildSettingContainer(
-    //   context: context,
-    //   borderRadius: BorderRadius.only(
-    //     topLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
-    //     topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-    //     bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
-    //     bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
-    //   ),
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: [
-    //       Row(
-    //         children: [
-    //           Icon(FontAwesomeIcons.ribbon, color: textColor, size: kIconSizeM),
-    //           const SizedBox(width: kSpaceML),
-    //           Expanded(
-    //             child: Text(coreLang(context).topScore,
-    //                 style: _getSettingTextStyle(context)),
-    //           ),
-    //           Container(
-    //             padding:
-    //                 const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-    //             decoration: BoxDecoration(
-    //               color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
-    //               borderRadius: BorderRadius.circular(12),
-    //             ),
-    //             child: Text(settingState.numberOfTopBoard.toString(),
-    //                 style: _getSettingValueTextStyle(context)),
-    //           ),
-    //         ],
-    //       ),
-    //       Slider(
-    //         value: settingState.numberOfTopBoard.toDouble(),
-    //         min: 20,
-    //         max: 100,
-    //         divisions: 8,
-    //         activeColor: textColor,
-    //         inactiveColor: textColor.withValues(alpha: 0.3),
-    //         onChanged: (val) {
-    //           setState(() {
-    //             settingBloc.add(
-    //               ChangedNumberOfTopBoard(numberOfTopBoard: val.round()),
-    //             );
-    //           });
-    //         },
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 
   Widget _buildOnlyMyRecordsToggle(
@@ -631,47 +414,18 @@ class _SettingScreenState extends State<SettingScreen> {
       context,
       iconData: FontAwesomeIcons.userCheck,
       title: coreLang(context).personal,
-      child: Switch(
-        value: settingState.onlyShowMyRecorded,
-        activeThumbColor: Theme.of(context).primaryColor,
-        onChanged: (val) {
-          settingBloc.add(
-            ChangedOnlyShowMyRecorded(onlyShowMyRecorded: val),
-          );
-        },
-      ),
+      child: _buildWrappedInput(context, _buildThemedSwitch(
+        context,
+        Switch(
+          value: settingState.onlyShowMyRecorded,
+          onChanged: (val) {
+            settingBloc.add(
+              ChangedOnlyShowMyRecorded(onlyShowMyRecorded: val),
+            );
+          },
+        ),
+      )),
     );
-
-    // final textColor = _getSettingTextStyle(context).color!;
-    // return _buildSettingContainer(
-    //   context: context,
-    //   borderRadius: BorderRadius.only(
-    //     topLeft: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
-    //     topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-    //     bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
-    //     bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-    //   ),
-    //   child: Row(
-    //     children: [
-    //       Icon(FontAwesomeIcons.userCheck, color: textColor, size: kIconSizeM),
-    //       const SizedBox(width: kSpaceML),
-    //       Expanded(
-    //         child: Text(coreLang(context).personal,
-    //             style: _getSettingTextStyle(context)),
-    //       ),
-    //       const SizedBox(width: kSpaceML),
-    //       Switch(
-    //         value: settingState.onlyShowMyRecorded,
-    //         activeThumbColor: Theme.of(context).primaryColor,
-    //         onChanged: (val) {
-    //           settingBloc.add(
-    //             ChangedOnlyShowMyRecorded(onlyShowMyRecorded: val),
-    //           );
-    //         },
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 
   Widget _buildLanguageDropdown(
@@ -680,15 +434,14 @@ class _SettingScreenState extends State<SettingScreen> {
       context,
       iconData: FontAwesomeIcons.language,
       title: coreLang(context).language,
-      child: DropdownButtonFormField<String>(
-        initialValue: settingState.locale,
+      child: _buildWrappedInput(context, DropdownButtonFormField<String>(
+        value: settingState.locale,
         items: languages.entries
             .map(
               (lang) => DropdownMenuItem<String>(
                 value: lang.key,
                 child: Text(
                   lang.value,
-                  // style: _getSettingTextStyle(context),
                 ),
               ),
             )
@@ -698,110 +451,28 @@ class _SettingScreenState extends State<SettingScreen> {
             settingBloc.add(ChangedLocale(locale: val));
           }
         },
-        decoration: InputDecoration(
-          hintText: coreLang(context).anonymous,
-          border: OutlineInputBorder(
-            borderRadius:
-                BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius:
-                BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
-            // borderSide: BorderSide(color: textColor.withValues(alpha: 0.3)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius:
-                BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
-            // borderSide: BorderSide(color: textColor, width: 2),
-          ),
-        ),
+        decoration: _buildInputDecoration(context, coreLang(context).anonymous),
         dropdownColor: Theme.of(context).primaryColor,
         // style: _getSettingTextStyle(context),
-      ),
+      )),
     );
+  }
 
-    // final textColor = _getSettingTextStyle(context).color!;
-    // return _buildSettingContainer(
-    //   context: context,
-    //   borderRadius: BorderRadius.only(
-    //     topLeft: Radius.circular(LayoutConfig.layoutBorderRadius / 5),
-    //     topRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-    //     bottomLeft: Radius.circular(LayoutConfig.layoutBorderRadius),
-    //     bottomRight: Radius.circular(LayoutConfig.layoutBorderRadius),
-    //   ),
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: [
-    //       Row(
-    //         children: [
-    //           Icon(FontAwesomeIcons.language,
-    //               color: textColor, size: kIconSizeM),
-    //           const SizedBox(width: kSpaceML),
-    //           Text(coreLang(context).language,
-    //               style: _getSettingTextStyle(context)),
-    //         ],
-    //       ),
-    //       const SizedBox(height: kSpaceML),
-    //       DropdownButtonFormField<String>(
-    //         initialValue: settingState.locale,
-    //         items: languages.entries
-    //             .map(
-    //               (lang) => DropdownMenuItem<String>(
-    //                 value: lang.key,
-    //                 child: Text(
-    //                   lang.value,
-    //                   style: _getSettingTextStyle(context),
-    //                 ),
-    //               ),
-    //             )
-    //             .toList(),
-    //         onChanged: (val) {
-    //           if (val != null) {
-    //             settingBloc.add(ChangedLocale(locale: val));
-    //           }
-    //         },
-    //         decoration: InputDecoration(
-    //           contentPadding: const EdgeInsets.symmetric(
-    //             horizontal: 16,
-    //             vertical: 12,
-    //           ),
-    //           border: OutlineInputBorder(
-    //             borderRadius: BorderRadius.circular(
-    //               LayoutConfig.layoutBorderRadius,
-    //             ),
-    //             borderSide: BorderSide(
-    //               color: Theme.of(context)
-    //                   .colorScheme
-    //                   .onPrimary
-    //                   .withValues(alpha: 0.3),
-    //             ),
-    //           ),
-    //           enabledBorder: OutlineInputBorder(
-    //             borderRadius: BorderRadius.circular(
-    //               LayoutConfig.layoutBorderRadius,
-    //             ),
-    //             borderSide: BorderSide(
-    //               color: Theme.of(context)
-    //                   .colorScheme
-    //                   .onPrimary
-    //                   .withValues(alpha: 0.3),
-    //             ),
-    //           ),
-    //           focusedBorder: OutlineInputBorder(
-    //             borderRadius: BorderRadius.circular(
-    //               LayoutConfig.layoutBorderRadius,
-    //             ),
-    //             borderSide: BorderSide(
-    //               color: Theme.of(context).primaryColor.getSmartColor(context),
-    //               width: 2,
-    //             ),
-    //           ),
-    //         ),
-    //         dropdownColor: Theme.of(context).primaryColor,
-    //         style: _getSettingTextStyle(context),
-    //       ),
-    //     ],
-    //   ),
-    // );
+  Widget _buildThemedSlider(BuildContext context, Widget child) {
+    final themeData =
+        CustomButtonTheme.of(context)?.sliderThemeBuilder?.call(context);
+    if (themeData != null) {
+      return SliderTheme(data: themeData, child: child);
+    }
+    return child;
+  }
+
+  Widget _buildThemedSwitch(BuildContext context, Widget child) {
+    final themeData =
+        CustomButtonTheme.of(context)?.switchThemeBuilder?.call(context);
+    if (themeData != null) {
+      return SwitchTheme(data: themeData, child: child);
+    }
+    return child;
   }
 }

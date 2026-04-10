@@ -1,6 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:skeleton_core/skeleton_core.dart';
 
+typedef InputWrapperBuilder = Widget Function(
+    BuildContext context, Widget child);
+typedef InputDecorationBuilder = InputDecoration Function(
+    BuildContext context, String? hintText);
+typedef ValueWrapperBuilder = Widget Function(
+    BuildContext context, Widget child);
+typedef InputTextStyleBuilder = TextStyle Function(BuildContext context);
+typedef SliderThemeBuilder = SliderThemeData Function(BuildContext context);
+typedef SwitchThemeBuilder = SwitchThemeData Function(BuildContext context);
+typedef SegmentedButtonThemeBuilder = SegmentedButtonThemeData Function(
+    BuildContext context);
+
 /// Data class holding the default visual style for [CustomElevatedButton].
 ///
 /// At minimum, provide a [buttonRenderer] to completely replace the button's
@@ -43,6 +55,27 @@ class CustomButtonThemeData {
   final RoundedWithShapeAt? dialogTitleShapeAt;
   final Widget Function(BuildContext context, Widget child)? dialogBodyWrapper;
 
+  /// Optional builder to wrap input fields (e.g. TextFormField) in a custom container.
+  final InputWrapperBuilder? inputWrapperBuilder;
+
+  /// Optional builder to customize the InputDecoration for fields.
+  final InputDecorationBuilder? inputDecorationBuilder;
+
+  /// Optional builder to wrap value displays in a custom container.
+  final ValueWrapperBuilder? valueWrapperBuilder;
+
+  /// Optional builder to provide text style for input fields.
+  final InputTextStyleBuilder? inputTextStyleBuilder;
+
+  /// Optional builder to provide a custom SliderThemeData.
+  final SliderThemeBuilder? sliderThemeBuilder;
+
+  /// Optional builder to provide a custom SwitchThemeData.
+  final SwitchThemeBuilder? switchThemeBuilder;
+
+  /// Optional builder to provide a custom SegmentedButtonThemeData.
+  final SegmentedButtonThemeBuilder? segmentedButtonThemeBuilder;
+
   const CustomButtonThemeData({
     this.buttonRenderer,
     this.textStyle,
@@ -51,6 +84,13 @@ class CustomButtonThemeData {
     this.dialogTitleBackgroundColor,
     this.dialogTitleShapeAt,
     this.dialogBodyWrapper,
+    this.inputWrapperBuilder,
+    this.inputDecorationBuilder,
+    this.valueWrapperBuilder,
+    this.inputTextStyleBuilder,
+    this.sliderThemeBuilder,
+    this.switchThemeBuilder,
+    this.segmentedButtonThemeBuilder,
   });
 }
 
@@ -95,5 +135,13 @@ class CustomButtonTheme extends InheritedWidget {
       data.dialogTitleBackgroundColor !=
           oldWidget.data.dialogTitleBackgroundColor ||
       data.dialogTitleShapeAt != oldWidget.data.dialogTitleShapeAt ||
-      data.dialogBodyWrapper != oldWidget.data.dialogBodyWrapper;
+      data.dialogBodyWrapper != oldWidget.data.dialogBodyWrapper ||
+      data.inputWrapperBuilder != oldWidget.data.inputWrapperBuilder ||
+      data.inputDecorationBuilder != oldWidget.data.inputDecorationBuilder ||
+      data.valueWrapperBuilder != oldWidget.data.valueWrapperBuilder ||
+      data.inputTextStyleBuilder != oldWidget.data.inputTextStyleBuilder ||
+      data.sliderThemeBuilder != oldWidget.data.sliderThemeBuilder ||
+      data.switchThemeBuilder != oldWidget.data.switchThemeBuilder ||
+      data.segmentedButtonThemeBuilder !=
+          oldWidget.data.segmentedButtonThemeBuilder;
 }
