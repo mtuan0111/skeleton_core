@@ -12,6 +12,12 @@ typedef SliderThemeBuilder = SliderThemeData Function(BuildContext context);
 typedef SwitchThemeBuilder = SwitchThemeData Function(BuildContext context);
 typedef SegmentedButtonThemeBuilder = SegmentedButtonThemeData Function(
     BuildContext context);
+typedef SettingContainerBuilder = Widget Function(
+    BuildContext context,
+    Widget child,
+    BorderRadius borderRadius,
+    String title,
+    IconData? icon);
 
 /// Data class holding the default visual style for [CustomElevatedButton].
 ///
@@ -76,6 +82,9 @@ class CustomButtonThemeData {
   /// Optional builder to provide a custom SegmentedButtonThemeData.
   final SegmentedButtonThemeBuilder? segmentedButtonThemeBuilder;
 
+  /// Optional builder to customise the appearance of each setting's container.
+  final SettingContainerBuilder? settingContainerBuilder;
+
   const CustomButtonThemeData({
     this.buttonRenderer,
     this.textStyle,
@@ -91,6 +100,7 @@ class CustomButtonThemeData {
     this.sliderThemeBuilder,
     this.switchThemeBuilder,
     this.segmentedButtonThemeBuilder,
+    this.settingContainerBuilder,
   });
 }
 
@@ -126,6 +136,16 @@ class CustomButtonTheme extends InheritedWidget {
     return widget?.data;
   }
 
+  /// Global fallback for wrapping input fields (e.g. TextFormField).
+  /// Used if no [CustomButtonTheme] is found in the tree, or if the
+  /// theme's [CustomButtonThemeData.inputWrapperBuilder] is null.
+  static InputWrapperBuilder? defaultInputWrapperBuilder;
+
+  /// Global fallback for wrapping setting items.
+  /// Used if no [CustomButtonTheme] is found in the tree, or if the
+  /// theme's [CustomButtonThemeData.settingContainerBuilder] is null.
+  static SettingContainerBuilder? defaultSettingContainerBuilder;
+
   @override
   bool updateShouldNotify(CustomButtonTheme oldWidget) =>
       data.buttonRenderer != oldWidget.data.buttonRenderer ||
@@ -143,5 +163,6 @@ class CustomButtonTheme extends InheritedWidget {
       data.sliderThemeBuilder != oldWidget.data.sliderThemeBuilder ||
       data.switchThemeBuilder != oldWidget.data.switchThemeBuilder ||
       data.segmentedButtonThemeBuilder !=
-          oldWidget.data.segmentedButtonThemeBuilder;
+          oldWidget.data.segmentedButtonThemeBuilder ||
+      data.settingContainerBuilder != oldWidget.data.settingContainerBuilder;
 }

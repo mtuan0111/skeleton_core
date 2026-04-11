@@ -176,6 +176,102 @@ class RankBadge extends StatelessWidget {
 }
 
 // ============================================================================
+// CustomSettingContainer
+// ============================================================================
+
+class CustomWrapContainer extends StatelessWidget {
+  final Widget child;
+  final String title;
+  final IconData? icon;
+  final BorderRadius? borderRadius;
+  final Color? backgroundColor;
+  final String? fontFamily;
+
+  const CustomWrapContainer({
+    super.key,
+    required this.child,
+    required this.title,
+    this.icon,
+    this.borderRadius,
+    this.backgroundColor,
+    this.fontFamily,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final currentRadius =
+        borderRadius ?? BorderRadius.circular(LayoutConfig.layoutBorderRadius);
+
+    final themeBuilder =
+        CustomButtonTheme.of(context)?.settingContainerBuilder ??
+            CustomButtonTheme.defaultSettingContainerBuilder;
+
+    if (themeBuilder != null) {
+      return themeBuilder(
+        context,
+        child,
+        currentRadius,
+        title,
+        icon,
+      );
+    }
+
+    final bg = backgroundColor ?? Theme.of(context).primaryColor;
+    final textColor = bg.getSmartColor(context);
+    final buttonThemeStyle = CustomButtonTheme.of(context)?.textStyle;
+    final textStyle =
+        (buttonThemeStyle ?? AppTextStyles.displayLarge(context)).copyWith(
+      fontFamily: fontFamily,
+      color: textColor,
+    );
+
+    return DefaultTextStyle(
+      style: textStyle,
+      child: Container(
+        padding: const EdgeInsets.all(kPaddingL),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.1),
+          borderRadius: currentRadius,
+          border: Border.all(
+            color: Theme.of(context)
+                .primaryColor
+                .getSmartColor(context)
+                .withValues(alpha: 0.2),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                if (icon != null) ...[
+                  Icon(
+                    icon,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    size: kIconSizeM,
+                  ),
+                  const SizedBox(width: kSpaceML),
+                ],
+                Expanded(
+                  child: Text(
+                    title,
+                    style: AppTextStyles.titleLarge(context)
+                        .copyWith(fontSize: kFontSizeL),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: kSpaceM),
+            child,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
 // RankingSortingWidget
 // ============================================================================
 
@@ -1475,4 +1571,78 @@ class RankingInfoRow extends StatelessWidget {
       ],
     );
   }
+}
+
+// ============================================================================
+// InnerShadow
+// ============================================================================
+
+class InnerShadow extends StatelessWidget {
+  final Widget child;
+  final List<BoxShadow> shadows;
+  final BorderRadius borderRadius;
+
+  const InnerShadow({
+    super.key,
+    required this.child,
+    this.shadows = const [],
+    this.borderRadius = BorderRadius.zero,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: borderRadius,
+      child: Stack(
+        children: [
+          child,
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: _InnerShadowPainter(shadows, borderRadius),
+                size: Size.infinite,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InnerShadowPainter extends CustomPainter {
+  final List<BoxShadow> shadows;
+  final BorderRadius borderRadius;
+
+  _InnerShadowPainter(this.shadows, this.borderRadius);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final rrect = borderRadius.toRRect(rect);
+
+    for (var shadow in shadows) {
+      final shadowRect = rect.inflate(shadow.spreadRadius);
+      final shadowRRect = borderRadius.toRRect(shadowRect);
+
+      canvas.save();
+      canvas.clipRRect(rrect);
+
+      final shadowPaint = Paint()
+        ..color = shadow.color
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10.0);
+
+      final shadowPath = Path()
+        ..fillType = PathFillType.evenOdd
+        ..addRect(shadowRect.inflate(shadow.blurRadius))
+        ..addRRect(shadowRRect.shift(shadow.offset));
+
+      canvas.drawPath(shadowPath, shadowPaint);
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(_InnerShadowPainter oldDelegate) =>
+      oldDelegate.shadows != shadows || oldDelegate.borderRadius != borderRadius;
 }

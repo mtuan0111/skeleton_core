@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:skeleton_core/skeleton_core.dart';
+import 'package:skeleton_core/src/blocs/menu/menu_bloc.dart';
+import 'package:skeleton_core/src/blocs/setting/setting_bloc.dart';
+import 'package:skeleton_core/src/blocs/setting/setting_event.dart';
+import 'package:skeleton_core/src/blocs/setting/setting_state.dart';
+import 'package:skeleton_core/src/blocs/user/user_bloc.dart';
+import 'package:skeleton_core/src/blocs/user/user_event.dart';
+import 'package:skeleton_core/src/blocs/user/user_state.dart';
+import 'package:skeleton_core/src/helpers/app_text_styles.dart';
+import 'package:skeleton_core/src/helpers/const.dart';
+import 'package:skeleton_core/src/helpers/core_lang.dart';
+import 'package:skeleton_core/src/helpers/ui_constants.dart';
+import 'package:skeleton_core/src/widgets/custom_button_theme.dart';
+import 'package:skeleton_core/src/widgets/custom_sliver_app_bar.dart';
+import 'package:skeleton_core/src/widgets/template_widgets.dart';
 
 /// A generic, reusable Setting screen for all game apps.
 ///
@@ -32,11 +45,12 @@ class SettingScreen extends StatefulWidget {
 
   /// Optional builder to customise the appearance of each setting's container.
   final Widget Function(
-      BuildContext context,
-      Widget child,
-      BorderRadius borderRadius,
-      String title,
-      IconData? iconData)? settingContainerBuilder;
+    BuildContext context,
+    Widget child,
+    BorderRadius borderRadius,
+    String title,
+    IconData? iconData,
+  )? settingContainerBuilder;
 
   /// Optional callback when the number of top board changes,
   /// so apps can sync their TurnRecordedListBloc.
@@ -144,16 +158,6 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  TextStyle _getSettingTextStyle(BuildContext context) {
-    final bg = widget.backgroundColor ?? Theme.of(context).primaryColor;
-    final textColor = bg.getSmartColor(context);
-    final buttonStyle = CustomButtonTheme.of(context)?.textStyle;
-    return (buttonStyle ?? AppTextStyles.displayLarge(context)).copyWith(
-      fontFamily: widget.fontFamily,
-      color: textColor,
-    );
-  }
-
   TextStyle _getSettingValueTextStyle(BuildContext context) {
     final buttonStyle = CustomButtonTheme.of(context)?.textStyle;
     return (buttonStyle ?? AppTextStyles.bodyLargeBold(context)).copyWith(
@@ -171,26 +175,49 @@ class _SettingScreenState extends State<SettingScreen> {
       border: OutlineInputBorder(
         borderRadius:
             BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+        borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius:
             BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+        borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius:
             BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+        borderSide: BorderSide.none,
       ),
-      filled: true,
-      fillColor: Colors.white,
+      filled: false,
+
+      // fillColor: Colors.white,
     );
   }
 
   Widget _buildWrappedInput(BuildContext context, Widget child) {
-    final builder = CustomButtonTheme.of(context)?.inputWrapperBuilder;
+    final builder = CustomButtonTheme.of(context)?.inputWrapperBuilder ??
+        CustomButtonTheme.defaultInputWrapperBuilder;
     if (builder != null) {
       return builder(context, child);
     }
-    return child;
+    return InnerShadow(
+      borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+      shadows: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.5),
+          blurRadius: 1,
+          spreadRadius: 1,
+          offset: const Offset(0, 0),
+        ),
+      ],
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.1),
+          borderRadius:
+              BorderRadius.circular(LayoutConfig.layoutBorderRadius / 2),
+        ),
+        child: child,
+      ),
+    );
   }
 
   Widget _buildValueChip(BuildContext context, Widget child) {
@@ -255,35 +282,13 @@ class _SettingScreenState extends State<SettingScreen> {
     IconData? icon,
     BorderRadius? borderRadius,
   }) {
-    final currentRadius = borderRadius ??
-        BorderRadius.circular(LayoutConfig.layoutBorderRadius / 5);
-
-    if (widget.settingContainerBuilder != null) {
-      return widget.settingContainerBuilder!(
-        context,
-        child,
-        currentRadius,
-        title,
-        icon,
-      );
-    }
-
-    return DefaultTextStyle(
-      style: _getSettingTextStyle(context),
-      child: Container(
-        padding: const EdgeInsets.all(kPaddingL),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.1),
-          borderRadius: currentRadius,
-          border: Border.all(
-            color: Theme.of(context)
-                .primaryColor
-                .getSmartColor(context)
-                .withValues(alpha: 0.2),
-          ),
-        ),
-        child: child,
-      ),
+    return CustomWrapContainer(
+      title: title,
+      icon: icon,
+      borderRadius: borderRadius,
+      backgroundColor: widget.backgroundColor,
+      fontFamily: widget.fontFamily,
+      child: child,
     );
   }
 
