@@ -18,6 +18,10 @@ typedef SettingContainerBuilder = Widget Function(
     BorderRadius borderRadius,
     String title,
     IconData? icon);
+typedef RankingDecorationBuilder = Widget Function(
+    BuildContext context, int position);
+typedef RankingCenterBuilder = Widget Function(
+    BuildContext context, int position, Widget? childElement);
 
 /// Data class holding the default visual style for [CustomElevatedButton].
 ///
@@ -85,6 +89,12 @@ class CustomButtonThemeData {
   /// Optional builder to customise the appearance of each setting's container.
   final SettingContainerBuilder? settingContainerBuilder;
 
+  /// Optional builder to customise the outer decoration of the ranking sorting widget.
+  final RankingDecorationBuilder? rankingDecorationBuilder;
+
+  /// Optional builder to customise the center widget of the ranking sorting widget.
+  final RankingCenterBuilder? rankingCenterBuilder;
+
   const CustomButtonThemeData({
     this.buttonRenderer,
     this.textStyle,
@@ -101,6 +111,8 @@ class CustomButtonThemeData {
     this.switchThemeBuilder,
     this.segmentedButtonThemeBuilder,
     this.settingContainerBuilder,
+    this.rankingDecorationBuilder,
+    this.rankingCenterBuilder,
   });
 }
 
@@ -164,5 +176,8 @@ class CustomButtonTheme extends InheritedWidget {
       data.switchThemeBuilder != oldWidget.data.switchThemeBuilder ||
       data.segmentedButtonThemeBuilder !=
           oldWidget.data.segmentedButtonThemeBuilder ||
-      data.settingContainerBuilder != oldWidget.data.settingContainerBuilder;
+      data.settingContainerBuilder != oldWidget.data.settingContainerBuilder ||
+      data.rankingDecorationBuilder !=
+          oldWidget.data.rankingDecorationBuilder ||
+      data.rankingCenterBuilder != oldWidget.data.rankingCenterBuilder;
 }

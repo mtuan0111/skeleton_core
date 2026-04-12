@@ -360,12 +360,17 @@ class RankingSortingWidget extends StatelessWidget {
     final baseSize = size ?? _defaultSize;
     final wingRadius = baseSize / 1.5;
 
+    final resolvedDecorationBuilder = decorationBuilder ??
+        CustomButtonTheme.of(context)?.rankingDecorationBuilder;
+    final resolvedCenterBuilder =
+        centerBuilder ?? CustomButtonTheme.of(context)?.rankingCenterBuilder;
+
     return Stack(
       alignment: Alignment.center,
       clipBehavior: Clip.none,
       children: [
-        if (decorationBuilder != null)
-          decorationBuilder!(context, position)
+        if (resolvedDecorationBuilder != null)
+          resolvedDecorationBuilder(context, position)
         else ...[
           if (position == 1)
             Positioned(
@@ -422,8 +427,8 @@ class RankingSortingWidget extends StatelessWidget {
               ),
             ),
         ],
-        if (centerBuilder != null)
-          centerBuilder!(context, position, childElement)
+        if (resolvedCenterBuilder != null)
+          resolvedCenterBuilder(context, position, childElement)
         else
           Stack(
             clipBehavior: Clip.none,
@@ -1349,6 +1354,7 @@ class OptionCard extends StatelessWidget {
   final BuildContext context;
   final String title;
   final String description;
+  final String? bestTurnsOfUser;
   final IconData icon;
   final Color color;
   final VoidCallback onTap;
@@ -1360,6 +1366,7 @@ class OptionCard extends StatelessWidget {
     required this.context,
     required this.title,
     required this.description,
+    this.bestTurnsOfUser,
     required this.icon,
     required this.color,
     required this.onTap,
@@ -1378,17 +1385,40 @@ class OptionCard extends StatelessWidget {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  CustomElevatedButton(
-                    text: description,
-                    style: (CustomButtonTheme.of(context)?.textStyle ??
-                            AppTextStyles.bodyLarge(context))
-                        .copyWith(
-                      color: Colors.black54.getSmartColor(context),
-                      fontSize: AppTextStyles.bodyLarge(context).fontSize,
-                    ),
-                    buttonSize: ButtonSize.smallest,
-                    shapeAt: RoundedWithShapeAt.topRight,
-                    backgroundColor: Colors.black54,
+                  Column(
+                    // mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      CustomElevatedButton(
+                        text: description,
+                        style: (CustomButtonTheme.of(context)?.textStyle ??
+                                AppTextStyles.bodyLarge(context))
+                            .copyWith(
+                          color: Colors.black54.getSmartColor(context),
+                          fontSize: AppTextStyles.bodyLarge(context).fontSize,
+                        ),
+                        buttonSize: ButtonSize.smallest,
+                        shapeAt: RoundedWithShapeAt.topRight,
+                        backgroundColor: Colors.black54,
+                      ),
+                      if (bestTurnsOfUser != null)
+                        CustomElevatedButton(
+                          shapeAt: RoundedWithShapeAt.topLeft,
+                          child: Text(
+                            'Best turns of user: $bestTurnsOfUser',
+                            style: (CustomButtonTheme.of(context)?.textStyle ??
+                                    AppTextStyles.bodyLarge(context))
+                                .copyWith(
+                              color: Colors.black54.getSmartColor(context),
+                              // fontSize:
+                              //     AppTextStyles.bodyLarge(context).fontSize,
+                            ),
+                          ),
+                          backgroundColor: Colors.black54,
+                          buttonSize: ButtonSize.smallest,
+                        )
+                    ],
                   ),
                   Positioned(
                     top: -45,
