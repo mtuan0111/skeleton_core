@@ -370,19 +370,24 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget _buildVibrateToggle(BuildContext context, SettingState settingState) {
     return _buildField(
       context,
-      iconData: FontAwesomeIcons.mobileVibrate,
+      iconData: FontAwesomeIcons.mobile,
       title: coreLang(context).vibrate,
-      child: _buildWrappedInput(
-          context,
-          _buildThemedSwitch(
-            context,
-            Switch(
-              value: settingState.isVibrate,
-              onChanged: (val) {
-                settingBloc.add(ChangedIsVibrate(isVibrate: val));
-              },
-            ),
-          )),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          _buildWrappedInput(
+              context,
+              _buildThemedSwitch(
+                context,
+                Switch(
+                  value: settingState.isVibrate,
+                  onChanged: (val) {
+                    settingBloc.add(ChangedIsVibrate(isVibrate: val));
+                  },
+                ),
+              )),
+        ],
+      ),
     );
   }
 
@@ -431,19 +436,24 @@ class _SettingScreenState extends State<SettingScreen> {
       context,
       iconData: FontAwesomeIcons.userCheck,
       title: coreLang(context).personal,
-      child: _buildWrappedInput(
-          context,
-          _buildThemedSwitch(
-            context,
-            Switch(
-              value: settingState.onlyShowMyRecorded,
-              onChanged: (val) {
-                settingBloc.add(
-                  ChangedOnlyShowMyRecorded(onlyShowMyRecorded: val),
-                );
-              },
-            ),
-          )),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          _buildWrappedInput(
+              context,
+              _buildThemedSwitch(
+                context,
+                Switch(
+                  value: settingState.onlyShowMyRecorded,
+                  onChanged: (val) {
+                    settingBloc.add(
+                      ChangedOnlyShowMyRecorded(onlyShowMyRecorded: val),
+                    );
+                  },
+                ),
+              )),
+        ],
+      ),
     );
   }
 

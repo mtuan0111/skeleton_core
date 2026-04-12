@@ -1644,5 +1644,6 @@ class _InnerShadowPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_InnerShadowPainter oldDelegate) =>
-      oldDelegate.shadows != shadows || oldDelegate.borderRadius != borderRadius;
+      oldDelegate.shadows != shadows ||
+      oldDelegate.borderRadius != borderRadius;
 }
