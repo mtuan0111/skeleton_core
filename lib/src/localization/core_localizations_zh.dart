@@ -291,4 +291,14 @@ class CoreLocalizationsZh extends CoreLocalizations {
 
   @override
   String get greetingKwanzaa => 'Habari Gani!';
+
+  @override
+  String optimalMoveHint(int optimal) {
+    return '最优为 $optimal — 继续加油！';
+  }
+
+  @override
+  String yourBestMove(String count) {
+    return '你的最佳：$count 步';
+  }
 }

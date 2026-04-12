@@ -400,5 +400,7 @@
   "greetingKwanzaa": "Habari Gani!",
   "@greetingKwanzaa": {
     "description": "Kwanzaa greeting in Swahili"
-  }
+  },
+  "optimalMoveHint": "最优为 {optimal} — 继续加油！",
+  "yourBestMove": "你的最佳：{count} 步"
 }

@@ -400,5 +400,7 @@
   "greetingKwanzaa": "Joyeux Kwanzaa !",
   "@greetingKwanzaa": {
     "description": "Kwanzaa greeting in Swahili"
-  }
+  },
+  "optimalMoveHint": "L'optimal est {optimal} — continuez !",
+  "yourBestMove": "Votre meilleur : {count} coups"
 }

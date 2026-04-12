@@ -400,5 +400,7 @@
   "greetingKwanzaa": "ハッピークワンザ！",
   "@greetingKwanzaa": {
     "description": "Kwanzaa greeting in Swahili"
-  }
+  },
+  "optimalMoveHint": "最適は {optimal} — 頑張って！",
+  "yourBestMove": "あなたのベスト：{count} 手"
 }

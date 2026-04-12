@@ -400,5 +400,7 @@
   "greetingKwanzaa": "สุขสันต์วันควอนซา!",
   "@greetingKwanzaa": {
     "description": "Kwanzaa greeting in Swahili"
-  }
+  },
+  "optimalMoveHint": "ค่าที่ดีที่สุดคือ {optimal} — พยายามต่อไป!",
+  "yourBestMove": "ดีที่สุดของคุณ: {count} ครั้ง"
 }

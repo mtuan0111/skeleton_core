@@ -404,5 +404,7 @@
   "greetingKwanzaa": "Habari Gani!",
   "@greetingKwanzaa": {
     "description": "Lời chúc lễ hội Kwanzaa bằng tiếng Swahili"
-  }
+  },
+  "optimalMoveHint": "Tối ưu là {optimal} — cố lên!",
+  "yourBestMove": "Tốt nhất của bạn: {count} nước"
 }

@@ -1355,6 +1355,7 @@ class OptionCard extends StatelessWidget {
   final String title;
   final String description;
   final String? bestTurnsOfUser;
+  final int? bestMovePossible;
   final IconData icon;
   final Color color;
   final VoidCallback onTap;
@@ -1367,6 +1368,7 @@ class OptionCard extends StatelessWidget {
     required this.title,
     required this.description,
     this.bestTurnsOfUser,
+    this.bestMovePossible,
     required this.icon,
     required this.color,
     required this.onTap,
@@ -1398,26 +1400,58 @@ class OptionCard extends StatelessWidget {
                           color: Colors.black54.getSmartColor(context),
                           fontSize: AppTextStyles.bodyLarge(context).fontSize,
                         ),
+                        child: Column(children: [
+                          Text(description,
+                              style:
+                                  (CustomButtonTheme.of(context)?.textStyle ??
+                                          AppTextStyles.bodyLarge(context))
+                                      .copyWith(
+                                color: Colors.black54.getSmartColor(context),
+                                fontSize:
+                                    AppTextStyles.bodyMedium(context).fontSize,
+                              )),
+                          if (bestTurnsOfUser != null)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const SizedBox(height: kSpaceL),
+                                Text(
+                                  coreLang(context)
+                                      .yourBestMove(bestTurnsOfUser!),
+                                  style: (CustomButtonTheme.of(context)
+                                              ?.textStyle ??
+                                          AppTextStyles.bodySmall(context))
+                                      .copyWith(
+                                    color:
+                                        Colors.black54.getSmartColor(context),
+                                  ),
+                                ),
+                                if (bestMovePossible != null &&
+                                    int.tryParse(bestTurnsOfUser!) != null &&
+                                    int.parse(bestTurnsOfUser!) >
+                                        bestMovePossible!)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: Text(
+                                      coreLang(context)
+                                          .optimalMoveHint(bestMovePossible!),
+                                      style: (CustomButtonTheme.of(context)
+                                                  ?.textStyle ??
+                                              AppTextStyles.bodySmall(context))
+                                          .copyWith(
+                                        color: Colors.black54
+                                            .getSmartColor(context),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            )
+                        ]),
                         buttonSize: ButtonSize.smallest,
                         shapeAt: RoundedWithShapeAt.topRight,
                         backgroundColor: Colors.black54,
                       ),
-                      if (bestTurnsOfUser != null)
-                        CustomElevatedButton(
-                          shapeAt: RoundedWithShapeAt.topLeft,
-                          child: Text(
-                            'Best turns of user: $bestTurnsOfUser',
-                            style: (CustomButtonTheme.of(context)?.textStyle ??
-                                    AppTextStyles.bodyLarge(context))
-                                .copyWith(
-                              color: Colors.black54.getSmartColor(context),
-                              // fontSize:
-                              //     AppTextStyles.bodyLarge(context).fontSize,
-                            ),
-                          ),
-                          backgroundColor: Colors.black54,
-                          buttonSize: ButtonSize.smallest,
-                        )
                     ],
                   ),
                   Positioned(

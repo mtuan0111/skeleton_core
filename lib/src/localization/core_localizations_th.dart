@@ -295,4 +295,14 @@ class CoreLocalizationsTh extends CoreLocalizations {
 
   @override
   String get greetingKwanzaa => 'สุขสันต์วันควอนซา!';
+
+  @override
+  String optimalMoveHint(int optimal) {
+    return 'ค่าที่ดีที่สุดคือ $optimal — พยายามต่อไป!';
+  }
+
+  @override
+  String yourBestMove(String count) {
+    return 'ดีที่สุดของคุณ: $count ครั้ง';
+  }
 }

@@ -404,5 +404,25 @@
   "greetingKwanzaa": "Habari Gani!",
   "@greetingKwanzaa": {
     "description": "Kwanzaa greeting in Swahili"
+  },
+  "optimalMoveHint": "Optimal is {optimal} — keep trying!",
+  "@optimalMoveHint": {
+    "description": "Hint that user hasn't reached the optimal move count",
+    "placeholders": {
+      "optimal": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "yourBestMove": "Your best: {count} moves",
+  "@yourBestMove": {
+    "description": "Label showing user's best move count for a difficulty",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "15"
+      }
+    }
   }
 }

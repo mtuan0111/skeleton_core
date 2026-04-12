@@ -665,6 +665,18 @@ abstract class CoreLocalizations {
   /// In en, this message translates to:
   /// **'Habari Gani!'**
   String get greetingKwanzaa;
+
+  /// Hint that user hasn't reached the optimal move count
+  ///
+  /// In en, this message translates to:
+  /// **'Optimal is {optimal} — keep trying!'**
+  String optimalMoveHint(int optimal);
+
+  /// Label showing user's best move count for a difficulty
+  ///
+  /// In en, this message translates to:
+  /// **'Your best: {count} moves'**
+  String yourBestMove(String count);
 }
 
 class _CoreLocalizationsDelegate
