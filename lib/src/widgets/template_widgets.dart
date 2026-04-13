@@ -1380,11 +1380,14 @@ class OptionCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(top: 40),
               child: Stack(
+                alignment: Alignment.topRight,
                 clipBehavior: Clip.none,
                 children: [
                   Column(
@@ -1419,9 +1422,7 @@ class OptionCard extends StatelessWidget {
                                 Text(
                                   coreLang(context)
                                       .yourBestMove(bestTurnsOfUser!),
-                                  style: (CustomButtonTheme.of(context)
-                                              ?.textStyle ??
-                                          AppTextStyles.bodySmall(context))
+                                  style: (AppTextStyles.bodySmall(context))
                                       .copyWith(
                                     color:
                                         Colors.black54.getSmartColor(context),
@@ -1436,9 +1437,7 @@ class OptionCard extends StatelessWidget {
                                     child: Text(
                                       coreLang(context)
                                           .optimalMoveHint(bestMovePossible!),
-                                      style: (CustomButtonTheme.of(context)
-                                                  ?.textStyle ??
-                                              AppTextStyles.bodySmall(context))
+                                      style: (AppTextStyles.bodySmall(context))
                                           .copyWith(
                                         color: Colors.black54
                                             .getSmartColor(context),

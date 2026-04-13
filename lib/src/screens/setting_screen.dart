@@ -87,27 +87,26 @@ class _SettingScreenState extends State<SettingScreen> {
           widget.onNumberOfTopBoardChanged!(settingState.numberOfTopBoard);
         }
 
-        final scrollBody = CustomScrollView(
-          slivers: [
-            CustomSliverAppBar(
-              title: screenTitle,
-              onBackPressed: () {
-                context.read<MenuBloc>().add(ShowMenu());
-              },
-              expandedHeight: 100,
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 20,
-              ),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate(
-                  [
-                    SafeArea(
-                      top: false,
-                      child: DeviceWrapper(
-                        child: BlocBuilder<UserBloc, UserState>(
+        final scrollBody = SafeArea(
+          child: DeviceWrapper(
+            child: CustomScrollView(
+              slivers: [
+                CustomSliverAppBar(
+                  title: screenTitle,
+                  onBackPressed: () {
+                    context.read<MenuBloc>().add(ShowMenu());
+                  },
+                  expandedHeight: 100,
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 20,
+                  ),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate(
+                      [
+                        BlocBuilder<UserBloc, UserState>(
                           builder: (context, userState) {
                             return Form(
                               child: Column(
@@ -136,13 +135,13 @@ class _SettingScreenState extends State<SettingScreen> {
                             );
                           },
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         );
 
         return Scaffold(
@@ -370,7 +369,7 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget _buildVibrateToggle(BuildContext context, SettingState settingState) {
     return _buildField(
       context,
-      iconData: FontAwesomeIcons.mobile,
+      iconData: FontAwesomeIcons.mobileVibrate,
       title: coreLang(context).vibrate,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,

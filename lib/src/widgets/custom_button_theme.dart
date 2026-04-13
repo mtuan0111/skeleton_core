@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:skeleton_core/skeleton_core.dart';
 
 typedef InputWrapperBuilder = Widget Function(
-    BuildContext context, Widget child);
+    BuildContext context, Widget child,
+    {EdgeInsetsGeometry? customPadding});
 typedef InputDecorationBuilder = InputDecoration Function(
     BuildContext context, String? hintText);
 typedef ValueWrapperBuilder = Widget Function(
@@ -22,6 +23,8 @@ typedef RankingDecorationBuilder = Widget Function(
     BuildContext context, int position);
 typedef RankingCenterBuilder = Widget Function(
     BuildContext context, int position, Widget? childElement);
+typedef SliverAppBarBackgroundBuilder = Widget Function(
+    BuildContext context, bool isCollapsed);
 
 /// Data class holding the default visual style for [CustomElevatedButton].
 ///
@@ -95,6 +98,12 @@ class CustomButtonThemeData {
   /// Optional builder to customise the center widget of the ranking sorting widget.
   final RankingCenterBuilder? rankingCenterBuilder;
 
+  /// Optional global background builder for every [CustomSliverAppBar] in the tree.
+  ///
+  /// Receives [isCollapsed] so the background can adapt when the app bar
+  /// collapses. When `null` the default animated solid-colour behaviour is used.
+  final SliverAppBarBackgroundBuilder? sliverAppBarBackgroundBuilder;
+
   const CustomButtonThemeData({
     this.buttonRenderer,
     this.textStyle,
@@ -113,6 +122,7 @@ class CustomButtonThemeData {
     this.settingContainerBuilder,
     this.rankingDecorationBuilder,
     this.rankingCenterBuilder,
+    this.sliverAppBarBackgroundBuilder,
   });
 }
 
@@ -179,5 +189,7 @@ class CustomButtonTheme extends InheritedWidget {
       data.settingContainerBuilder != oldWidget.data.settingContainerBuilder ||
       data.rankingDecorationBuilder !=
           oldWidget.data.rankingDecorationBuilder ||
-      data.rankingCenterBuilder != oldWidget.data.rankingCenterBuilder;
+      data.rankingCenterBuilder != oldWidget.data.rankingCenterBuilder ||
+      data.sliverAppBarBackgroundBuilder !=
+          oldWidget.data.sliverAppBarBackgroundBuilder;
 }

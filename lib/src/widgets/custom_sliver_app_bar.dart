@@ -35,6 +35,14 @@ class CustomSliverAppBar extends StatelessWidget {
   /// Padding around the title text.
   final EdgeInsets titlePadding;
 
+  /// Optional builder for a custom background behind the flexible space.
+  ///
+  /// Receives [isCollapsed] so the background can adapt when the app bar
+  /// collapses. When `null` the default [AnimatedContainer] solid-colour
+  /// behaviour is used.
+  final Widget Function(BuildContext context, bool isCollapsed)?
+      backgroundBuilder;
+
   const CustomSliverAppBar({
     super.key,
     this.title,
@@ -45,6 +53,7 @@ class CustomSliverAppBar extends StatelessWidget {
     this.leading,
     this.actions,
     this.titlePadding = const EdgeInsets.all(kPaddingM),
+    this.backgroundBuilder,
   }) : assert(
           title != null || titleWidget != null,
           'Either title or titleWidget must be provided',
@@ -64,35 +73,49 @@ class CustomSliverAppBar extends StatelessWidget {
         child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
             final double appBarHeight = constraints.biggest.height;
-            final bool isCollapsed = appBarHeight <=
-                kToolbarHeight + MediaQuery.of(context).padding.top;
+            final bool isCollapsed = !(appBarHeight <=
+                kToolbarHeight + MediaQuery.of(context).padding.top);
 
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: kAnimationDurationMedium),
-              color: isCollapsed
-                  ? Theme.of(context).primaryColor
-                  : Colors.transparent,
-              child: FlexibleSpaceBar(
-                centerTitle: true,
-                titlePadding: EdgeInsets.zero,
-                title: Padding(
-                  padding: titlePadding,
-                  child: titleWidget != null
-                      ? FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: titleWidget,
-                        )
-                      : FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            title!,
-                            textAlign: TextAlign.center,
-                            style:
-                                AppTextStyles.displaySmallTitleScreen(context),
+            // Priority: per-widget builder → global theme builder → default colour
+            final effectiveBackground = backgroundBuilder ??
+                CustomButtonTheme.of(context)?.sliverAppBarBackgroundBuilder;
+
+            final Widget bg = effectiveBackground != null
+                ? effectiveBackground(context, isCollapsed)
+                : AnimatedContainer(
+                    duration:
+                        const Duration(milliseconds: kAnimationDurationMedium),
+                    color: isCollapsed
+                        ? Theme.of(context).primaryColor
+                        : Colors.transparent,
+                  );
+
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                bg,
+                FlexibleSpaceBar(
+                  centerTitle: true,
+                  titlePadding: EdgeInsets.zero,
+                  title: Padding(
+                    padding: titlePadding,
+                    child: titleWidget != null
+                        ? FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: titleWidget,
+                          )
+                        : FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              title!,
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.displaySmallTitleScreen(
+                                  context),
+                            ),
                           ),
-                        ),
+                  ),
                 ),
-              ),
+              ],
             );
           },
         ),
