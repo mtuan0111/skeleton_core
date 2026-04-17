@@ -88,59 +88,53 @@ class _SettingScreenState extends State<SettingScreen> {
         }
 
         final scrollBody = SafeArea(
-          child: DeviceWrapper(
-            child: CustomScrollView(
-              slivers: [
-                CustomSliverAppBar(
-                  title: screenTitle,
-                  onBackPressed: () {
-                    context.read<MenuBloc>().add(ShowMenu());
-                  },
-                  expandedHeight: 100,
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
-                  ),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate(
-                      [
-                        BlocBuilder<UserBloc, UserState>(
-                          builder: (context, userState) {
-                            return Form(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  _buildUsernameField(context, userState),
-                                  const SizedBox(height: kSpace2XL),
-                                  _buildFontSizeSlider(context, settingState),
-                                  const SizedBox(height: kSpaceL),
-                                  _buildVolumeSlider(context, settingState),
-                                  const SizedBox(height: kSpaceL),
-                                  _buildVibrateToggle(context, settingState),
-                                  const SizedBox(height: kSpaceL),
-                                  _buildTopScoresSlider(context, settingState),
-                                  const SizedBox(height: kSpaceL),
-                                  _buildOnlyMyRecordsToggle(
+          child: CustomScrollView(
+            slivers: [
+              CustomSliverAppBar(
+                title: screenTitle,
+                onBackPressed: () {
+                  context.read<MenuBloc>().add(ShowMenu());
+                },
+                expandedHeight: 100,
+              ),
+              SliverList(
+                delegate: SliverChildListDelegate(
+                  [
+                    BlocBuilder<UserBloc, UserState>(
+                      builder: (context, userState) {
+                        return DeviceWrapper(
+                          child: Form(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                _buildUsernameField(context, userState),
+                                const SizedBox(height: kSpace2XL),
+                                _buildFontSizeSlider(context, settingState),
+                                const SizedBox(height: kSpaceL),
+                                _buildVolumeSlider(context, settingState),
+                                const SizedBox(height: kSpaceL),
+                                _buildVibrateToggle(context, settingState),
+                                const SizedBox(height: kSpaceL),
+                                _buildTopScoresSlider(context, settingState),
+                                const SizedBox(height: kSpaceL),
+                                _buildOnlyMyRecordsToggle(
+                                    context, settingState),
+                                const SizedBox(height: kSpaceL),
+                                _buildLanguageDropdown(context, settingState),
+                                const SizedBox(height: kSpace2XL),
+                                if (widget.additionalSettingsBuilder != null)
+                                  ...widget.additionalSettingsBuilder!(
                                       context, settingState),
-                                  const SizedBox(height: kSpaceL),
-                                  _buildLanguageDropdown(context, settingState),
-                                  const SizedBox(height: kSpace2XL),
-                                  if (widget.additionalSettingsBuilder != null)
-                                    ...widget.additionalSettingsBuilder!(
-                                        context, settingState),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
 

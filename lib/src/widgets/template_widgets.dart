@@ -279,6 +279,8 @@ class RankingSortingWidget extends StatelessWidget {
   final int position;
   final Widget? childElement;
   final double? size;
+  final bool isCurrentUser;
+  final String currentUserLabel;
 
   static const double _defaultSize = 60.0;
   static const double _innerContainerPadding = 10.0;
@@ -294,6 +296,8 @@ class RankingSortingWidget extends StatelessWidget {
     this.size,
     this.decorationBuilder,
     this.centerBuilder,
+    this.isCurrentUser = false,
+    this.currentUserLabel = 'You',
   });
 
   /// Optional builder to override the default wing decorations.
@@ -427,6 +431,36 @@ class RankingSortingWidget extends StatelessWidget {
               ),
             ),
         ],
+        if (isCurrentUser)
+          Positioned(
+            top: -baseSize * 0.1,
+            right: -baseSize * 0.1,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 6,
+                vertical: 2,
+              ),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.secondary,
+                borderRadius: BorderRadius.circular(4),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Text(
+                currentUserLabel,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSecondary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 10,
+                ),
+              ),
+            ),
+          ),
         if (resolvedCenterBuilder != null)
           resolvedCenterBuilder(context, position, childElement)
         else
@@ -1536,6 +1570,8 @@ class RankingItem extends StatelessWidget {
                 position: ranking!,
                 decorationBuilder: decorationBuilder,
                 centerBuilder: centerBuilder,
+                isCurrentUser: isCurrentUser,
+                currentUserLabel: currentUserLabel,
               ),
             )
           else
@@ -1546,6 +1582,8 @@ class RankingItem extends StatelessWidget {
                 childElement: Icon(iconData),
                 decorationBuilder: decorationBuilder,
                 centerBuilder: centerBuilder,
+                isCurrentUser: isCurrentUser,
+                currentUserLabel: currentUserLabel,
               ),
             ),
           Expanded(
@@ -1565,7 +1603,7 @@ class RankingItem extends StatelessWidget {
                     if (isCurrentUser) ...[
                       Positioned(
                         top: -20,
-                        right: -30,
+                        right: 0,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: kPaddingXS,

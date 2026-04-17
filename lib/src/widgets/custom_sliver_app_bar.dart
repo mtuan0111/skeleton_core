@@ -68,56 +68,58 @@ class CustomSliverAppBar extends StatelessWidget {
       pinned: true,
       stretch: true,
       expandedHeight: expandedHeight,
-      flexibleSpace: Opacity(
-        opacity: opacity,
-        child: LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-            final double appBarHeight = constraints.biggest.height;
-            final bool isCollapsed = !(appBarHeight <=
-                kToolbarHeight + MediaQuery.of(context).padding.top);
+      flexibleSpace: DeviceWrapper(
+        child: Opacity(
+          opacity: opacity,
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              final double appBarHeight = constraints.biggest.height;
+              final bool isCollapsed = !(appBarHeight <=
+                  kToolbarHeight + MediaQuery.of(context).padding.top);
 
-            // Priority: per-widget builder → global theme builder → default colour
-            final effectiveBackground = backgroundBuilder ??
-                CustomButtonTheme.of(context)?.sliverAppBarBackgroundBuilder;
+              // Priority: per-widget builder → global theme builder → default colour
+              final effectiveBackground = backgroundBuilder ??
+                  CustomButtonTheme.of(context)?.sliverAppBarBackgroundBuilder;
 
-            final Widget bg = effectiveBackground != null
-                ? effectiveBackground(context, isCollapsed)
-                : AnimatedContainer(
-                    duration:
-                        const Duration(milliseconds: kAnimationDurationMedium),
-                    color: isCollapsed
-                        ? Theme.of(context).primaryColor
-                        : Colors.transparent,
-                  );
+              final Widget bg = effectiveBackground != null
+                  ? effectiveBackground(context, isCollapsed)
+                  : AnimatedContainer(
+                      duration: const Duration(
+                          milliseconds: kAnimationDurationMedium),
+                      color: isCollapsed
+                          ? Theme.of(context).primaryColor
+                          : Colors.transparent,
+                    );
 
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                bg,
-                FlexibleSpaceBar(
-                  centerTitle: true,
-                  titlePadding: EdgeInsets.zero,
-                  title: Padding(
-                    padding: titlePadding,
-                    child: titleWidget != null
-                        ? FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: titleWidget,
-                          )
-                        : FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              title!,
-                              textAlign: TextAlign.center,
-                              style: AppTextStyles.displaySmallTitleScreen(
-                                  context),
+              return Stack(
+                fit: StackFit.expand,
+                children: [
+                  bg,
+                  FlexibleSpaceBar(
+                    centerTitle: true,
+                    titlePadding: EdgeInsets.zero,
+                    title: Padding(
+                      padding: titlePadding,
+                      child: titleWidget != null
+                          ? FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: titleWidget,
+                            )
+                          : FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                title!,
+                                textAlign: TextAlign.center,
+                                style: AppTextStyles.displaySmallTitleScreen(
+                                    context),
+                              ),
                             ),
-                          ),
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
       leading: leading ??

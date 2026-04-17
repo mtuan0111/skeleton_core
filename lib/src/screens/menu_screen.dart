@@ -146,16 +146,13 @@ class _MenuScreenState extends State<MenuScreen> {
                   ),
                 ),
               ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 32),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: widget.menuItems[index],
-                  ),
-                  childCount: widget.menuItems.length,
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: widget.menuItems[index],
                 ),
+                childCount: widget.menuItems.length,
               ),
             ),
             if (_version?.isNotEmpty ?? false)
