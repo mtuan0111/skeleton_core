@@ -305,4 +305,7 @@ class CoreLocalizationsTh extends CoreLocalizations {
   String yourBestMove(String count) {
     return 'ดีที่สุดของคุณ: $count ครั้ง';
   }
+
+  @override
+  String get you => 'You';
 }

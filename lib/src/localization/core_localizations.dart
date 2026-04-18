@@ -677,6 +677,12 @@ abstract class CoreLocalizations {
   /// In en, this message translates to:
   /// **'Your best: {count} moves'**
   String yourBestMove(String count);
+
+  /// Label for the current user in rankings
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get you;
 }
 
 class _CoreLocalizationsDelegate

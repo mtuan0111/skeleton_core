@@ -188,7 +188,7 @@ class AlertTemplate extends StatelessWidget {
             Text(
               message!,
               style: messageStyle ??
-                  AppTextStyles.withColor(AppTextStyles.bodyLarge(context),
+                  AppTextStyles.withColor(AppTextStyles.bodyLargeBold(context),
                       Theme.of(context).colorScheme.primary.getDarker()),
             ),
         ],

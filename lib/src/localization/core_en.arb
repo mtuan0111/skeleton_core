@@ -424,5 +424,9 @@
         "example": "15"
       }
     }
+  },
+  "you": "You",
+  "@you": {
+    "description": "Label for the current user in rankings"
   }
 }

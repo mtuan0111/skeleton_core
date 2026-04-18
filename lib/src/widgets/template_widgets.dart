@@ -280,7 +280,7 @@ class RankingSortingWidget extends StatelessWidget {
   final Widget? childElement;
   final double? size;
   final bool isCurrentUser;
-  final String currentUserLabel;
+  final String? currentUserLabel;
 
   static const double _defaultSize = 60.0;
   static const double _innerContainerPadding = 10.0;
@@ -297,7 +297,7 @@ class RankingSortingWidget extends StatelessWidget {
     this.decorationBuilder,
     this.centerBuilder,
     this.isCurrentUser = false,
-    this.currentUserLabel = 'You',
+    this.currentUserLabel,
   });
 
   /// Optional builder to override the default wing decorations.
@@ -359,6 +359,7 @@ class RankingSortingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final effectiveUserLabel = currentUserLabel ?? coreLang(context).you;
     final fillColor = _getPositionColor(theme);
     final darkerFillColor = fillColor.getDarker();
     final baseSize = size ?? _defaultSize;
@@ -452,7 +453,7 @@ class RankingSortingWidget extends StatelessWidget {
                 ],
               ),
               child: Text(
-                currentUserLabel,
+                effectiveUserLabel,
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: theme.colorScheme.onSecondary,
                   fontWeight: FontWeight.bold,
@@ -780,12 +781,12 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
 
     Widget row = Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       textDirection: getTextDirection(),
+      spacing: kSpaceSM,
       children: [
         if (iconWidget != null) iconWidget,
-        if (iconWidget != null && textWidget != null)
-          const SizedBox(width: kSpaceSM),
         if (textWidget != null) textWidget,
       ],
     );
@@ -1532,12 +1533,11 @@ class RankingItem extends StatelessWidget {
     super.key,
     required this.heroTag,
     required this.ranking,
-    required this.titleIcon,
-    required this.titleText,
     required this.infoRows,
     this.iconData,
     this.isCurrentUser = false,
-    this.currentUserLabel = 'You',
+    this.currentUserLabel,
+    this.playedName,
     this.decorationBuilder,
     this.centerBuilder,
   });
@@ -1545,17 +1545,18 @@ class RankingItem extends StatelessWidget {
   final String heroTag;
   final int? ranking;
   final IconData? iconData;
-  final IconData titleIcon;
-  final String titleText;
+  final String? playedName;
+
   final List<Widget> infoRows;
   final bool isCurrentUser;
-  final String currentUserLabel;
+  final String? currentUserLabel;
   final Widget Function(BuildContext context, int position)? decorationBuilder;
   final Widget Function(
       BuildContext context, int position, Widget? childElement)? centerBuilder;
 
   @override
   Widget build(BuildContext context) {
+    final effectiveUserLabel = currentUserLabel ?? coreLang(context).you;
     return Hero(
       tag: heroTag,
       child: Row(
@@ -1563,72 +1564,58 @@ class RankingItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 20,
         children: [
+          // RankingInfoRow(
+          //   icon: titleIcon,
+          //   text: titleText,
+          // ),
           if (ranking != null)
             Expanded(
               flex: 2,
-              child: RankingSortingWidget(
-                position: ranking!,
-                decorationBuilder: decorationBuilder,
-                centerBuilder: centerBuilder,
-                isCurrentUser: isCurrentUser,
-                currentUserLabel: currentUserLabel,
+              child: Center(
+                child: Column(
+                  spacing: kSpaceXL,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    RankingSortingWidget(
+                      position: ranking!,
+                      decorationBuilder: decorationBuilder,
+                      centerBuilder: centerBuilder,
+                      isCurrentUser: isCurrentUser,
+                      currentUserLabel: effectiveUserLabel,
+                    ),
+                    if (playedName != null)
+                      Text(
+                        playedName!,
+                        style: AppTextStyles.titleMedium(context),
+                      ),
+                  ],
+                ),
               ),
             )
           else
             Expanded(
               flex: 2,
-              child: RankingSortingWidget(
-                position: 0,
-                childElement: Icon(iconData),
-                decorationBuilder: decorationBuilder,
-                centerBuilder: centerBuilder,
-                isCurrentUser: isCurrentUser,
-                currentUserLabel: currentUserLabel,
+              child: Center(
+                child: RankingSortingWidget(
+                  position: 0,
+                  childElement: Icon(iconData),
+                  decorationBuilder: decorationBuilder,
+                  centerBuilder: centerBuilder,
+                  isCurrentUser: isCurrentUser,
+                  currentUserLabel: effectiveUserLabel,
+                ),
               ),
             ),
-          Expanded(
-            flex: 2,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    RankingInfoRow(
-                      icon: titleIcon,
-                      text: titleText,
-                      style: AppTextStyles.titleLarge(context),
-                    ),
-                    if (isCurrentUser) ...[
-                      Positioned(
-                        top: -20,
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: kPaddingXS,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.secondary,
-                            borderRadius: BorderRadius.circular(kBorderRadiusS),
-                          ),
-                          child: Text(
-                            currentUserLabel,
-                            style: AppTextStyles.bodySmall(context).copyWith(
-                              color: Theme.of(context).colorScheme.onSecondary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ]
-                  ],
-                ),
-                ...infoRows,
-              ],
-            ),
-          )
+          if (infoRows.isNotEmpty)
+            Expanded(
+              flex: 2,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: kSpaceS,
+                children: infoRows,
+              ),
+            )
         ],
       ),
     );
@@ -1652,8 +1639,9 @@ class RankingInfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Icon(
           icon,
@@ -1665,7 +1653,7 @@ class RankingInfoRow extends StatelessWidget {
           fit: FlexFit.loose,
           child: Text(
             text,
-            style: (style ?? AppTextStyles.bodyLarge(context)),
+            style: (style ?? AppTextStyles.bodySmall(context)),
             softWrap: true,
           ),
         ),

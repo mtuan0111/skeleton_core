@@ -303,4 +303,7 @@ class CoreLocalizationsJa extends CoreLocalizations {
   String yourBestMove(String count) {
     return 'あなたのベスト：$count 手';
   }
+
+  @override
+  String get you => 'You';
 }

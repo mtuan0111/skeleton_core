@@ -307,4 +307,7 @@ class CoreLocalizationsVi extends CoreLocalizations {
   String yourBestMove(String count) {
     return 'Tốt nhất của bạn: $count nước';
   }
+
+  @override
+  String get you => 'Bạn';
 }

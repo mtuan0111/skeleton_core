@@ -301,4 +301,7 @@ class CoreLocalizationsZh extends CoreLocalizations {
   String yourBestMove(String count) {
     return '你的最佳：$count 步';
   }
+
+  @override
+  String get you => 'You';
 }

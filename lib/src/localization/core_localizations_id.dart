@@ -305,4 +305,7 @@ class CoreLocalizationsId extends CoreLocalizations {
   String yourBestMove(String count) {
     return 'Terbaik Anda: $count langkah';
   }
+
+  @override
+  String get you => 'You';
 }

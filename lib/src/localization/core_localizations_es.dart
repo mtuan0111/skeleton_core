@@ -306,4 +306,7 @@ class CoreLocalizationsEs extends CoreLocalizations {
   String yourBestMove(String count) {
     return 'Tu mejor: $count movimientos';
   }
+
+  @override
+  String get you => 'You';
 }
