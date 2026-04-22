@@ -102,21 +102,13 @@ class _MenuScreenState extends State<MenuScreen> {
                     children: [
                       Text(
                         widget.title,
-                        style:
-                            Theme.of(context).textTheme.headlineLarge?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 32,
-                                ),
+                        style: AppTextStyles.headlineLarge(context),
                       ),
                       if (widget.subtitle != null) ...[
                         const SizedBox(height: 4),
                         Text(
                           widget.subtitle!,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge
-                              ?.copyWith(color: Colors.white70),
+                          style: AppTextStyles.bodyLarge(context),
                         ),
                       ],
                       Text(

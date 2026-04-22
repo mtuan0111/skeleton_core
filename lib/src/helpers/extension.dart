@@ -44,8 +44,18 @@ extension ColorCustome on Color {
     final luminance = computeLuminance();
     final theme = Theme.of(context);
     return luminance > 0.5
-        ? theme.colorScheme.onPrimary.getDarker(percentage: 80)
-        : theme.colorScheme.onPrimary.getLighter();
+        ? theme.colorScheme.onPrimary.getDarker(percentage: 90)
+        : theme.colorScheme.onPrimary.getLighter(percentage: 90);
+  }
+
+  Color textOnColor(BuildContext context) {
+    return getSmartColor(context);
+  }
+}
+
+extension TextStyleCustom on TextStyle {
+  TextStyle onColor(BuildContext context, Color color) {
+    return copyWith(color: color.textOnColor(context));
   }
 }
 

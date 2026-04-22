@@ -26,6 +26,43 @@ class SeasonalTheme {
   /// Manual theme override - Set to null for automatic date-based switching
   static ThemeType? _manualOverride = null;
 
+  /// Per-ThemeType config overrides registered by the host app.
+  /// Use [registerOverrides] to populate; the [config] getter prefers these
+  /// over the built-in [_themes] defaults.
+  static final Map<ThemeType, ThemeConfig> _configOverrides = {};
+
+  /// Register app-specific [ThemeConfig] overrides for one or more [ThemeType]s.
+  ///
+  /// Call this **before** `SkeletonApp.launch()` (e.g. in `main()`) to
+  /// customise colours, particles, or any other config without modifying
+  /// skeleton_core.
+  ///
+  /// Only the entries you supply are overridden; all other themes continue to
+  /// use their built-in defaults.
+  ///
+  /// ```dart
+  /// SeasonalTheme.registerOverrides({
+  ///   ThemeType.defaultTheme: ThemeConfig(
+  ///     name: 'Hasto Default',
+  ///     primaryColor: Color(0xFF00AE5A),
+  ///     // …
+  ///   ),
+  /// });
+  /// ```
+  static void registerOverrides(Map<ThemeType, ThemeConfig> overrides) {
+    _configOverrides.addAll(overrides);
+  }
+
+  /// Removes all previously registered overrides, restoring built-in defaults.
+  /// Useful for testing or reset flows.
+  static void clearOverrides() => _configOverrides.clear();
+
+  /// Forces the app to use a specific theme, ignoring the date-based seasonal
+  /// themes. Set to `null` to restore automatic date-based switching.
+  static void setManualOverride(ThemeType? type) {
+    _manualOverride = type;
+  }
+
   /// Current active theme - Automatically determined by date or manual override
   static ThemeType get current {
     if (_manualOverride != null) return _manualOverride!;
@@ -158,8 +195,12 @@ class SeasonalTheme {
     return ThemeType.defaultTheme;
   }
 
-  /// Get current theme configuration
-  static ThemeConfig get config => _themes[current]!;
+  /// Get current theme configuration.
+  ///
+  /// Returns an app-registered override (via [registerOverrides]) if one
+  /// exists for the [current] theme, otherwise falls back to the built-in
+  /// default from [_themes].
+  static ThemeConfig get config => _configOverrides[current] ?? _themes[current]!;
 
   /// Available theme configurations
   static final Map<ThemeType, ThemeConfig> _themes = {

@@ -216,56 +216,45 @@ class CustomWrapContainer extends StatelessWidget {
       );
     }
 
-    final bg = backgroundColor ?? Theme.of(context).primaryColor;
-    final textColor = bg.getSmartColor(context);
-    final buttonThemeStyle = CustomButtonTheme.of(context)?.textStyle;
-    final textStyle =
-        (buttonThemeStyle ?? AppTextStyles.displayLarge(context)).copyWith(
-      fontFamily: fontFamily,
-      color: textColor,
-    );
-
-    return DefaultTextStyle(
-      style: textStyle,
-      child: Container(
-        padding: const EdgeInsets.all(kPaddingL),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.1),
-          borderRadius: currentRadius,
-          border: Border.all(
-            color: Theme.of(context)
-                .primaryColor
-                .getSmartColor(context)
-                .withValues(alpha: 0.2),
-          ),
+    return Container(
+      padding: const EdgeInsets.all(kPaddingL),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.1),
+        borderRadius: currentRadius,
+        border: Border.all(
+          color: Theme.of(context)
+              .primaryColor
+              .getSmartColor(context)
+              .withValues(alpha: 0.2),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                if (icon != null) ...[
-                  Icon(
-                    icon,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    size: kIconSizeM,
-                  ),
-                  const SizedBox(width: kSpaceML),
-                ],
-                Expanded(
-                  child: Text(
-                    title,
-                    style: AppTextStyles.titleLarge(context)
-                        .copyWith(fontSize: kFontSizeL),
-                  ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              if (icon != null) ...[
+                Icon(
+                  icon,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  size: kIconSizeM,
                 ),
+                const SizedBox(width: kSpaceML),
               ],
-            ),
-            const SizedBox(height: kSpaceM),
-            child,
-          ],
-        ),
+              Expanded(
+                child: Text(
+                  title,
+                  // style: AppTextStyles.bodyLarge(context),
+                  // style: AppTextStyles.titleLarge(context)
+                  //     .copyWith(fontSize: kFontSizeL),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: kSpaceM),
+          child,
+        ],
       ),
     );
   }
@@ -707,7 +696,10 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
 
   TextStyle getTextStyle(BuildContext context) {
     return widget.style ??
-        CustomButtonTheme.of(context)?.textStyle ??
+        CustomButtonTheme.of(context)?.textStyle?.onColor(
+              context,
+              getBackgroundColor(context),
+            ) ??
         Theme.of(context).textTheme.displayLarge!.copyWith(
               fontSize: getFontSize(context),
               color: getPressedColor(context),
@@ -763,10 +755,13 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
       textWidget = Expanded(
         child: Text(
           widget.text!,
-          style: getTextStyle(context).copyWith(
-              fontSize: getFontSize(context),
-              color: getPressedColor(context),
-              fontWeight: FontWeight.bold),
+          style: getTextStyle(context)
+          // .copyWith(
+          // fontSize: getFontSize(context),
+          // color: getPressedColor(context),
+          // fontWeight: FontWeight.bold,
+          // )
+          ,
         ),
       );
     }
@@ -1573,7 +1568,7 @@ class RankingItem extends StatelessWidget {
               flex: 2,
               child: Center(
                 child: Column(
-                  spacing: kSpaceXL,
+                  spacing: kSpaceL,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     RankingSortingWidget(
@@ -1586,7 +1581,7 @@ class RankingItem extends StatelessWidget {
                     if (playedName != null)
                       Text(
                         playedName!,
-                        style: AppTextStyles.titleMedium(context),
+                        style: AppTextStyles.titleMediumBold(context),
                       ),
                   ],
                 ),
