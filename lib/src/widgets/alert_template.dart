@@ -11,7 +11,9 @@ import 'package:skeleton_core/skeleton_core.dart';
 class AlertTemplate extends StatelessWidget {
   final String title;
   final String? message;
-  final Widget? content;
+  final Widget? headerContent;
+  final Widget? bodyContent;
+  final Widget? footerContent;
   final String? possitiveButtonLabel;
   final VoidCallback? onPossitiveButtonPressed;
   final String? negativeButtonLabel;
@@ -30,7 +32,9 @@ class AlertTemplate extends StatelessWidget {
     super.key,
     required this.title,
     this.message,
-    this.content,
+    this.headerContent,
+    this.bodyContent,
+    this.footerContent,
     this.possitiveButtonLabel,
     this.onPossitiveButtonPressed,
     this.negativeButtonLabel,
@@ -142,13 +146,13 @@ class AlertTemplate extends StatelessWidget {
                       Expanded(
                         child: resolvedBodyWrapper != null
                             ? resolvedBodyWrapper(
-                                context, _buildBodyContent(context))
+                                context, _buildContent(context))
                             : CustomElevatedButton(
                                 backgroundColor: backgroundColor ??
                                     theme?.dialogBackgroundColor ??
                                     Theme.of(context).scaffoldBackgroundColor,
                                 shapeAt: RoundedWithShapeAt.topRight,
-                                child: _buildBodyContent(context),
+                                child: _buildContent(context),
                               ),
                       ),
                     ],
@@ -177,13 +181,25 @@ class AlertTemplate extends StatelessWidget {
     );
   }
 
+  Widget _buildHeaderContent(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0).copyWith(top: 10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (headerContent != null) headerContent!,
+        ],
+      ),
+    );
+  }
+
   Widget _buildBodyContent(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10.0).copyWith(top: 10),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (content != null) content!,
+          if (bodyContent != null) bodyContent!,
           if (message != null)
             Text(
               message!,
@@ -193,6 +209,29 @@ class AlertTemplate extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+
+  Widget _buildFooterContent(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0).copyWith(top: 10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (footerContent != null) footerContent!,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildHeaderContent(context),
+        _buildBodyContent(context),
+        _buildFooterContent(context),
+      ],
     );
   }
 }

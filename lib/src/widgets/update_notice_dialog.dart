@@ -55,7 +55,7 @@ class UpdateNoticeDialog extends StatelessWidget {
       onWillPop: () async => !isForceUpdate,
       child: AlertTemplate(
         title: isForceUpdate ? labels.updateRequired : labels.updateAvailable,
-        content: SingleChildScrollView(
+        headerContent: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
