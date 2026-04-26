@@ -90,92 +90,95 @@ class AlertTemplate extends StatelessWidget {
       filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
       child: Dialog(
         backgroundColor: resolvedBackgroundColor,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Stack(
-                    children: [
-                      Opacity(
-                        opacity: 1,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: CustomElevatedButton(
-                                text: title,
-                                buttonSize: ButtonSize.small,
-                                shapeAt: resolvedTitleShapeAt,
-                                buttonRadius: titleRadius,
-                                color: resolvedTitleBackgroundColor != null
-                                    ? resolvedTitleBackgroundColor
-                                        .getSmartColor(context)
-                                    : Theme.of(context).colorScheme.onPrimary,
-                                backgroundColor: resolvedTitleBackgroundColor,
-                                gradient: titleGradient ??
-                                    (resolvedTitleBackgroundColor == null &&
-                                            theme?.dialogTitleBackgroundColor ==
-                                                null
-                                        ? LinearGradient(
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                            colors: [
-                                              Theme.of(context).primaryColor,
-                                              Theme.of(context)
-                                                  .secondaryHeaderColor,
-                                            ],
-                                          )
-                                        : null),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            Flexible(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 20),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: resolvedBodyWrapper != null
-                            ? resolvedBodyWrapper(
-                                context, _buildContent(context))
-                            : CustomElevatedButton(
-                                backgroundColor: backgroundColor ??
-                                    theme?.dialogBackgroundColor ??
-                                    Theme.of(context).scaffoldBackgroundColor,
-                                shapeAt: RoundedWithShapeAt.topRight,
-                                child: _buildContent(context),
-                              ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: DeviceWrapper(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
                 children: [
-                  if (negativeButtonLabel != null)
-                    Expanded(child: _buildNegativeButton(context)),
-                  if (negativeButtonLabel != null &&
-                      possitiveButtonLabel != null)
-                    const SizedBox(width: kSpaceM),
-                  if (possitiveButtonLabel != null)
-                    Expanded(child: _buildPossitiveButton(context)),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Opacity(
+                          opacity: 1,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: CustomElevatedButton(
+                                  text: title,
+                                  buttonSize: ButtonSize.small,
+                                  shapeAt: resolvedTitleShapeAt,
+                                  buttonRadius: titleRadius,
+                                  color: resolvedTitleBackgroundColor != null
+                                      ? resolvedTitleBackgroundColor
+                                          .getSmartColor(context)
+                                      : Theme.of(context).colorScheme.onPrimary,
+                                  backgroundColor: resolvedTitleBackgroundColor,
+                                  gradient: titleGradient ??
+                                      (resolvedTitleBackgroundColor == null &&
+                                              theme?.dialogTitleBackgroundColor ==
+                                                  null
+                                          ? LinearGradient(
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                              colors: [
+                                                Theme.of(context).primaryColor,
+                                                Theme.of(context)
+                                                    .secondaryHeaderColor,
+                                              ],
+                                            )
+                                          : null),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ],
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10, bottom: 20),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: resolvedBodyWrapper != null
+                              ? resolvedBodyWrapper(
+                                  context, _buildContent(context))
+                              : CustomElevatedButton(
+                                  backgroundColor: backgroundColor ??
+                                      theme?.dialogBackgroundColor ??
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                  shapeAt: RoundedWithShapeAt.topRight,
+                                  child: _buildContent(context),
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    if (negativeButtonLabel != null)
+                      Expanded(child: _buildNegativeButton(context)),
+                    if (negativeButtonLabel != null &&
+                        possitiveButtonLabel != null)
+                      const SizedBox(width: kSpaceM),
+                    if (possitiveButtonLabel != null)
+                      Expanded(child: _buildPossitiveButton(context)),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

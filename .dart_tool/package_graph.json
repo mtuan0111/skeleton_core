@@ -80,7 +80,7 @@
     },
     {
       "name": "share_plus",
-      "version": "7.2.2",
+      "version": "13.1.0",
       "dependencies": [
         "cross_file",
         "ffi",
@@ -94,6 +94,7 @@
         "url_launcher_platform_interface",
         "url_launcher_web",
         "url_launcher_windows",
+        "web",
         "win32"
       ]
     },
@@ -348,7 +349,7 @@
     },
     {
       "name": "share_plus_platform_interface",
-      "version": "3.4.0",
+      "version": "7.1.0",
       "dependencies": [
         "cross_file",
         "flutter",
@@ -361,7 +362,7 @@
     },
     {
       "name": "mime",
-      "version": "1.0.6",
+      "version": "2.0.0",
       "dependencies": []
     },
     {

@@ -1357,8 +1357,8 @@ class DeviceWrapper extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: isNavBar ? 20 : 40),
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
+      child: Builder(
+        builder: (BuildContext context) {
           if (isIpad) {
             return Center(
               child: SizedBox(
