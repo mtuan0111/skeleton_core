@@ -97,14 +97,15 @@ class CustomSliverAppBar extends StatelessWidget {
                   bg,
                   FlexibleSpaceBar(
                     centerTitle: true,
-                    titlePadding: EdgeInsets.zero,
+                    // titlePadding: EdgeInsets.zero,
+                    expandedTitleScale: 1,
+                    titlePadding: isCollapsed ? EdgeInsets.zero : titlePadding,
                     title: Padding(
-                      padding: titlePadding,
+                      padding: title.isNotNullOrEmpty
+                          ? titlePadding
+                          : EdgeInsets.zero,
                       child: titleWidget != null
-                          ? FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: titleWidget,
-                            )
+                          ? titleWidget
                           : FittedBox(
                               fit: BoxFit.scaleDown,
                               child: Text(

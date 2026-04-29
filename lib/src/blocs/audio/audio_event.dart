@@ -26,3 +26,10 @@ class SetAudioVolume extends AudioEvent {
 
 /// Immediately stops any currently-playing audio.
 class StopAllAudio extends AudioEvent {}
+
+class PlayCustomAudio extends AudioEvent {
+  final String asset;
+  final String? package;
+
+  PlayCustomAudio({required this.asset, this.package});
+}

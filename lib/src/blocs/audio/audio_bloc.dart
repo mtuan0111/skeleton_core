@@ -6,7 +6,9 @@ import 'package:skeleton_core/src/services/audio_services.dart';
 class AudioBloc extends Bloc<AudioEvent, AudioState> {
   final AudioServices _audioServices;
 
-  AudioBloc() : _audioServices = AudioServices(), super(const AudioState()) {
+  AudioBloc()
+      : _audioServices = AudioServices(),
+        super(const AudioState()) {
     on<PlayIntroAudio>(_onPlayIntro);
     on<PlayTapAudio>(_onPlayTap);
     on<PlayCorrectAudio>(_onPlayCorrect);
@@ -18,6 +20,7 @@ class AudioBloc extends Bloc<AudioEvent, AudioState> {
     on<PlayNewTings>(_onPlayNewTings);
     on<SetAudioVolume>(_onSetVolume);
     on<StopAllAudio>(_onStopAll);
+    on<PlayCustomAudio>(_onPlayCustom);
   }
 
   Future<void> _onPlayIntro(
@@ -114,5 +117,14 @@ class AudioBloc extends Bloc<AudioEvent, AudioState> {
     Emitter<AudioState> emitter,
   ) async {
     await _audioServices.stopAll();
+  }
+
+  Future<void> _onPlayCustom(
+    PlayCustomAudio event,
+    Emitter<AudioState> emitter,
+  ) async {
+    emitter(state.copyWith(isPlaying: true, lastPlayedSound: event.asset));
+    await _audioServices.playCustomAudio(event.asset, package: event.package);
+    emitter(state.copyWith(isPlaying: false));
   }
 }

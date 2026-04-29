@@ -47,6 +47,26 @@ class AudioServices {
       mode: PlayerMode.lowLatency,
     );
   }
+
+  Future<void> playCustomAudio(String soundPath, {String? package}) async {
+    if (getVolume == 0) return;
+    final player = AudioPlayer();
+    _activePlayers.add(player);
+
+    player.onPlayerComplete.listen((_) {
+      _activePlayers.remove(player);
+      player.dispose();
+    });
+
+    // In audioplayers, if a package is provided, the path is generally 'packages/package_name/path'
+    final String fullPath = package != null ? 'packages/$package/$soundPath' : soundPath;
+    
+    await player.play(
+      AssetSource(fullPath),
+      volume: getVolume,
+      mode: PlayerMode.lowLatency,
+    );
+  }
   /// Stop any currently-playing audio immediately.
   Future<void> stopAll() async {
     for (final player in _activePlayers) {

@@ -105,3 +105,19 @@ extension StringExtensions on String {
     return camelCaseString;
   }
 }
+
+// add isNotNullOrEmpty for all type
+extension ObjectExtensions<T> on T {
+  bool get isNotNullOrEmpty {
+    if (this is String) {
+      return (this as String).isNotEmpty;
+    }
+    if (this is List) {
+      return (this as List).isNotEmpty;
+    }
+    if (this is Map) {
+      return (this as Map).isNotEmpty;
+    }
+    return this != null;
+  }
+}
