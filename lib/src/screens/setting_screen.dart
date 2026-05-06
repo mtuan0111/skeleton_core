@@ -363,7 +363,7 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget _buildVibrateToggle(BuildContext context, SettingState settingState) {
     return _buildField(
       context,
-      iconData: FontAwesomeIcons.mobileVibrate,
+      iconData: Icons.vibration_rounded,
       title: coreLang(context).vibrate,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,

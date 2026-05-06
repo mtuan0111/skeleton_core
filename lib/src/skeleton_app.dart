@@ -4,6 +4,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:nested/nested.dart';
 import 'package:skeleton_core/skeleton_core.dart';
 
+// export FontAwesomeicons and Fa
+export 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 /// A generic app launcher for skeleton_core-based apps.
 ///
 /// Encapsulates all common boilerplate:
