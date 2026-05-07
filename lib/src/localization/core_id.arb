@@ -402,5 +402,6 @@
     "description": "Kwanzaa greeting in Swahili"
   },
   "optimalMoveHint": "Optimal adalah {optimal} — terus coba!",
-  "yourBestMove": "Terbaik Anda: {count} langkah"
+  "yourBestMove": "Terbaik Anda: {count} langkah",
+  "you": "Anda"
 }

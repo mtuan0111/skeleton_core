@@ -303,5 +303,5 @@ class CoreLocalizationsZh extends CoreLocalizations {
   }
 
   @override
-  String get you => 'You';
+  String get you => '你';
 }

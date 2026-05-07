@@ -402,5 +402,6 @@
     "description": "Kwanzaa greeting in Swahili"
   },
   "optimalMoveHint": "इष्टतम {optimal} है — कोशिश जारी रखें!",
-  "yourBestMove": "आपका सर्वश्रेष्ठ: {count} चालें"
+  "yourBestMove": "आपका सर्वश्रेष्ठ: {count} चालें",
+  "you": "आप"
 }

@@ -307,5 +307,5 @@ class CoreLocalizationsId extends CoreLocalizations {
   }
 
   @override
-  String get you => 'You';
+  String get you => 'Anda';
 }

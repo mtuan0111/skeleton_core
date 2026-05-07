@@ -308,5 +308,5 @@ class CoreLocalizationsEs extends CoreLocalizations {
   }
 
   @override
-  String get you => 'You';
+  String get you => 'Tú';
 }
