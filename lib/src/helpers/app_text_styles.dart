@@ -55,6 +55,11 @@ class AppTextStyles {
         );
   }
 
+  /// Display small bold
+  static TextStyle displaySmallBold(BuildContext context) {
+    return displaySmall(context).copyWith(fontWeight: FontWeight.bold);
+  }
+
   /// Display small with text shadow (for title screens)
   static TextStyle displaySmallWithShadow(BuildContext context) {
     return displaySmall(context).copyWith(
@@ -158,6 +163,10 @@ class AppTextStyles {
         );
   }
 
+  static TextStyle titleSmallBold(BuildContext context) {
+    return titleSmall(context).copyWith(fontWeight: FontWeight.bold);
+  }
+
   // ============================================================================
   // BODY STYLES
   // ============================================================================
@@ -245,7 +254,6 @@ class AppTextStyles {
   static TextStyle labelSmallLight(BuildContext context) {
     return Theme.of(context).textTheme.labelSmall!.copyWith(
           color: Colors.white,
-          fontSize: kFontSizeXS,
         );
   }
 

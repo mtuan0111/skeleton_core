@@ -96,14 +96,17 @@ class _MenuScreenState extends State<MenuScreen> {
             ),
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
+                padding: const EdgeInsets.symmetric(vertical: 5),
                 child: Center(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        widget.title,
-                        style: AppTextStyles.headlineLarge(context),
-                      ),
+                      if (widget.title.isNotNullOrEmpty)
+                        Text(
+                          widget.title,
+                          style: AppTextStyles.headlineLarge(context),
+                        ),
                       if (widget.subtitle != null) ...[
                         const SizedBox(height: 4),
                         Text(

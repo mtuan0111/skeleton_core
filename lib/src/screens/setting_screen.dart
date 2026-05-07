@@ -239,7 +239,12 @@ class _SettingScreenState extends State<SettingScreen> {
       borderRadius: BorderRadius.circular(LayoutConfig.layoutBorderRadius),
       icon: iconData,
       title: title,
-      child: child,
+      child: _buildWrappedInput(
+          context,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: child,
+          )),
     );
   }
 
@@ -251,19 +256,16 @@ class _SettingScreenState extends State<SettingScreen> {
       context,
       iconData: Icons.person,
       title: coreLang(context).name,
-      child: _buildWrappedInput(
-        context,
-        TextFormField(
-          initialValue: userState.model.username,
-          onChanged: (value) {
-            userBloc.add(UsernameChanged(newUsername: value));
-          },
-          style: textStyle,
-          decoration: CustomButtonTheme.of(context)
-                  ?.inputDecorationBuilder
-                  ?.call(context, coreLang(context).anonymous) ??
-              _buildInputDecoration(context, coreLang(context).anonymous),
-        ),
+      child: TextFormField(
+        initialValue: userState.model.username,
+        onChanged: (value) {
+          userBloc.add(UsernameChanged(newUsername: value));
+        },
+        style: textStyle,
+        decoration: CustomButtonTheme.of(context)
+                ?.inputDecorationBuilder
+                ?.call(context, coreLang(context).anonymous) ??
+            _buildInputDecoration(context, coreLang(context).anonymous),
       ),
     );
   }
@@ -286,39 +288,38 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Widget _buildFontSizeSlider(BuildContext context, SettingState settingState) {
-    return _buildField(context,
-        iconData: Icons.format_size,
-        title: coreLang(context).fontSize,
-        child: _buildWrappedInput(
+    return _buildField(
+      context,
+      iconData: Icons.format_size,
+      title: coreLang(context).fontSize,
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildThemedSlider(
+              context,
+              Slider(
+                value: settingState.fontSize.toDouble(),
+                min: 0,
+                max: 10,
+                divisions: 10,
+                onChanged: (val) {
+                  setState(() {
+                    settingBloc.add(ChangedFontSize(fontSize: val.round()));
+                  });
+                },
+              ),
+            ),
+          ),
+          _buildValueChip(
             context,
-            Row(
-              children: [
-                Expanded(
-                  child: _buildThemedSlider(
-                    context,
-                    Slider(
-                      value: settingState.fontSize.toDouble(),
-                      min: 0,
-                      max: 10,
-                      divisions: 10,
-                      onChanged: (val) {
-                        setState(() {
-                          settingBloc
-                              .add(ChangedFontSize(fontSize: val.round()));
-                        });
-                      },
-                    ),
-                  ),
-                ),
-                _buildValueChip(
-                  context,
-                  Text(
-                    settingState.fontSize.toString(),
-                    style: _getSettingValueTextStyle(context),
-                  ),
-                ),
-              ],
-            )));
+            Text(
+              settingState.fontSize.toString(),
+              style: _getSettingValueTextStyle(context),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildVolumeSlider(BuildContext context, SettingState settingState) {
@@ -330,33 +331,31 @@ class _SettingScreenState extends State<SettingScreen> {
               ? FontAwesomeIcons.volumeLow
               : FontAwesomeIcons.volumeOff,
       title: coreLang(context).volume,
-      child: _buildWrappedInput(
-          context,
-          Row(
-            children: [
-              Expanded(
-                child: _buildThemedSlider(
-                  context,
-                  Slider(
-                    value: settingState.vol.toDouble(),
-                    min: 0,
-                    max: 10,
-                    divisions: 10,
-                    onChanged: (val) {
-                      setState(() {
-                        settingBloc.add(ChangedVol(vol: val.round()));
-                      });
-                    },
-                  ),
-                ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildThemedSlider(
+              context,
+              Slider(
+                value: settingState.vol.toDouble(),
+                min: 0,
+                max: 10,
+                divisions: 10,
+                onChanged: (val) {
+                  setState(() {
+                    settingBloc.add(ChangedVol(vol: val.round()));
+                  });
+                },
               ),
-              _buildValueChip(
-                context,
-                Text(settingState.vol.toString(),
-                    style: _getSettingValueTextStyle(context)),
-              ),
-            ],
-          )),
+            ),
+          ),
+          _buildValueChip(
+            context,
+            Text(settingState.vol.toString(),
+                style: _getSettingValueTextStyle(context)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -368,17 +367,15 @@ class _SettingScreenState extends State<SettingScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          _buildWrappedInput(
-              context,
-              _buildThemedSwitch(
-                context,
-                Switch(
-                  value: settingState.isVibrate,
-                  onChanged: (val) {
-                    settingBloc.add(ChangedIsVibrate(isVibrate: val));
-                  },
-                ),
-              )),
+          _buildThemedSwitch(
+            context,
+            Switch(
+              value: settingState.isVibrate,
+              onChanged: (val) {
+                settingBloc.add(ChangedIsVibrate(isVibrate: val));
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -390,36 +387,33 @@ class _SettingScreenState extends State<SettingScreen> {
       context,
       iconData: FontAwesomeIcons.ribbon,
       title: coreLang(context).topScore,
-      child: _buildWrappedInput(
-          context,
-          Row(
-            children: [
-              Expanded(
-                child: _buildThemedSlider(
-                  context,
-                  Slider(
-                    value: settingState.numberOfTopBoard.toDouble(),
-                    min: 20,
-                    max: 100,
-                    divisions: 8,
-                    onChanged: (val) {
-                      setState(() {
-                        settingBloc.add(
-                          ChangedNumberOfTopBoard(
-                              numberOfTopBoard: val.round()),
-                        );
-                      });
-                    },
-                  ),
-                ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildThemedSlider(
+              context,
+              Slider(
+                value: settingState.numberOfTopBoard.toDouble(),
+                min: 20,
+                max: 100,
+                divisions: 8,
+                onChanged: (val) {
+                  setState(() {
+                    settingBloc.add(
+                      ChangedNumberOfTopBoard(numberOfTopBoard: val.round()),
+                    );
+                  });
+                },
               ),
-              _buildValueChip(
-                context,
-                Text(settingState.numberOfTopBoard.toString(),
-                    style: _getSettingValueTextStyle(context)),
-              ),
-            ],
-          )),
+            ),
+          ),
+          _buildValueChip(
+            context,
+            Text(settingState.numberOfTopBoard.toString(),
+                style: _getSettingValueTextStyle(context)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -432,19 +426,17 @@ class _SettingScreenState extends State<SettingScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          _buildWrappedInput(
-              context,
-              _buildThemedSwitch(
-                context,
-                Switch(
-                  value: settingState.onlyShowMyRecorded,
-                  onChanged: (val) {
-                    settingBloc.add(
-                      ChangedOnlyShowMyRecorded(onlyShowMyRecorded: val),
-                    );
-                  },
-                ),
-              )),
+          _buildThemedSwitch(
+            context,
+            Switch(
+              value: settingState.onlyShowMyRecorded,
+              onChanged: (val) {
+                settingBloc.add(
+                  ChangedOnlyShowMyRecorded(onlyShowMyRecorded: val),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -456,30 +448,27 @@ class _SettingScreenState extends State<SettingScreen> {
       context,
       iconData: FontAwesomeIcons.language,
       title: coreLang(context).language,
-      child: _buildWrappedInput(
-          context,
-          DropdownButtonFormField<String>(
-            value: settingState.locale,
-            items: languages.entries
-                .map(
-                  (lang) => DropdownMenuItem<String>(
-                    value: lang.key,
-                    child: Text(
-                      lang.value,
-                    ),
-                  ),
-                )
-                .toList(),
-            onChanged: (val) {
-              if (val != null) {
-                settingBloc.add(ChangedLocale(locale: val));
-              }
-            },
-            decoration:
-                _buildInputDecoration(context, coreLang(context).anonymous),
-            dropdownColor: Theme.of(context).primaryColor,
-            // style: _getSettingTextStyle(context),
-          )),
+      child: DropdownButtonFormField<String>(
+        value: settingState.locale,
+        items: languages.entries
+            .map(
+              (lang) => DropdownMenuItem<String>(
+                value: lang.key,
+                child: Text(
+                  lang.value,
+                ),
+              ),
+            )
+            .toList(),
+        onChanged: (val) {
+          if (val != null) {
+            settingBloc.add(ChangedLocale(locale: val));
+          }
+        },
+        decoration: _buildInputDecoration(context, coreLang(context).anonymous),
+        dropdownColor: Theme.of(context).primaryColor,
+        // style: _getSettingTextStyle(context),
+      ),
     );
   }
 

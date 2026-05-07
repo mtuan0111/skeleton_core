@@ -421,36 +421,6 @@ class RankingSortingWidget extends StatelessWidget {
               ),
             ),
         ],
-        if (isCurrentUser)
-          Positioned(
-            top: -baseSize * 0.1,
-            right: -baseSize * 0.1,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 6,
-                vertical: 2,
-              ),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.secondary,
-                borderRadius: BorderRadius.circular(4),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Text(
-                effectiveUserLabel,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSecondary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 10,
-                ),
-              ),
-            ),
-          ),
         if (resolvedCenterBuilder != null)
           resolvedCenterBuilder(context, position, childElement)
         else
@@ -532,6 +502,36 @@ class RankingSortingWidget extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        if (isCurrentUser)
+          Positioned(
+            top: -baseSize * 0.1,
+            right: -baseSize * 0.1,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 6,
+                vertical: 2,
+              ),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.secondary,
+                borderRadius: BorderRadius.circular(4),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Text(
+                effectiveUserLabel,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSecondary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 10,
+                ),
+              ),
+            ),
           ),
       ],
     );
