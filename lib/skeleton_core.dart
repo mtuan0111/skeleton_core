@@ -88,6 +88,7 @@ export 'src/blocs/tour/tour_state.dart';
 // Widgets
 export 'src/widgets/loading_widget.dart';
 export 'src/widgets/update_checker_wrapper.dart';
+export 'src/widgets/admob_banner.dart';
 
 // Services
 export 'src/services/audio_services.dart';
