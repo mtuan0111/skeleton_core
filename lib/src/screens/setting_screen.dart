@@ -114,22 +114,16 @@ class _SettingScreenState extends State<SettingScreen> {
                           child: Form(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
+                              spacing: kSpaceL,
                               children: [
                                 _buildUsernameField(context, userState),
-                                const SizedBox(height: kSpace2XL),
                                 _buildFontSizeSlider(context, settingState),
-                                const SizedBox(height: kSpaceL),
                                 _buildVolumeSlider(context, settingState),
-                                const SizedBox(height: kSpaceL),
                                 _buildVibrateToggle(context, settingState),
-                                const SizedBox(height: kSpaceL),
                                 _buildTopScoresSlider(context, settingState),
-                                const SizedBox(height: kSpaceL),
                                 _buildOnlyMyRecordsToggle(
                                     context, settingState),
-                                const SizedBox(height: kSpaceL),
                                 _buildLanguageDropdown(context, settingState),
-                                const SizedBox(height: kSpace2XL),
                                 if (widget.additionalSettingsBuilder != null)
                                   ...widget.additionalSettingsBuilder!(
                                     context,
