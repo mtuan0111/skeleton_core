@@ -40,8 +40,16 @@ class SettingScreen extends StatefulWidget {
 
   /// Optional builder to inject app-specific settings widgets
   /// after the common settings. Receives the current [SettingState].
-  final List<Widget> Function(BuildContext context, SettingState settingState)?
-      additionalSettingsBuilder;
+  final List<Widget> Function(
+    BuildContext context,
+    SettingState settingState,
+    Widget Function(
+      BuildContext context, {
+      required String title,
+      required Widget child,
+      IconData? iconData,
+    }) buildField,
+  )? additionalSettingsBuilder;
 
   /// Optional builder to customise the appearance of each setting's container.
   final Widget Function(
@@ -124,7 +132,10 @@ class _SettingScreenState extends State<SettingScreen> {
                                 const SizedBox(height: kSpace2XL),
                                 if (widget.additionalSettingsBuilder != null)
                                   ...widget.additionalSettingsBuilder!(
-                                      context, settingState),
+                                    context,
+                                    settingState,
+                                    _buildField,
+                                  ),
                               ],
                             ),
                           ),

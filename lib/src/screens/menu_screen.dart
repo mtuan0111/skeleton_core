@@ -41,21 +41,7 @@ class MenuScreen extends StatefulWidget {
   State<MenuScreen> createState() => _MenuScreenState();
 }
 
-class _MenuScreenState extends State<MenuScreen> {
-  String? _version;
-
-  @override
-  void initState() {
-    super.initState();
-    PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
-      if (mounted) {
-        setState(() {
-          _version = packageInfo.version;
-        });
-      }
-    });
-  }
-
+class _MenuScreenState extends State<MenuScreen> with AppVersionStateMixin {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<UserBloc, UserState>(
@@ -150,7 +136,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 childCount: widget.menuItems.length,
               ),
             ),
-            if (_version?.isNotEmpty ?? false)
+            if (appVersion?.isNotEmpty ?? false)
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: Container(
@@ -162,7 +148,7 @@ class _MenuScreenState extends State<MenuScreen> {
                     children: [
                       Text("${coreLang(context).version}: ",
                           style: AppTextStyles.bodyLarge(context)),
-                      Text(_version ?? "",
+                      Text(appVersion ?? "",
                           style: AppTextStyles.bodyLarge(context)),
                     ],
                   ),

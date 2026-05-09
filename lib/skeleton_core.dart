@@ -24,6 +24,7 @@ export 'src/helpers/const.dart';
 export 'src/helpers/app_text_styles.dart';
 export 'src/helpers/helper.dart';
 export 'src/helpers/core_lang.dart';
+export 'src/helpers/app_version_state_mixin.dart';
 
 // Localization
 export 'src/localization/core_localizations.dart';
