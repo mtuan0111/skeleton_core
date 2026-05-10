@@ -100,21 +100,29 @@ class CustomSliverAppBar extends StatelessWidget {
                     // titlePadding: EdgeInsets.zero,
                     expandedTitleScale: 1,
                     titlePadding: isCollapsed ? EdgeInsets.zero : titlePadding,
-                    title: Padding(
-                      padding: title.isNotNullOrEmpty
-                          ? titlePadding
-                          : EdgeInsets.zero,
-                      child: titleWidget != null
-                          ? titleWidget
-                          : FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Text(
-                                title!,
-                                textAlign: TextAlign.center,
-                                style: AppTextStyles.displaySmallTitleScreen(
-                                    context),
-                              ),
-                            ),
+                    title: Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: title.isNotNullOrEmpty && isCollapsed
+                                ? titlePadding
+                                : EdgeInsets.zero,
+                            child: titleWidget != null
+                                ? Center(child: titleWidget)
+                                : Center(
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        title!,
+                                        textAlign: TextAlign.center,
+                                        style: AppTextStyles
+                                            .displaySmallTitleScreen(context),
+                                      ),
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
