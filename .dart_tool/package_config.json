@@ -723,9 +723,9 @@
     },
     {
       "name": "win32",
-      "rootUri": "file:///Users/mac/.pub-cache/hosted/pub.dev/win32-5.15.0",
+      "rootUri": "file:///Users/mac/.pub-cache/hosted/pub.dev/win32-6.2.0",
       "packageUri": "lib/",
-      "languageVersion": "3.8"
+      "languageVersion": "3.10"
     },
     {
       "name": "win32_registry",
