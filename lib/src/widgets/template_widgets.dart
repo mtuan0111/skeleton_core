@@ -146,7 +146,7 @@ class RankBadge extends StatelessWidget {
           ),
           Positioned(
             child: Center(
-              child: Icon(
+              child: FaIcon(
                 FontAwesomeIcons.certificate,
                 color: Theme.of(context).primaryColor,
                 size: LayoutConfig.boxSize,
@@ -157,7 +157,7 @@ class RankBadge extends StatelessWidget {
             Positioned(
               top: 0,
               right: 0,
-              child: Icon(
+              child: FaIcon(
                 FontAwesomeIcons.trophy,
                 color: Colors.amber,
                 size: Theme.of(context).textTheme.displaySmall!.fontSize!,
@@ -182,7 +182,7 @@ class RankBadge extends StatelessWidget {
 class CustomWrapContainer extends StatelessWidget {
   final Widget child;
   final String title;
-  final IconData? icon;
+  final dynamic icon;
   final BorderRadius? borderRadius;
   final Color? backgroundColor;
   final String? fontFamily;
@@ -235,11 +235,17 @@ class CustomWrapContainer extends StatelessWidget {
           Row(
             children: [
               if (icon != null) ...[
-                Icon(
-                  icon,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  size: kIconSizeM,
-                ),
+                icon is FaIconData
+                    ? FaIcon(
+                        icon as FaIconData,
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        size: kIconSizeM,
+                      )
+                    : Icon(
+                        icon as IconData?,
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        size: kIconSizeM,
+                      ),
                 const SizedBox(width: kSpaceML),
               ],
               Expanded(
@@ -555,7 +561,7 @@ class CustomElevatedButton extends StatefulWidget {
   final double opacity;
   final String? text;
   final TextStyle? style;
-  final IconData? iconData;
+  final FaIconData? iconData;
   final ButtonSize buttonSize;
   final RoundedWithShapeAt? shapeAt;
   final double? buttonRadius;
@@ -767,8 +773,9 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
     }
 
     if (widget.iconData != null) {
-      iconWidget = Icon(
-        widget.iconData,
+      final FaIconData icon = widget.iconData!;
+      iconWidget = FaIcon(
+        icon,
         color: getColor(context),
         size: getFontSize(context),
       );
@@ -1118,7 +1125,7 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
 class AnimatedButton extends StatefulWidget {
   final BuildContext context;
   final ButtonSize? buttonSize;
-  final IconData? iconData;
+  final FaIconData? iconData;
   final String? text;
   final TextStyle? style;
   final VoidCallback onPressed;
@@ -1206,44 +1213,46 @@ class _AnimatedButtonState extends State<AnimatedButton> {
     Duration duration = const Duration(milliseconds: 200);
     bool isEnable = widget.isEnable ?? true;
 
-    return AnimatedScale(
-      scale: originalScale,
-      duration: Duration(milliseconds: milisecondDuation),
-      child: AnimatedOpacity(
-        opacity: isEnable ? 1 : 0.5,
-        duration: duration,
-        child: CustomElevatedButton(
-          iconData: widget.iconData,
-          text: widget.text,
-          style: widget.style,
-          buttonSize: widget.buttonSize ?? ButtonSize.medium,
-          shapeAt: widget.shapeAt,
-          minWidth: minWidth,
-          minHeight: minHeight,
-          color: widget.color,
-          backgroundColor: widget.backgroundColor,
-          isActive: widget.isActive,
-          textDirection: widget.textDirection,
-          backgroundBuilder: widget.backgroundBuilder,
-          onPressed: () {
-            onPressed();
+    return FittedBox(
+      child: AnimatedScale(
+        scale: originalScale,
+        duration: Duration(milliseconds: milisecondDuation),
+        child: AnimatedOpacity(
+          opacity: isEnable ? 1 : 0.5,
+          duration: duration,
+          child: CustomElevatedButton(
+            iconData: widget.iconData,
+            text: widget.text,
+            style: widget.style,
+            buttonSize: widget.buttonSize ?? ButtonSize.medium,
+            shapeAt: widget.shapeAt,
+            minWidth: minWidth,
+            minHeight: minHeight,
+            color: widget.color,
+            backgroundColor: widget.backgroundColor,
+            isActive: widget.isActive,
+            textDirection: widget.textDirection,
+            backgroundBuilder: widget.backgroundBuilder,
+            onPressed: () {
+              onPressed();
 
-            if (mounted) {
-              setState(() {
-                originalScale = 0.8;
-                milisecondDuation = 1000;
-              });
-            }
-
-            Future.delayed(duration, () {
               if (mounted) {
                 setState(() {
-                  originalScale = 1;
-                  milisecondDuation = 10;
+                  originalScale = 0.8;
+                  milisecondDuation = 1000;
                 });
               }
-            });
-          },
+
+              Future.delayed(duration, () {
+                if (mounted) {
+                  setState(() {
+                    originalScale = 1;
+                    milisecondDuation = 10;
+                  });
+                }
+              });
+            },
+          ),
         ),
       ),
     );
@@ -1386,7 +1395,7 @@ class OptionCard extends StatelessWidget {
   final String description;
   final String? bestTurnsOfUser;
   final int? bestMovePossible;
-  final IconData icon;
+  final dynamic icon;
   final Color color;
   final VoidCallback onTap;
   final Widget Function(BuildContext context, BorderRadius borderRadius)?
@@ -1539,7 +1548,7 @@ class RankingItem extends StatelessWidget {
 
   final String heroTag;
   final int? ranking;
-  final IconData? iconData;
+  final dynamic iconData;
   final String? playedName;
 
   final List<Widget> infoRows;
@@ -1593,7 +1602,9 @@ class RankingItem extends StatelessWidget {
               child: Center(
                 child: RankingSortingWidget(
                   position: 0,
-                  childElement: Icon(iconData),
+                  childElement: iconData is FaIconData
+                      ? FaIcon(iconData as FaIconData)
+                      : Icon(iconData as IconData?),
                   decorationBuilder: decorationBuilder,
                   centerBuilder: centerBuilder,
                   isCurrentUser: isCurrentUser,
@@ -1626,7 +1637,7 @@ class RankingInfoRow extends StatelessWidget {
     this.color,
   });
 
-  final IconData icon;
+  final dynamic icon;
   final String text;
   final TextStyle? style;
   final Color? color;
@@ -1638,11 +1649,17 @@ class RankingInfoRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(
-          icon,
-          size: Theme.of(context).textTheme.titleLarge?.fontSize,
-          color: color ?? Theme.of(context).colorScheme.onPrimary,
-        ),
+        icon is FaIconData
+            ? FaIcon(
+                icon as FaIconData,
+                size: Theme.of(context).textTheme.titleLarge?.fontSize,
+                color: color ?? Theme.of(context).colorScheme.onPrimary,
+              )
+            : Icon(
+                icon as IconData?,
+                size: Theme.of(context).textTheme.titleLarge?.fontSize,
+                color: color ?? Theme.of(context).colorScheme.onPrimary,
+              ),
         const SizedBox(width: kSpaceM),
         Flexible(
           fit: FlexFit.loose,

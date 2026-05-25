@@ -17,7 +17,7 @@ dependencies:
 
   # UI
   cupertino_icons: ^1.0.2
-  font_awesome_flutter: ^10.12.0
+  font_awesome_flutter: ^11.0.0
 
   # State management
   flutter_bloc: ^9.1.1

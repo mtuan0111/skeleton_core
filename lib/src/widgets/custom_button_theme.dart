@@ -14,11 +14,12 @@ typedef SwitchThemeBuilder = SwitchThemeData Function(BuildContext context);
 typedef SegmentedButtonThemeBuilder = SegmentedButtonThemeData Function(
     BuildContext context);
 typedef SettingContainerBuilder = Widget Function(
-    BuildContext context,
-    Widget child,
-    BorderRadius borderRadius,
-    String title,
-    IconData? icon);
+  BuildContext context,
+  Widget child,
+  BorderRadius borderRadius,
+  String title,
+  dynamic icon,
+);
 typedef RankingDecorationBuilder = Widget Function(
     BuildContext context, int position);
 typedef RankingCenterBuilder = Widget Function(

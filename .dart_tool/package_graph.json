@@ -36,16 +36,11 @@
     },
     {
       "name": "win32",
-      "version": "6.2.0",
+      "version": "6.3.0",
       "dependencies": [
-        "code_assets",
-        "crypto",
         "ffi",
         "ffi_leak_tracker",
-        "hooks",
-        "logging",
-        "meta",
-        "native_toolchain_c"
+        "meta"
       ]
     },
     {
@@ -68,7 +63,7 @@
     },
     {
       "name": "reactive_ble_mobile",
-      "version": "5.4.2",
+      "version": "5.5.0",
       "dependencies": [
         "flutter",
         "protobuf",
@@ -100,7 +95,7 @@
     },
     {
       "name": "fluttertoast",
-      "version": "9.0.0",
+      "version": "9.1.0",
       "dependencies": [
         "flutter",
         "flutter_web_plugins",
@@ -194,7 +189,7 @@
     },
     {
       "name": "cloud_firestore",
-      "version": "6.3.0",
+      "version": "6.4.1",
       "dependencies": [
         "cloud_firestore_platform_interface",
         "cloud_firestore_web",
@@ -207,7 +202,7 @@
     },
     {
       "name": "firebase_auth",
-      "version": "6.4.0",
+      "version": "6.5.1",
       "dependencies": [
         "firebase_auth_platform_interface",
         "firebase_auth_web",
@@ -219,7 +214,7 @@
     },
     {
       "name": "firebase_core",
-      "version": "4.7.0",
+      "version": "4.9.0",
       "dependencies": [
         "firebase_core_platform_interface",
         "firebase_core_web",
@@ -258,7 +253,7 @@
     },
     {
       "name": "font_awesome_flutter",
-      "version": "10.12.0",
+      "version": "11.0.0",
       "dependencies": [
         "flutter"
       ]
@@ -299,39 +294,9 @@
       ]
     },
     {
-      "name": "native_toolchain_c",
-      "version": "0.17.6",
-      "dependencies": [
-        "code_assets",
-        "glob",
-        "hooks",
-        "logging",
-        "meta",
-        "pub_semver"
-      ]
-    },
-    {
       "name": "meta",
-      "version": "1.17.0",
+      "version": "1.18.0",
       "dependencies": []
-    },
-    {
-      "name": "logging",
-      "version": "1.3.0",
-      "dependencies": []
-    },
-    {
-      "name": "hooks",
-      "version": "1.0.3",
-      "dependencies": [
-        "collection",
-        "crypto",
-        "logging",
-        "meta",
-        "pub_semver",
-        "record_use",
-        "yaml"
-      ]
     },
     {
       "name": "ffi_leak_tracker",
@@ -344,14 +309,6 @@
       "name": "ffi",
       "version": "2.2.0",
       "dependencies": []
-    },
-    {
-      "name": "code_assets",
-      "version": "1.0.0",
-      "dependencies": [
-        "collection",
-        "hooks"
-      ]
     },
     {
       "name": "webview_flutter",
@@ -384,7 +341,7 @@
     },
     {
       "name": "reactive_ble_platform_interface",
-      "version": "5.4.2",
+      "version": "5.5.0",
       "dependencies": [
         "collection",
         "flutter",
@@ -519,9 +476,10 @@
     },
     {
       "name": "url_launcher_android",
-      "version": "6.3.29",
+      "version": "6.3.30",
       "dependencies": [
         "flutter",
+        "meta",
         "url_launcher_platform_interface"
       ]
     },
@@ -641,7 +599,7 @@
     },
     {
       "name": "firebase_core_platform_interface",
-      "version": "6.0.3",
+      "version": "7.0.1",
       "dependencies": [
         "collection",
         "flutter",
@@ -657,7 +615,7 @@
     },
     {
       "name": "cloud_firestore_web",
-      "version": "5.3.0",
+      "version": "5.4.1",
       "dependencies": [
         "_flutterfire_internals",
         "cloud_firestore_platform_interface",
@@ -670,7 +628,7 @@
     },
     {
       "name": "cloud_firestore_platform_interface",
-      "version": "7.2.0",
+      "version": "8.0.1",
       "dependencies": [
         "_flutterfire_internals",
         "collection",
@@ -682,7 +640,7 @@
     },
     {
       "name": "firebase_auth_web",
-      "version": "6.1.5",
+      "version": "6.2.1",
       "dependencies": [
         "firebase_auth_platform_interface",
         "firebase_core",
@@ -696,7 +654,7 @@
     },
     {
       "name": "firebase_auth_platform_interface",
-      "version": "8.1.9",
+      "version": "9.0.1",
       "dependencies": [
         "_flutterfire_internals",
         "collection",
@@ -709,7 +667,7 @@
     },
     {
       "name": "firebase_core_web",
-      "version": "3.6.0",
+      "version": "3.7.0",
       "dependencies": [
         "firebase_core_platform_interface",
         "flutter",
@@ -787,7 +745,7 @@
     },
     {
       "name": "bloc",
-      "version": "9.2.0",
+      "version": "9.2.1",
       "dependencies": [
         "meta"
       ]
@@ -813,42 +771,6 @@
       "name": "characters",
       "version": "1.4.1",
       "dependencies": []
-    },
-    {
-      "name": "pub_semver",
-      "version": "2.2.0",
-      "dependencies": [
-        "collection"
-      ]
-    },
-    {
-      "name": "glob",
-      "version": "2.1.3",
-      "dependencies": [
-        "async",
-        "collection",
-        "file",
-        "path",
-        "string_scanner"
-      ]
-    },
-    {
-      "name": "yaml",
-      "version": "3.1.3",
-      "dependencies": [
-        "collection",
-        "source_span",
-        "string_scanner"
-      ]
-    },
-    {
-      "name": "record_use",
-      "version": "0.6.0",
-      "dependencies": [
-        "collection",
-        "meta",
-        "pub_semver"
-      ]
     },
     {
       "name": "webview_flutter_platform_interface",
@@ -970,7 +892,7 @@
     },
     {
       "name": "_flutterfire_internals",
-      "version": "1.3.69",
+      "version": "1.3.71",
       "dependencies": [
         "collection",
         "firebase_core",
@@ -1030,14 +952,14 @@
     },
     {
       "name": "objective_c",
-      "version": "9.3.0",
+      "version": "9.4.1",
       "dependencies": [
         "code_assets",
         "collection",
         "ffi",
         "hooks",
         "logging",
-        "native_toolchain_c",
+        "meta",
         "pub_semver"
       ]
     },
@@ -1108,7 +1030,7 @@
     },
     {
       "name": "test_api",
-      "version": "0.7.10",
+      "version": "0.7.11",
       "dependencies": [
         "async",
         "boolean_selector",
@@ -1125,6 +1047,39 @@
       "name": "term_glyph",
       "version": "1.2.2",
       "dependencies": []
+    },
+    {
+      "name": "pub_semver",
+      "version": "2.2.0",
+      "dependencies": [
+        "collection"
+      ]
+    },
+    {
+      "name": "logging",
+      "version": "1.3.0",
+      "dependencies": []
+    },
+    {
+      "name": "hooks",
+      "version": "2.0.0",
+      "dependencies": [
+        "collection",
+        "crypto",
+        "logging",
+        "meta",
+        "pub_semver",
+        "record_use",
+        "yaml"
+      ]
+    },
+    {
+      "name": "code_assets",
+      "version": "1.1.0",
+      "dependencies": [
+        "collection",
+        "hooks"
+      ]
     },
     {
       "name": "package_config",
@@ -1164,6 +1119,24 @@
       "dependencies": [
         "source_span",
         "string_scanner"
+      ]
+    },
+    {
+      "name": "yaml",
+      "version": "3.1.3",
+      "dependencies": [
+        "collection",
+        "source_span",
+        "string_scanner"
+      ]
+    },
+    {
+      "name": "record_use",
+      "version": "0.6.0",
+      "dependencies": [
+        "collection",
+        "meta",
+        "pub_semver"
       ]
     },
     {

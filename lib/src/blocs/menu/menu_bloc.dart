@@ -108,12 +108,12 @@ class MenuItemConfig {
 /// Returns default icons for each menu option.
 /// Games should provide localized text via [buildMenuItems].
 Map<MenuOption, IconData> get defaultMenuIcons => {
-      MenuOption.instantStart: FontAwesomeIcons.bolt,
-      MenuOption.start: FontAwesomeIcons.play,
-      MenuOption.topScore: FontAwesomeIcons.trophy,
-      MenuOption.setting: FontAwesomeIcons.gear,
-      MenuOption.about: FontAwesomeIcons.circleInfo,
-      MenuOption.exit: FontAwesomeIcons.rightFromBracket,
+      MenuOption.instantStart: FontAwesomeIcons.bolt.data,
+      MenuOption.start: FontAwesomeIcons.play.data,
+      MenuOption.topScore: FontAwesomeIcons.trophy.data,
+      MenuOption.setting: FontAwesomeIcons.gear.data,
+      MenuOption.about: FontAwesomeIcons.circleInfo.data,
+      MenuOption.exit: FontAwesomeIcons.rightFromBracket.data,
     };
 
 /// Build menu items with localized text.
@@ -134,7 +134,7 @@ Map<MenuOption, MenuItemConfig> buildMenuItems({
       if (labels.containsKey(option))
         option: MenuItemConfig(
           text: labels[option]!,
-          icon: icons[option] ?? FontAwesomeIcons.question,
+          icon: icons[option] ?? FontAwesomeIcons.question.data,
         ),
   };
 }

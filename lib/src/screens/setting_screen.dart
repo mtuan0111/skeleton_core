@@ -47,7 +47,7 @@ class SettingScreen extends StatefulWidget {
       BuildContext context, {
       required String title,
       required Widget child,
-      IconData? iconData,
+      FaIconData? iconData,
     }) buildField,
   )? additionalSettingsBuilder;
 
@@ -57,7 +57,7 @@ class SettingScreen extends StatefulWidget {
     Widget child,
     BorderRadius borderRadius,
     String title,
-    IconData? iconData,
+    FaIconData? icon,
   )? settingContainerBuilder;
 
   /// Optional callback when the number of top board changes,
@@ -237,7 +237,7 @@ class _SettingScreenState extends State<SettingScreen> {
     BuildContext context, {
     required String title,
     required Widget child,
-    IconData? iconData,
+    FaIconData? iconData,
   }) {
     return _buildSettingContainer(
       context: context,
@@ -259,7 +259,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
     return _buildField(
       context,
-      iconData: Icons.person,
+      iconData: FontAwesomeIcons.user,
       title: coreLang(context).name,
       child: TextFormField(
         initialValue: userState.model.username,
@@ -279,7 +279,7 @@ class _SettingScreenState extends State<SettingScreen> {
     required BuildContext context,
     required Widget child,
     required String title,
-    IconData? icon,
+    dynamic icon,
     BorderRadius? borderRadius,
   }) {
     return CustomWrapContainer(
@@ -295,7 +295,7 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget _buildFontSizeSlider(BuildContext context, SettingState settingState) {
     return _buildField(
       context,
-      iconData: Icons.format_size,
+      iconData: FaIconData(Icons.format_size),
       title: coreLang(context).fontSize,
       child: Row(
         children: [
@@ -367,7 +367,7 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget _buildVibrateToggle(BuildContext context, SettingState settingState) {
     return _buildField(
       context,
-      iconData: Icons.vibration_rounded,
+      iconData: FaIconData(Icons.vibration_rounded),
       title: coreLang(context).vibrate,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -454,7 +454,7 @@ class _SettingScreenState extends State<SettingScreen> {
       iconData: FontAwesomeIcons.language,
       title: coreLang(context).language,
       child: DropdownButtonFormField<String>(
-        value: settingState.locale,
+        initialValue: settingState.locale,
         items: languages.entries
             .map(
               (lang) => DropdownMenuItem<String>(
