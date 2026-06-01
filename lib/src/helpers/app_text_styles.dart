@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:skeleton_core/src/helpers/ui_constants.dart';
 import 'package:skeleton_core/src/helpers/extension.dart';
+import 'package:skeleton_core/src/config/skeleton_config.dart';
 
 /// Centralized TextStyle system for the app
 ///
@@ -21,52 +22,57 @@ import 'package:skeleton_core/src/helpers/extension.dart';
 class AppTextStyles {
   AppTextStyles._(); // Private constructor to prevent instantiation
 
+  static Color _getColor(BuildContext context, Color defaultColor, Color? backgroundColor) {
+    return backgroundColor != null ? backgroundColor.getSmartColor(context) : defaultColor;
+  }
+
   // ============================================================================
   // DISPLAY STYLES - Extra large text for prominent UI elements
   // ============================================================================
 
   /// Extra large display text (for game challenges, main numbers)
   /// Font: Inter, Weight: 900, Italic
-  static TextStyle displayLarge(BuildContext context) {
+  static TextStyle displayLarge(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.displayLarge!.copyWith(
-          fontFamily: "Inter",
+          fontFamily: SkeletonConfig.primaryFontFamily ?? "Inter",
           fontWeight: FontWeight.w900,
           fontStyle: FontStyle.italic,
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor),
         );
   }
 
   /// Medium display text
   /// Font: Inter, Weight: Bold
-  static TextStyle displayMedium(BuildContext context) {
+  static TextStyle displayMedium(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.displayMedium!.copyWith(
-          fontFamily: "Inter",
+          fontFamily: SkeletonConfig.primaryFontFamily ?? "Inter",
           fontWeight: FontWeight.bold,
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor),
         );
   }
 
   /// Small display text (screen titles)
   /// Font: Theme default, Weight: Bold
-  static TextStyle displaySmall(BuildContext context) {
+  static TextStyle displaySmall(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.headlineLarge!.copyWith(
           fontWeight: FontWeight.bold,
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor),
         );
   }
 
   /// Display small bold
-  static TextStyle displaySmallBold(BuildContext context) {
-    return displaySmall(context).copyWith(fontWeight: FontWeight.bold);
+  static TextStyle displaySmallBold(BuildContext context, [Color? backgroundColor]) {
+    return displaySmall(context, backgroundColor).copyWith(fontWeight: FontWeight.bold);
   }
 
   /// Display small with text shadow (for title screens)
-  static TextStyle displaySmallWithShadow(BuildContext context) {
-    return displaySmall(context).copyWith(
+  static TextStyle displaySmallWithShadow(BuildContext context, [Color? backgroundColor]) {
+    final color = _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor);
+    return displaySmall(context, backgroundColor).copyWith(
       shadows: [
         BoxShadow(
           color:
-              Theme.of(context).colorScheme.onPrimary.computeLuminance() > 0.5
+              color.computeLuminance() > 0.5
                   ? Colors.black.withValues(alpha: 0.6)
                   : Colors.white.withValues(alpha: 0.6),
           blurRadius: 10,
@@ -77,18 +83,19 @@ class AppTextStyles {
   }
 
   /// Display small with italic style
-  static TextStyle displaySmallItalic(BuildContext context) {
-    return displaySmall(context).copyWith(fontStyle: FontStyle.italic);
+  static TextStyle displaySmallItalic(BuildContext context, [Color? backgroundColor]) {
+    return displaySmall(context, backgroundColor).copyWith(fontStyle: FontStyle.italic);
   }
 
   /// Display small with shadow and italic (title screen style)
-  static TextStyle displaySmallTitleScreen(BuildContext context) {
-    return displaySmall(context).copyWith(
+  static TextStyle displaySmallTitleScreen(BuildContext context, [Color? backgroundColor]) {
+    final color = _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor);
+    return displaySmall(context, backgroundColor).copyWith(
       fontStyle: FontStyle.italic,
       shadows: [
         BoxShadow(
           color:
-              Theme.of(context).colorScheme.onPrimary.computeLuminance() > 0.5
+              color.computeLuminance() > 0.5
                   ? Colors.black.withValues(alpha: 0.6)
                   : Colors.white.withValues(alpha: 0.6),
           blurRadius: 10,
@@ -102,21 +109,21 @@ class AppTextStyles {
   // HEADLINE STYLES
   // ============================================================================
 
-  static TextStyle headlineLarge(BuildContext context) {
+  static TextStyle headlineLarge(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.headlineLarge!.copyWith(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor),
         );
   }
 
-  static TextStyle headlineMedium(BuildContext context) {
+  static TextStyle headlineMedium(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.headlineMedium!.copyWith(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor),
         );
   }
 
-  static TextStyle headlineSmall(BuildContext context) {
+  static TextStyle headlineSmall(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.headlineSmall!.copyWith(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor),
         );
   }
 
@@ -124,15 +131,15 @@ class AppTextStyles {
   // TITLE STYLES
   // ============================================================================
 
-  static TextStyle titleLarge(BuildContext context) {
+  static TextStyle titleLarge(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.titleLarge!.copyWith(
           fontWeight: FontWeight.w600,
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor),
         );
   }
 
-  static TextStyle titleLargeWithShadow(BuildContext context) {
-    return titleLarge(context).copyWith(
+  static TextStyle titleLargeWithShadow(BuildContext context, [Color? backgroundColor]) {
+    return titleLarge(context, backgroundColor).copyWith(
       shadows: [
         const BoxShadow(
           color: Colors.black54,
@@ -143,95 +150,97 @@ class AppTextStyles {
     );
   }
 
-  static TextStyle titleLargeItalic(BuildContext context) {
-    return titleLarge(context).copyWith(fontStyle: FontStyle.italic);
+  static TextStyle titleLargeItalic(BuildContext context, [Color? backgroundColor]) {
+    return titleLarge(context, backgroundColor).copyWith(fontStyle: FontStyle.italic);
   }
 
-  static TextStyle titleMedium(BuildContext context) {
+  static TextStyle titleMedium(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.titleMedium!.copyWith(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor),
         );
   }
 
-  static TextStyle titleMediumBold(BuildContext context) {
-    return titleMedium(context).copyWith(fontWeight: FontWeight.bold);
+  static TextStyle titleMediumBold(BuildContext context, [Color? backgroundColor]) {
+    return titleMedium(context, backgroundColor).copyWith(fontWeight: FontWeight.bold);
   }
 
-  static TextStyle titleSmall(BuildContext context) {
+  static TextStyle titleSmall(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.titleSmall!.copyWith(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor),
         );
   }
 
-  static TextStyle titleSmallBold(BuildContext context) {
-    return titleSmall(context).copyWith(fontWeight: FontWeight.bold);
+  static TextStyle titleSmallBold(BuildContext context, [Color? backgroundColor]) {
+    return titleSmall(context, backgroundColor).copyWith(fontWeight: FontWeight.bold);
   }
 
   // ============================================================================
   // BODY STYLES
   // ============================================================================
 
-  static TextStyle bodyLarge(BuildContext context) {
+  static TextStyle bodyLarge(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.bodyLarge!.copyWith(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor),
         );
   }
 
-  static TextStyle bodyLargeBold(BuildContext context) {
-    return bodyLarge(context).copyWith(fontWeight: FontWeight.bold);
+  static TextStyle bodyLargeBold(BuildContext context, [Color? backgroundColor]) {
+    return bodyLarge(context, backgroundColor).copyWith(fontWeight: FontWeight.bold);
   }
 
-  static TextStyle bodyLargeMedium(BuildContext context) {
-    return bodyLarge(context).copyWith(fontWeight: FontWeight.w500);
+  static TextStyle bodyLargeMedium(BuildContext context, [Color? backgroundColor]) {
+    return bodyLarge(context, backgroundColor).copyWith(fontWeight: FontWeight.w500);
   }
 
-  static TextStyle bodyLargeOnDialogBackground(BuildContext context) {
+  static TextStyle bodyLargeOnDialogBackground(BuildContext context, [Color? backgroundColor]) {
     return bodyLarge(
       context,
-    ).copyWith(color: Theme.of(context).colorScheme.primary.getDarker());
+      backgroundColor,
+    ).copyWith(color: _getColor(context, Theme.of(context).colorScheme.primary.getDarker(), backgroundColor));
   }
 
-  static TextStyle bodyLargeBoldOnDialogBackground(BuildContext context) {
+  static TextStyle bodyLargeBoldOnDialogBackground(BuildContext context, [Color? backgroundColor]) {
     return bodyLargeBold(
       context,
-    ).copyWith(color: Theme.of(context).colorScheme.primary.getDarker());
+      backgroundColor,
+    ).copyWith(color: _getColor(context, Theme.of(context).colorScheme.primary.getDarker(), backgroundColor));
   }
 
-  static TextStyle bodyMedium(BuildContext context) {
+  static TextStyle bodyMedium(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.bodyMedium!.copyWith(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor),
         );
   }
 
-  static TextStyle bodyMediumBold(BuildContext context) {
-    return bodyMedium(context).copyWith(fontWeight: FontWeight.bold);
+  static TextStyle bodyMediumBold(BuildContext context, [Color? backgroundColor]) {
+    return bodyMedium(context, backgroundColor).copyWith(fontWeight: FontWeight.bold);
   }
 
-  static TextStyle bodyMediumSecondary(BuildContext context) {
+  static TextStyle bodyMediumSecondary(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.bodyMedium!.copyWith(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          color: _getColor(context, Theme.of(context).colorScheme.onSurfaceVariant, backgroundColor),
         );
   }
 
-  static TextStyle bodyMediumLight(BuildContext context) {
-    return bodyMedium(context).copyWith(color: Colors.white70);
+  static TextStyle bodyMediumLight(BuildContext context, [Color? backgroundColor]) {
+    return bodyMedium(context, backgroundColor).copyWith(color: _getColor(context, Colors.white70, backgroundColor));
   }
 
-  static TextStyle bodySmall(BuildContext context) {
+  static TextStyle bodySmall(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.bodySmall!.copyWith(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor),
         );
   }
 
-  static TextStyle bodySmallHint(BuildContext context) {
+  static TextStyle bodySmallHint(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.bodySmall!.copyWith(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          color: _getColor(context, Theme.of(context).colorScheme.onSurfaceVariant, backgroundColor),
         );
   }
 
-  static TextStyle bodySmallSecondary(BuildContext context) {
+  static TextStyle bodySmallSecondary(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.bodySmall!.copyWith(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          color: _getColor(context, Theme.of(context).colorScheme.onSurfaceVariant, backgroundColor),
         );
   }
 
@@ -239,21 +248,21 @@ class AppTextStyles {
   // LABEL STYLES
   // ============================================================================
 
-  static TextStyle labelLarge(BuildContext context) {
+  static TextStyle labelLarge(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.labelLarge!.copyWith(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor),
         );
   }
 
-  static TextStyle labelMedium(BuildContext context) {
+  static TextStyle labelMedium(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.labelMedium!.copyWith(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor),
         );
   }
 
-  static TextStyle labelSmallLight(BuildContext context) {
+  static TextStyle labelSmallLight(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.labelSmall!.copyWith(
-          color: Colors.white,
+          color: _getColor(context, Colors.white, backgroundColor),
         );
   }
 
@@ -261,10 +270,10 @@ class AppTextStyles {
   // SPECIALIZED STYLES
   // ============================================================================
 
-  static TextStyle handwriting(BuildContext context) {
+  static TextStyle handwriting(BuildContext context, [Color? backgroundColor]) {
     return Theme.of(context).textTheme.displaySmall!.copyWith(
-          fontFamily: "Dancing Script",
-          color: Theme.of(context).colorScheme.onPrimary,
+          fontFamily: SkeletonConfig.handwritingFontFamily ?? "Dancing Script",
+          color: _getColor(context, Theme.of(context).colorScheme.onPrimary, backgroundColor),
         );
   }
 
@@ -281,7 +290,7 @@ class AppTextStyles {
   }
 
   /// Get appropriate text style for game challenge display
-  static TextStyle forChallenge(int characterCount, BuildContext context) {
+  static TextStyle forChallenge(int characterCount, BuildContext context, [Color? backgroundColor]) {
     double fontSize;
 
     if (characterCount >= 10) {
@@ -296,30 +305,30 @@ class AppTextStyles {
       fontSize = 50;
     }
 
-    return displayLarge(context).copyWith(fontSize: fontSize);
+    return displayLarge(context, backgroundColor).copyWith(fontSize: fontSize);
   }
 
-  static TextStyle forCountdown(BuildContext context) {
-    return displaySmallItalic(context).copyWith(
+  static TextStyle forCountdown(BuildContext context, [Color? backgroundColor]) {
+    return displaySmallItalic(context, backgroundColor).copyWith(
       fontSize: kFontSize3XL,
       fontWeight: FontWeight.bold,
-      color: Theme.of(context).scaffoldBackgroundColor,
+      color: _getColor(context, Theme.of(context).scaffoldBackgroundColor, backgroundColor),
     );
   }
 
-  static TextStyle forCountdownReady(BuildContext context) {
-    return titleLargeItalic(context).copyWith(
+  static TextStyle forCountdownReady(BuildContext context, [Color? backgroundColor]) {
+    return titleLargeItalic(context, backgroundColor).copyWith(
       fontSize: kFontSizeM,
       fontWeight: FontWeight.bold,
-      color: Theme.of(context).scaffoldBackgroundColor,
+      color: _getColor(context, Theme.of(context).scaffoldBackgroundColor, backgroundColor),
     );
   }
 
-  static TextStyle forCountdownGo(BuildContext context) {
-    return titleLargeItalic(context).copyWith(
+  static TextStyle forCountdownGo(BuildContext context, [Color? backgroundColor]) {
+    return titleLargeItalic(context, backgroundColor).copyWith(
       fontSize: kFontSize2XL,
       fontWeight: FontWeight.bold,
-      color: Theme.of(context).scaffoldBackgroundColor,
+      color: _getColor(context, Theme.of(context).scaffoldBackgroundColor, backgroundColor),
     );
   }
 }
