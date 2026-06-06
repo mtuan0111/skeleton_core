@@ -18,7 +18,7 @@ typedef SettingContainerBuilder = Widget Function(
   Widget child,
   BorderRadius borderRadius,
   String title,
-  dynamic icon,
+  FaIconData? icon,
 );
 typedef RankingDecorationBuilder = Widget Function(
     BuildContext context, int position);

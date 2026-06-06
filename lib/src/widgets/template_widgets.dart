@@ -182,7 +182,7 @@ class RankBadge extends StatelessWidget {
 class CustomWrapContainer extends StatelessWidget {
   final Widget child;
   final String title;
-  final dynamic icon;
+  final FaIconData? icon;
   final BorderRadius? borderRadius;
   final Color? backgroundColor;
   final String? fontFamily;
@@ -1359,26 +1359,20 @@ class DeviceWrapper extends StatelessWidget {
     this.isNavBar = false,
   });
 
+  /// Helper to calculate the actual content width inside the wrapper
+  static double getWrapperWidth(BuildContext context, {bool isNavBar = false}) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double padding = isNavBar ? 40 : 80; // 20 * 2 or 40 * 2
+    final double availableWidth = screenWidth - padding;
+    return availableWidth > 800 ? 800 : availableWidth;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final bool isIpad = screenWidth > 800;
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: isNavBar ? 20 : 40),
-      child: Builder(
-        builder: (BuildContext context) {
-          if (isIpad) {
-            return Center(
-              child: SizedBox(
-                width: 800,
-                child: child,
-              ),
-            );
-          } else {
-            return child;
-          }
-        },
+    return Center(
+      child: SizedBox(
+        width: getWrapperWidth(context, isNavBar: isNavBar),
+        child: child,
       ),
     );
   }
@@ -1395,7 +1389,7 @@ class OptionCard extends StatelessWidget {
   final String description;
   final String? bestTurnsOfUser;
   final int? bestMovePossible;
-  final dynamic icon;
+  final FaIconData? icon;
   final Color color;
   final VoidCallback onTap;
   final Widget Function(BuildContext context, BorderRadius borderRadius)?
@@ -1637,7 +1631,7 @@ class RankingInfoRow extends StatelessWidget {
     this.color,
   });
 
-  final dynamic icon;
+  final FaIconData? icon;
   final String text;
   final TextStyle? style;
   final Color? color;

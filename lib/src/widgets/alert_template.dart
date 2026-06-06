@@ -138,29 +138,31 @@ class AlertTemplate extends StatelessWidget {
                   ),
                 ],
               ),
-              Flexible(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 20),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: resolvedBodyWrapper != null
-                              ? resolvedBodyWrapper(
-                                  context, _buildContent(context))
-                              : CustomElevatedButton(
-                                  backgroundColor: backgroundColor ??
-                                      theme?.dialogBackgroundColor ??
-                                      Theme.of(context).scaffoldBackgroundColor,
-                                  shapeAt: RoundedWithShapeAt.topRight,
-                                  child: _buildContent(context),
-                                ),
-                        ),
-                      ],
+              if (_buildContent(context) != null)
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10, bottom: 20),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: resolvedBodyWrapper != null
+                                ? resolvedBodyWrapper(
+                                    context, _buildContent(context)!)
+                                : CustomElevatedButton(
+                                    backgroundColor: backgroundColor ??
+                                        theme?.dialogBackgroundColor ??
+                                        Theme.of(context)
+                                            .scaffoldBackgroundColor,
+                                    shapeAt: RoundedWithShapeAt.topRight,
+                                    child: _buildContent(context),
+                                  ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -184,7 +186,8 @@ class AlertTemplate extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderContent(BuildContext context) {
+  Widget? _buildHeaderContent(BuildContext context) {
+    if (headerContent == null) return null;
     return Padding(
       padding: const EdgeInsets.all(10.0).copyWith(top: 10),
       child: Column(
@@ -196,7 +199,8 @@ class AlertTemplate extends StatelessWidget {
     );
   }
 
-  Widget _buildBodyContent(BuildContext context) {
+  Widget? _buildBodyContent(BuildContext context) {
+    if (bodyContent == null && message == null) return null;
     return Padding(
       padding: const EdgeInsets.all(10.0).copyWith(top: 10),
       child: Column(
@@ -215,7 +219,8 @@ class AlertTemplate extends StatelessWidget {
     );
   }
 
-  Widget _buildFooterContent(BuildContext context) {
+  Widget? _buildFooterContent(BuildContext context) {
+    if (footerContent == null) return null;
     return Padding(
       padding: const EdgeInsets.all(10.0).copyWith(top: 10),
       child: Column(
@@ -227,13 +232,16 @@ class AlertTemplate extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context) {
+  Widget? _buildContent(BuildContext context) {
+    if (_buildHeaderContent(context) == null &&
+        _buildBodyContent(context) == null &&
+        _buildFooterContent(context) == null) return null;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildHeaderContent(context),
-        _buildBodyContent(context),
-        _buildFooterContent(context),
+        if (_buildHeaderContent(context) != null) _buildHeaderContent(context)!,
+        if (_buildBodyContent(context) != null) _buildBodyContent(context)!,
+        if (_buildFooterContent(context) != null) _buildFooterContent(context)!,
       ],
     );
   }
