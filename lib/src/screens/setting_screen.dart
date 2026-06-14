@@ -11,6 +11,7 @@ import 'package:skeleton_core/src/blocs/user/user_state.dart';
 import 'package:skeleton_core/src/helpers/app_text_styles.dart';
 import 'package:skeleton_core/src/helpers/const.dart';
 import 'package:skeleton_core/src/helpers/core_lang.dart';
+import 'package:skeleton_core/src/helpers/extension.dart';
 import 'package:skeleton_core/src/helpers/ui_constants.dart';
 import 'package:skeleton_core/src/widgets/custom_button_theme.dart';
 import 'package:skeleton_core/src/widgets/custom_sliver_app_bar.dart';
@@ -157,9 +158,33 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   TextStyle _getSettingValueTextStyle(BuildContext context) {
-    final buttonStyle = CustomButtonTheme.of(context)?.textStyle;
-    return (buttonStyle ?? AppTextStyles.bodyLargeBold(context)).copyWith(
+    final themeData = CustomButtonTheme.of(context);
+    final buttonStyle = themeData?.textStyle;
+    final bgColor = themeData?.valueWrapperBackgroundColor;
+
+    final baseStyle = buttonStyle ??
+        (bgColor != null
+            ? AppTextStyles.bodyLargeBold(context, bgColor)
+            : AppTextStyles.bodyLargeBold(context));
+
+    return baseStyle.copyWith(
       fontWeight: FontWeight.bold,
+      color: bgColor != null ? bgColor.getSmartColor(context) : null,
+    );
+  }
+
+  TextStyle _getSettingDropdownTextStyle(BuildContext context) {
+    final themeData = CustomButtonTheme.of(context);
+    final textStyle = themeData?.inputTextStyleBuilder?.call(context);
+    final bgColor = themeData?.inputWrapperBackgroundColor;
+
+    final baseStyle = textStyle ??
+        (bgColor != null
+            ? AppTextStyles.bodyMedium(context, bgColor)
+            : AppTextStyles.bodyMedium(context));
+
+    return baseStyle.copyWith(
+      color: bgColor != null ? bgColor.getSmartColor(context) : null,
     );
   }
 
@@ -461,6 +486,8 @@ class _SettingScreenState extends State<SettingScreen> {
                 value: lang.key,
                 child: Text(
                   lang.value,
+                  style: AppTextStyles.bodyMedium(
+                      context, Theme.of(context).primaryColor),
                 ),
               ),
             )
@@ -472,7 +499,7 @@ class _SettingScreenState extends State<SettingScreen> {
         },
         decoration: _buildInputDecoration(context, coreLang(context).anonymous),
         dropdownColor: Theme.of(context).primaryColor,
-        // style: _getSettingTextStyle(context),
+        style: _getSettingDropdownTextStyle(context),
       ),
     );
   }

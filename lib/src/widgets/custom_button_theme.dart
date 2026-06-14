@@ -72,11 +72,17 @@ class CustomButtonThemeData {
   /// Optional builder to wrap input fields (e.g. TextFormField) in a custom container.
   final InputWrapperBuilder? inputWrapperBuilder;
 
+  /// Optional background color of the input wrapper, used to compute contrasting text colors.
+  final Color? inputWrapperBackgroundColor;
+
   /// Optional builder to customize the InputDecoration for fields.
   final InputDecorationBuilder? inputDecorationBuilder;
 
   /// Optional builder to wrap value displays in a custom container.
   final ValueWrapperBuilder? valueWrapperBuilder;
+
+  /// Optional background color of the value wrapper, used to compute contrasting text colors.
+  final Color? valueWrapperBackgroundColor;
 
   /// Optional builder to provide text style for input fields.
   final InputTextStyleBuilder? inputTextStyleBuilder;
@@ -114,8 +120,10 @@ class CustomButtonThemeData {
     this.dialogTitleShapeAt,
     this.dialogBodyWrapper,
     this.inputWrapperBuilder,
+    this.inputWrapperBackgroundColor,
     this.inputDecorationBuilder,
     this.valueWrapperBuilder,
+    this.valueWrapperBackgroundColor,
     this.inputTextStyleBuilder,
     this.sliderThemeBuilder,
     this.switchThemeBuilder,
@@ -180,8 +188,10 @@ class CustomButtonTheme extends InheritedWidget {
       data.dialogTitleShapeAt != oldWidget.data.dialogTitleShapeAt ||
       data.dialogBodyWrapper != oldWidget.data.dialogBodyWrapper ||
       data.inputWrapperBuilder != oldWidget.data.inputWrapperBuilder ||
+      data.inputWrapperBackgroundColor != oldWidget.data.inputWrapperBackgroundColor ||
       data.inputDecorationBuilder != oldWidget.data.inputDecorationBuilder ||
       data.valueWrapperBuilder != oldWidget.data.valueWrapperBuilder ||
+      data.valueWrapperBackgroundColor != oldWidget.data.valueWrapperBackgroundColor ||
       data.inputTextStyleBuilder != oldWidget.data.inputTextStyleBuilder ||
       data.sliderThemeBuilder != oldWidget.data.sliderThemeBuilder ||
       data.switchThemeBuilder != oldWidget.data.switchThemeBuilder ||
