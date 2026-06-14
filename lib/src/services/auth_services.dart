@@ -4,19 +4,19 @@ import 'package:skeleton_core/src/helpers/preferences_key.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthServices {
-  late final FirebaseAuth? _auth;
+  FirebaseAuth? get _auth {
+    try {
+      return FirebaseAuth.instance;
+    } catch (e) {
+      return null;
+    }
+  }
+  
   SharedPreferences? _prefs;
   bool _isOfflineMode = false;
   String? _offlineUserId;
 
   AuthServices() {
-    try {
-      _auth = FirebaseAuth.instance;
-    } catch (e) {
-      print('⚠️ Firebase Auth not available (offline mode): $e');
-      _auth = null;
-      _isOfflineMode = true;
-    }
     loadSharedPreferences();
   }
 
@@ -40,7 +40,7 @@ class AuthServices {
 
   /// Stream of auth state changes
   Stream<User?> get authStateChanges {
-    if (_isOfflineMode) {
+    if (_isOfflineMode || _auth == null) {
       return Stream.empty();
     }
     return _auth!.authStateChanges();
@@ -60,6 +60,9 @@ class AuthServices {
     }
 
     try {
+      if (_auth == null) {
+        throw FirebaseAuthException(code: 'not-initialized', message: 'Firebase not initialized yet');
+      }
       final userCredential = await _auth!.signInAnonymously();
 
       if (userCredential.user != null) {

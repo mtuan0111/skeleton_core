@@ -31,3 +31,9 @@ class LevelCleared extends UserEvent {
 
   LevelCleared({required this.level});
 }
+
+class ToggleAutomationPlay extends UserEvent {
+  final bool isEnabled;
+
+  ToggleAutomationPlay({required this.isEnabled});
+}

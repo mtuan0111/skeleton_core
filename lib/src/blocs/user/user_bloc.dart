@@ -12,8 +12,18 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<GetGreetingMessage>(_onGetGreetingMessage);
     on<ScheduleDailyReminder>(_onScheduleDailyReminder);
     on<LevelCleared>(_onLevelCleared);
+    on<ToggleAutomationPlay>(_onToggleAutomationPlay);
 
     add(AttempGettingUser());
+  }
+
+  void _onToggleAutomationPlay(
+    ToggleAutomationPlay event,
+    Emitter<UserState> emitter,
+  ) {
+    emitter(state.copyWith(
+      model: state.model.copyWith(isAutomationPlay: event.isEnabled),
+    ));
   }
 
   Future<void> _onAttempGettingUser(
