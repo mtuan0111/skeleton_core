@@ -238,14 +238,16 @@ class CustomWrapContainer extends StatelessWidget {
                 icon is FaIconData
                     ? FaIcon(
                         icon as FaIconData,
-                        color: (backgroundColor ?? Theme.of(context).primaryColor)
-                            .getSmartColor(context),
+                        color:
+                            (backgroundColor ?? Theme.of(context).primaryColor)
+                                .getSmartColor(context),
                         size: kIconSizeM,
                       )
                     : Icon(
                         icon as IconData?,
-                        color: (backgroundColor ?? Theme.of(context).primaryColor)
-                            .getSmartColor(context),
+                        color:
+                            (backgroundColor ?? Theme.of(context).primaryColor)
+                                .getSmartColor(context),
                         size: kIconSizeM,
                       ),
                 const SizedBox(width: kSpaceML),
@@ -253,12 +255,10 @@ class CustomWrapContainer extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: AppTextStyles.titleLarge(
-                          context, backgroundColor ?? Theme.of(context).primaryColor)
+                  style: AppTextStyles.titleLarge(context,
+                          backgroundColor ?? Theme.of(context).primaryColor)
                       .copyWith(
                     fontSize: kFontSizeL,
-                    color: (backgroundColor ?? Theme.of(context).primaryColor)
-                        .getSmartColor(context),
                     fontFamily: fontFamily,
                   ),
                 ),

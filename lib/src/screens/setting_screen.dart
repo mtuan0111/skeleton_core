@@ -173,7 +173,7 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  TextStyle _getSettingDropdownTextStyle(BuildContext context) {
+  TextStyle _getInputTextStyle(BuildContext context) {
     final themeData = CustomButtonTheme.of(context);
     final textStyle = themeData?.inputTextStyleBuilder?.call(context);
     final bgColor = themeData?.inputWrapperBackgroundColor;
@@ -279,8 +279,7 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Widget _buildUsernameField(BuildContext context, UserState userState) {
-    final textStyle =
-        CustomButtonTheme.of(context)?.inputTextStyleBuilder?.call(context);
+    final textStyle = _getInputTextStyle(context);
 
     return _buildField(
       context,
@@ -499,7 +498,7 @@ class _SettingScreenState extends State<SettingScreen> {
         },
         decoration: _buildInputDecoration(context, coreLang(context).anonymous),
         dropdownColor: Theme.of(context).primaryColor,
-        style: _getSettingDropdownTextStyle(context),
+        style: _getInputTextStyle(context),
       ),
     );
   }

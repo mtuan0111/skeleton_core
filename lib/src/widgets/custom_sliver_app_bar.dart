@@ -29,6 +29,9 @@ class CustomSliverAppBar extends StatelessWidget {
   /// Custom leading widget. Overrides default back button if provided.
   final Widget? leading;
 
+  // trailing
+  final Widget? trailing;
+
   /// List of action widgets to display on the trailing side.
   final List<Widget>? actions;
 
@@ -51,6 +54,7 @@ class CustomSliverAppBar extends StatelessWidget {
     this.expandedHeight = 100,
     this.opacity = 1.0,
     this.leading,
+    this.trailing,
     this.actions,
     this.titlePadding = const EdgeInsets.all(kPaddingM),
     this.backgroundBuilder,

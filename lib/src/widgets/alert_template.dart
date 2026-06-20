@@ -27,6 +27,7 @@ class AlertTemplate extends StatelessWidget {
   final Widget Function(BuildContext context, Widget child)? bodyWrapper;
   final RoundedWithShapeAt? titleShapeAt;
   final double? titleRadius;
+  final bool showBlur;
 
   const AlertTemplate({
     super.key,
@@ -46,6 +47,7 @@ class AlertTemplate extends StatelessWidget {
     this.bodyWrapper,
     this.titleShapeAt = RoundedWithShapeAt.topLeft,
     this.titleRadius,
+    this.showBlur = true,
   });
 
   Widget _buildPossitiveButton(BuildContext context) {
@@ -86,104 +88,141 @@ class AlertTemplate extends StatelessWidget {
 
     final resolvedBodyWrapper = bodyWrapper ?? theme?.dialogBodyWrapper;
 
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
-      child: Dialog(
-        backgroundColor: resolvedBackgroundColor,
-        child: DeviceWrapper(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        Opacity(
-                          opacity: 1,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: CustomElevatedButton(
-                                  text: title,
-                                  buttonSize: ButtonSize.small,
-                                  shapeAt: resolvedTitleShapeAt,
-                                  buttonRadius: titleRadius,
-                                  color: resolvedTitleBackgroundColor != null
-                                      ? resolvedTitleBackgroundColor
-                                          .getSmartColor(context)
-                                      : Theme.of(context).colorScheme.onPrimary,
-                                  backgroundColor: resolvedTitleBackgroundColor,
-                                  gradient: titleGradient ??
-                                      (resolvedTitleBackgroundColor == null &&
-                                              theme?.dialogTitleBackgroundColor ==
-                                                  null
-                                          ? LinearGradient(
-                                              begin: Alignment.topCenter,
-                                              end: Alignment.bottomCenter,
-                                              colors: [
-                                                Theme.of(context).primaryColor,
-                                                Theme.of(context)
-                                                    .secondaryHeaderColor,
-                                              ],
-                                            )
-                                          : null),
-                                ),
+    final resolvedBodyBgColor = backgroundColor ??
+        theme?.dialogBackgroundColor ??
+        Theme.of(context).scaffoldBackgroundColor;
+
+    final smartTextColor = (resolvedBodyBgColor == Colors.transparent || resolvedBodyBgColor.a == 0)
+        ? Colors.white.getSmartColor(context)
+        : resolvedBodyBgColor.getSmartColor(context);
+
+    final dialogWidget = Dialog(
+      backgroundColor: resolvedBackgroundColor,
+      child: DeviceWrapper(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Opacity(
+                        opacity: 1,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: CustomElevatedButton(
+                                text: title,
+                                buttonSize: ButtonSize.small,
+                                shapeAt: resolvedTitleShapeAt,
+                                buttonRadius: titleRadius,
+                                color: resolvedTitleBackgroundColor != null
+                                    ? resolvedTitleBackgroundColor
+                                        .getSmartColor(context)
+                                    : Theme.of(context).colorScheme.onPrimary,
+                                backgroundColor: resolvedTitleBackgroundColor,
+                                gradient: titleGradient ??
+                                    (resolvedTitleBackgroundColor == null &&
+                                            theme?.dialogTitleBackgroundColor ==
+                                                null
+                                        ? LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Theme.of(context).primaryColor,
+                                              Theme.of(context)
+                                                  .secondaryHeaderColor,
+                                            ],
+                                          )
+                                        : null),
                               ),
-                            ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (_buildContent(context) != null)
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10, bottom: 20),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: DefaultTextStyle(
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: smartTextColor) ?? TextStyle(color: smartTextColor),
+                            child: resolvedBodyWrapper != null
+                                ? resolvedBodyWrapper(
+                                    context, _buildContent(context)!)
+                                : CustomElevatedButton(
+                                    backgroundColor: resolvedBodyBgColor,
+                                    color: smartTextColor,
+                                    shapeAt: RoundedWithShapeAt.topRight,
+                                    child: _buildContent(context),
+                                  ),
                           ),
                         ),
                       ],
                     ),
                   ),
+                ),
+              ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  if (negativeButtonLabel != null)
+                    Expanded(child: _buildNegativeButton(context)),
+                  if (negativeButtonLabel != null &&
+                      possitiveButtonLabel != null)
+                    const SizedBox(width: kSpaceM),
+                  if (possitiveButtonLabel != null)
+                    Expanded(child: _buildPossitiveButton(context)),
                 ],
               ),
-              if (_buildContent(context) != null)
-                Flexible(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10, bottom: 20),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: resolvedBodyWrapper != null
-                                ? resolvedBodyWrapper(
-                                    context, _buildContent(context)!)
-                                : CustomElevatedButton(
-                                    backgroundColor: backgroundColor ??
-                                        theme?.dialogBackgroundColor ??
-                                        Theme.of(context)
-                                            .scaffoldBackgroundColor,
-                                    shapeAt: RoundedWithShapeAt.topRight,
-                                    child: _buildContent(context),
-                                  ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    if (negativeButtonLabel != null)
-                      Expanded(child: _buildNegativeButton(context)),
-                    if (negativeButtonLabel != null &&
-                        possitiveButtonLabel != null)
-                      const SizedBox(width: kSpaceM),
-                    if (possitiveButtonLabel != null)
-                      Expanded(child: _buildPossitiveButton(context)),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
+
+    final route = ModalRoute.of(context);
+    Widget animatedDialog = dialogWidget;
+    if (route != null && route.animation != null) {
+      animatedDialog = FadeTransition(
+        opacity: CurvedAnimation(
+          parent: route.animation!,
+          curve: Curves.easeInOut,
+          reverseCurve: Curves.easeInOut,
+        ),
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.75, end: 1.0).animate(
+            CurvedAnimation(
+              parent: route.animation!,
+              curve: Curves.easeOutBack,
+              reverseCurve: Curves.easeInBack,
+            ),
+          ),
+          child: dialogWidget,
+        ),
+      );
+    }
+
+    if (showBlur) {
+      return BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+        child: animatedDialog,
+      );
+    }
+
+    return animatedDialog;
   }
 
   Widget? _buildHeaderContent(BuildContext context) {
@@ -201,6 +240,14 @@ class AlertTemplate extends StatelessWidget {
 
   Widget? _buildBodyContent(BuildContext context) {
     if (bodyContent == null && message == null) return null;
+    final theme = CustomButtonTheme.of(context);
+    final resolvedBodyBgColor = backgroundColor ??
+        theme?.dialogBackgroundColor ??
+        Theme.of(context).scaffoldBackgroundColor;
+    final smartTextColor = (resolvedBodyBgColor == Colors.transparent || resolvedBodyBgColor.a == 0)
+        ? Colors.white.getSmartColor(context)
+        : resolvedBodyBgColor.getSmartColor(context);
+
     return Padding(
       padding: const EdgeInsets.all(10.0).copyWith(top: 10),
       child: Column(
@@ -211,8 +258,8 @@ class AlertTemplate extends StatelessWidget {
             Text(
               message!,
               style: messageStyle ??
-                  AppTextStyles.withColor(AppTextStyles.bodyLargeBold(context),
-                      Theme.of(context).colorScheme.primary.getDarker()),
+                  AppTextStyles.withColor(
+                      AppTextStyles.bodyLargeBold(context), smartTextColor),
             ),
         ],
       ),
