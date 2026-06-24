@@ -13,6 +13,14 @@ enum TourStep {
   leaderboard, // Point to leaderboard on main menu
   settings, // Point to settings on main menu
   about, // Point to about on main menu (history and rules)
+  
+  // Generic game tutorial steps
+  gameTutorialStep1,
+  gameTutorialStep2,
+  gameTutorialWaiting,
+  gameTutorialStep3,
+  gameTutorialStep4,
+  gameTutorialStep5,
 }
 
 class TourState {

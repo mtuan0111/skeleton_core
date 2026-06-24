@@ -1666,7 +1666,8 @@ class RankingInfoRow extends StatelessWidget {
           fit: FlexFit.loose,
           child: Text(
             text,
-            style: (style ?? AppTextStyles.bodySmall(context)),
+            style: (style ?? AppTextStyles.bodySmall(context))
+                .copyWith(color: color),
             softWrap: true,
           ),
         ),
