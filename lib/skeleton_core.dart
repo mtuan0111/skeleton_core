@@ -7,6 +7,10 @@ library skeleton_core;
 // App launcher
 export 'src/skeleton_app.dart';
 
+// Package
+export 'package:font_awesome_flutter/font_awesome_flutter.dart';
+export 'package:flutter_bloc/flutter_bloc.dart';
+
 // Config
 export 'src/config/env_config.dart';
 export 'src/config/theme_config.dart';
