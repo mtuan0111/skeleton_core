@@ -192,7 +192,7 @@
     },
     {
       "name": "firebase_auth",
-      "version": "6.5.1",
+      "version": "6.5.4",
       "dependencies": [
         "firebase_auth_platform_interface",
         "firebase_auth_web",
@@ -610,7 +610,7 @@
     },
     {
       "name": "firebase_auth_web",
-      "version": "6.2.1",
+      "version": "6.2.3",
       "dependencies": [
         "firebase_auth_platform_interface",
         "firebase_core",
@@ -624,7 +624,7 @@
     },
     {
       "name": "firebase_auth_platform_interface",
-      "version": "9.0.1",
+      "version": "9.0.3",
       "dependencies": [
         "_flutterfire_internals",
         "collection",

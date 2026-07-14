@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:skeleton_core/skeleton_core.dart';
@@ -27,6 +28,7 @@ class UpdateNoticeDialog extends StatelessWidget {
   }) : super(key: key);
 
   String get _storeUrl {
+    if (kIsWeb) return '';
     if (Platform.isAndroid) {
       final packageName =
           dotenv.env['ANDROID_PACKAGE_NAME'] ?? 'com.example.app';

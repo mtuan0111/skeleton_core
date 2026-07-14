@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:skeleton_core/src/models/app_version_model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -19,6 +20,7 @@ class AppVersionServices {
   }
 
   String getCurrentPlatform() {
+    if (kIsWeb) return 'web';
     if (Platform.isAndroid) {
       return 'android';
     } else if (Platform.isIOS) {

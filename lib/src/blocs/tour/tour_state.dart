@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 /// Tour steps in order - following app navigation flow.
 /// Apps can define their own tour steps by extending or replacing this enum.
 enum TourStep {
@@ -58,7 +58,7 @@ class TourState {
 
   /// Check if this is the last step
   bool get isLastStep {
-    if (Platform.isIOS) {
+    if (!kIsWeb && Platform.isIOS) {
       // On iOS, settings is the last step (skip combat steps)
       return currentTourStep == TourStep.settings;
     }

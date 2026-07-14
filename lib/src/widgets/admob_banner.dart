@@ -1,5 +1,5 @@
 import 'dart:io' show Platform;
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -147,7 +147,7 @@ class _AdMobBannerState extends State<AdMobBanner> {
   /// Resolves the effective ad unit ID: test IDs take priority.
   String get _effectiveAdUnitId {
     if (_useTestAds) {
-      return Platform.isIOS
+      return !kIsWeb && Platform.isIOS
           ? BaseAdMobConfig.iosTestBannerId
           : BaseAdMobConfig.androidTestBannerId;
     }
@@ -161,6 +161,11 @@ class _AdMobBannerState extends State<AdMobBanner> {
   }
 
   void _loadAd() {
+    if (kIsWeb) {
+      debugPrint('📱 [AdMob] Skipping banner ad load on web');
+      return;
+    }
+    
     final adUnitId = _effectiveAdUnitId;
     debugPrint(
         '📱 [AdMob] Loading banner — ID: $adUnitId (test: $_useTestAds)');
@@ -189,7 +194,9 @@ class _AdMobBannerState extends State<AdMobBanner> {
 
   @override
   void dispose() {
-    _bannerAd?.dispose();
+    if (!kIsWeb) {
+      _bannerAd?.dispose();
+    }
     super.dispose();
   }
 

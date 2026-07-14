@@ -125,7 +125,13 @@ class VibrationServices {
       return;
     }
 
-    await Vibration.vibrate(duration: duration);
+    try {
+      if (await Vibration.hasVibrator() ?? false) {
+        await Vibration.vibrate(duration: duration);
+      }
+    } catch (_) {
+      // Ignore vibration errors (e.g., in test environments or on unsupported platforms)
+    }
   }
 
   Future<void> multipleVibrate(

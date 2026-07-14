@@ -171,19 +171,19 @@
     },
     {
       "name": "firebase_auth",
-      "rootUri": "file:///Users/mac/.pub-cache/hosted/pub.dev/firebase_auth-6.5.1",
+      "rootUri": "file:///Users/mac/.pub-cache/hosted/pub.dev/firebase_auth-6.5.4",
       "packageUri": "lib/",
       "languageVersion": "3.6"
     },
     {
       "name": "firebase_auth_platform_interface",
-      "rootUri": "file:///Users/mac/.pub-cache/hosted/pub.dev/firebase_auth_platform_interface-9.0.1",
+      "rootUri": "file:///Users/mac/.pub-cache/hosted/pub.dev/firebase_auth_platform_interface-9.0.3",
       "packageUri": "lib/",
       "languageVersion": "3.6"
     },
     {
       "name": "firebase_auth_web",
-      "rootUri": "file:///Users/mac/.pub-cache/hosted/pub.dev/firebase_auth_web-6.2.1",
+      "rootUri": "file:///Users/mac/.pub-cache/hosted/pub.dev/firebase_auth_web-6.2.3",
       "packageUri": "lib/",
       "languageVersion": "3.6"
     },

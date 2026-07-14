@@ -1220,46 +1220,44 @@ class _AnimatedButtonState extends State<AnimatedButton> {
     Duration duration = const Duration(milliseconds: 200);
     bool isEnable = widget.isEnable ?? true;
 
-    return FittedBox(
-      child: AnimatedScale(
-        scale: originalScale,
-        duration: Duration(milliseconds: milisecondDuation),
-        child: AnimatedOpacity(
-          opacity: isEnable ? 1 : 0.5,
-          duration: duration,
-          child: CustomElevatedButton(
-            iconData: widget.iconData,
-            text: widget.text,
-            style: widget.style,
-            buttonSize: widget.buttonSize ?? ButtonSize.medium,
-            shapeAt: widget.shapeAt,
-            minWidth: minWidth,
-            minHeight: minHeight,
-            color: widget.color,
-            backgroundColor: widget.backgroundColor,
-            isActive: widget.isActive,
-            textDirection: widget.textDirection,
-            backgroundBuilder: widget.backgroundBuilder,
-            onPressed: () {
-              onPressed();
+    return AnimatedScale(
+      scale: originalScale,
+      duration: Duration(milliseconds: milisecondDuation),
+      child: AnimatedOpacity(
+        opacity: isEnable ? 1 : 0.5,
+        duration: duration,
+        child: CustomElevatedButton(
+          iconData: widget.iconData,
+          text: widget.text,
+          style: widget.style,
+          buttonSize: widget.buttonSize ?? ButtonSize.medium,
+          shapeAt: widget.shapeAt,
+          minWidth: minWidth,
+          minHeight: minHeight,
+          color: widget.color,
+          backgroundColor: widget.backgroundColor,
+          isActive: widget.isActive,
+          textDirection: widget.textDirection,
+          backgroundBuilder: widget.backgroundBuilder,
+          onPressed: () {
+            onPressed();
 
+            if (mounted) {
+              setState(() {
+                originalScale = 0.8;
+                milisecondDuation = 1000;
+              });
+            }
+
+            Future.delayed(duration, () {
               if (mounted) {
                 setState(() {
-                  originalScale = 0.8;
-                  milisecondDuation = 1000;
+                  originalScale = 1;
+                  milisecondDuation = 10;
                 });
               }
-
-              Future.delayed(duration, () {
-                if (mounted) {
-                  setState(() {
-                    originalScale = 1;
-                    milisecondDuation = 10;
-                  });
-                }
-              });
-            },
-          ),
+            });
+          },
         ),
       ),
     );
