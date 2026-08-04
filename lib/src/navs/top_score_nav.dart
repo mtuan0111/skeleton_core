@@ -30,12 +30,19 @@ class TopScoreNav<TRecord, TPeriod> extends StatefulWidget {
   /// Called when the root page is removed from the navigation stack.
   final VoidCallback? onRootPageRemoved;
 
+  /// Optional hook to customize the page transition used for each screen
+  /// instead of the default [MaterialPage]. Omit this to keep today's stock
+  /// platform transition — every existing consumer of [TopScoreNav] behaves
+  /// identically whether or not it's provided.
+  final Page<dynamic> Function(Widget child, {LocalKey? key})? pageBuilder;
+
   const TopScoreNav({
     super.key,
     required this.rootScreenBuilder,
     required this.detailScreenBuilder,
     required this.titleBuilder,
     this.onRootPageRemoved,
+    this.pageBuilder,
   });
 
   @override
@@ -50,6 +57,11 @@ class _TopScoreNavState<TRecord, TPeriod>
     return BlocBuilder<TopScoreNavCubit<TRecord, TPeriod>, TopScoreNavState>(
       builder: (context, state) {
         final title = widget.titleBuilder(context);
+        Page<dynamic> buildPage(Widget child, {LocalKey? key}) {
+          return widget.pageBuilder?.call(child, key: key) ??
+              MaterialPage(key: key, child: child);
+        }
+
         return Navigator(
           onDidRemovePage: (page) async {
             if (widget.onRootPageRemoved != null) {
@@ -59,13 +71,9 @@ class _TopScoreNavState<TRecord, TPeriod>
             }
           },
           pages: [
-            MaterialPage(
-              child: widget.rootScreenBuilder(context, title),
-            ),
+            buildPage(widget.rootScreenBuilder(context, title)),
             if (state is TopScoreDetailState<TRecord, TPeriod>)
-              MaterialPage(
-                child: widget.detailScreenBuilder(context, title, state),
-              ),
+              buildPage(widget.detailScreenBuilder(context, title, state)),
           ],
         );
       },

@@ -99,98 +99,100 @@ class AlertTemplate extends StatelessWidget {
 
     final dialogWidget = Dialog(
       backgroundColor: resolvedBackgroundColor,
-      child: IntrinsicWidth(
+      child: DeviceWrapper(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: Stack(
-                  children: [
-                    Opacity(
-                      opacity: 1,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: CustomElevatedButton(
-                              text: title,
-                              buttonSize: ButtonSize.small,
-                              shapeAt: resolvedTitleShapeAt,
-                              buttonRadius: titleRadius,
-                              color: resolvedTitleBackgroundColor != null
-                                  ? resolvedTitleBackgroundColor
-                                      .getSmartColor(context)
-                                  : Theme.of(context).colorScheme.onPrimary,
-                              backgroundColor: resolvedTitleBackgroundColor,
-                              gradient: titleGradient ??
-                                  (resolvedTitleBackgroundColor == null &&
-                                          theme?.dialogTitleBackgroundColor ==
-                                              null
-                                      ? LinearGradient(
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
-                                          colors: [
-                                            Theme.of(context).primaryColor,
-                                            Theme.of(context)
-                                                .secondaryHeaderColor,
-                                          ],
-                                        )
-                                      : null),
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Opacity(
+                        opacity: 1,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: CustomElevatedButton(
+                                text: title,
+                                buttonSize: ButtonSize.small,
+                                shapeAt: resolvedTitleShapeAt,
+                                buttonRadius: titleRadius,
+                                color: resolvedTitleBackgroundColor != null
+                                    ? resolvedTitleBackgroundColor
+                                        .getSmartColor(context)
+                                    : Theme.of(context).colorScheme.onPrimary,
+                                backgroundColor: resolvedTitleBackgroundColor,
+                                gradient: titleGradient ??
+                                    (resolvedTitleBackgroundColor == null &&
+                                            theme?.dialogTitleBackgroundColor ==
+                                                null
+                                        ? LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Theme.of(context).primaryColor,
+                                              Theme.of(context)
+                                                  .secondaryHeaderColor,
+                                            ],
+                                          )
+                                        : null),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-          if (_buildContent(context) != null)
-            Flexible(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 20),
-                  child: DefaultTextStyle(
-                    style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: smartTextColor) ??
-                        TextStyle(color: smartTextColor),
-                    child: resolvedBodyWrapper != null
-                        ? resolvedBodyWrapper(context, _buildContent(context)!)
-                        : CustomElevatedButton(
-                            backgroundColor: resolvedBodyBgColor,
-                            color: smartTextColor,
-                            shapeAt: RoundedWithShapeAt.topRight,
-                            child: _buildContent(context),
-                          ),
+              ],
+            ),
+            if (_buildContent(context) != null)
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10, bottom: 20),
+                    child: DefaultTextStyle(
+                      style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: smartTextColor) ??
+                          TextStyle(color: smartTextColor),
+                      child: resolvedBodyWrapper != null
+                          ? resolvedBodyWrapper(
+                              context, _buildContent(context)!)
+                          : CustomElevatedButton(
+                              backgroundColor: resolvedBodyBgColor,
+                              color: smartTextColor,
+                              shapeAt: RoundedWithShapeAt.topRight,
+                              child: _buildContent(context),
+                            ),
+                    ),
                   ),
                 ),
               ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  if (negativeButtonLabel != null)
+                    Expanded(child: _buildNegativeButton(context)),
+                  if (negativeButtonLabel != null &&
+                      possitiveButtonLabel != null)
+                    const SizedBox(width: kSpaceM),
+                  if (possitiveButtonLabel != null)
+                    Expanded(child: _buildPossitiveButton(context)),
+                ],
+              ),
             ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                if (negativeButtonLabel != null)
-                  Expanded(child: _buildNegativeButton(context)),
-                if (negativeButtonLabel != null && possitiveButtonLabel != null)
-                  const SizedBox(width: kSpaceM),
-                if (possitiveButtonLabel != null)
-                  Expanded(child: _buildPossitiveButton(context)),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
 
     final route = ModalRoute.of(context);
     Widget animatedDialog = dialogWidget;

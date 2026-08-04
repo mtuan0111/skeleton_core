@@ -33,6 +33,12 @@ class MenuNav extends StatefulWidget {
   final Map<MenuOption, Map<String, dynamic>> Function(BuildContext context)?
       menuArrayBuilder;
 
+  /// Optional hook to customize the page transition used for each screen
+  /// (fade, slide, or anything else) instead of the default [MaterialPage].
+  /// Omit this to keep today's stock platform transition — every existing
+  /// consumer of [MenuNav] behaves identically whether or not it's provided.
+  final Page<dynamic> Function(Widget child, {LocalKey? key})? pageBuilder;
+
   const MenuNav({
     super.key,
     required this.menuScreenBuilder,
@@ -41,6 +47,7 @@ class MenuNav extends StatefulWidget {
     this.settingScreenBuilder,
     this.aboutScreenBuilder,
     this.menuArrayBuilder,
+    this.pageBuilder,
   });
 
   @override
@@ -54,6 +61,11 @@ class _MenuNavState extends State<MenuNav> {
       return array[option]?['text'] ?? '';
     }
     return '';
+  }
+
+  Page<dynamic> _page(Widget child, {LocalKey? key}) {
+    return widget.pageBuilder?.call(child, key: key) ??
+        MaterialPage(key: key, child: child);
   }
 
   @override
@@ -88,34 +100,24 @@ class _MenuNavState extends State<MenuNav> {
                   onDidRemovePage: (page) =>
                       context.read<MenuBloc>().add(ShowMenu()),
                   pages: [
-                    MaterialPage(
-                      child: widget.menuScreenBuilder(context),
-                    ),
+                    _page(widget.menuScreenBuilder(context)),
                     if ((navState is Play || navState is InstantStart) &&
                         widget.playScreenBuilder != null)
-                      MaterialPage(
-                        child: widget.playScreenBuilder!(context, navState),
-                      ),
+                      _page(widget.playScreenBuilder!(context, navState)),
                     if (navState is TopScore &&
                         widget.topScoreScreenBuilder != null)
-                      MaterialPage(
-                        child: widget.topScoreScreenBuilder!(context),
-                      ),
+                      _page(widget.topScoreScreenBuilder!(context)),
                     if (navState is Setting &&
                         widget.settingScreenBuilder != null)
-                      MaterialPage(
-                        child: widget.settingScreenBuilder!(
-                          context,
-                          _getMenuTitle(context, MenuOption.setting),
-                        ),
-                      ),
+                      _page(widget.settingScreenBuilder!(
+                        context,
+                        _getMenuTitle(context, MenuOption.setting),
+                      )),
                     if (navState is About && widget.aboutScreenBuilder != null)
-                      MaterialPage(
-                        child: widget.aboutScreenBuilder!(
-                          context,
-                          _getMenuTitle(context, MenuOption.about),
-                        ),
-                      ),
+                      _page(widget.aboutScreenBuilder!(
+                        context,
+                        _getMenuTitle(context, MenuOption.about),
+                      )),
                   ],
                 );
               },
