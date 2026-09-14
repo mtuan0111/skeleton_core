@@ -23,6 +23,12 @@ class MenuScreen extends StatefulWidget {
   /// Receives the scrollable body as a child to wrap.
   final Widget Function(Widget child)? backgroundWrapper;
 
+  /// Opt-in: when true, [menuItems] flow into a 2-3 column [ResponsiveGrid]
+  /// on any landscape orientation instead of the default single-column
+  /// list. Defaults to false so existing consumers (e.g. o_an_quan) are
+  /// completely unaffected unless they explicitly opt in.
+  final bool enableLandscapeSplit;
+
   const MenuScreen({
     super.key,
     required this.title,
@@ -34,6 +40,7 @@ class MenuScreen extends StatefulWidget {
     this.floatingActionButtonLocation,
     this.backgroundDecoration,
     this.backgroundWrapper,
+    this.enableLandscapeSplit = false,
   });
 
   @override
@@ -126,15 +133,28 @@ class _MenuScreenState extends State<MenuScreen> with AppVersionStateMixin {
                   ),
                 ),
               ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) => Padding(
+            if (widget.enableLandscapeSplit && context.isLandscapeOrientation)
+              SliverToBoxAdapter(
+                child: Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
-                  child: widget.menuItems[index],
+                  child: ResponsiveGrid(
+                    minItemWidth: 260,
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: widget.menuItems,
+                  ),
                 ),
-                childCount: widget.menuItems.length,
+              )
+            else
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: widget.menuItems[index],
+                  ),
+                  childCount: widget.menuItems.length,
+                ),
               ),
-            ),
             if (appVersion?.isNotEmpty ?? false)
               SliverFillRemaining(
                 hasScrollBody: false,

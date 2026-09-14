@@ -11,10 +11,12 @@ import 'package:skeleton_core/src/blocs/user/user_state.dart';
 import 'package:skeleton_core/src/helpers/app_text_styles.dart';
 import 'package:skeleton_core/src/helpers/const.dart';
 import 'package:skeleton_core/src/helpers/core_lang.dart';
+import 'package:skeleton_core/src/helpers/device_type.dart';
 import 'package:skeleton_core/src/helpers/extension.dart';
 import 'package:skeleton_core/src/helpers/ui_constants.dart';
 import 'package:skeleton_core/src/widgets/custom_button_theme.dart';
 import 'package:skeleton_core/src/widgets/custom_sliver_app_bar.dart';
+import 'package:skeleton_core/src/widgets/responsive_layout.dart';
 import 'package:skeleton_core/src/widgets/template_widgets.dart';
 
 /// A generic, reusable Setting screen for all game apps.
@@ -35,6 +37,7 @@ class SettingScreen extends StatefulWidget {
     this.backgroundWrapper,
     this.backgroundColor,
     this.fontFamily,
+    this.enableLandscapeSplit = false,
   });
 
   final String title;
@@ -77,6 +80,12 @@ class SettingScreen extends StatefulWidget {
   /// When set, overrides the font family from [AppTextStyles.titleLarge].
   final String? fontFamily;
 
+  /// Opt-in: when true, the setting rows flow into a 2-column
+  /// [ResponsiveGrid] on any landscape orientation instead of the default
+  /// single vertical list. Defaults to false so existing consumers (e.g.
+  /// o_an_quan) are completely unaffected unless they explicitly opt in.
+  final bool enableLandscapeSplit;
+
   @override
   State<SettingScreen> createState() => _SettingScreenState();
 }
@@ -111,28 +120,42 @@ class _SettingScreenState extends State<SettingScreen> {
                   [
                     BlocBuilder<UserBloc, UserState>(
                       builder: (context, userState) {
-                        return DeviceWrapper(
-                          child: Form(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              spacing: kSpaceL,
-                              children: [
-                                _buildUsernameField(context, userState),
-                                _buildFontSizeSlider(context, settingState),
-                                _buildVolumeSlider(context, settingState),
-                                _buildVibrateToggle(context, settingState),
-                                _buildTopScoresSlider(context, settingState),
-                                _buildOnlyMyRecordsToggle(
-                                    context, settingState),
-                                _buildLanguageDropdown(context, settingState),
-                                if (widget.additionalSettingsBuilder != null)
-                                  ...widget.additionalSettingsBuilder!(
-                                    context,
-                                    settingState,
-                                    _buildField,
-                                  ),
-                              ],
+                        final settingFields = [
+                          _buildUsernameField(context, userState),
+                          _buildFontSizeSlider(context, settingState),
+                          _buildVolumeSlider(context, settingState),
+                          _buildVibrateToggle(context, settingState),
+                          _buildTopScoresSlider(context, settingState),
+                          _buildOnlyMyRecordsToggle(context, settingState),
+                          _buildLanguageDropdown(context, settingState),
+                          if (widget.additionalSettingsBuilder != null)
+                            ...widget.additionalSettingsBuilder!(
+                              context,
+                              settingState,
+                              _buildField,
                             ),
+                        ];
+
+                        return DeviceWrapper(
+                          maxWidth: widget.enableLandscapeSplit &&
+                                  context.isLandscapeOrientation
+                              ? 1200
+                              : null,
+                          child: Form(
+                            child: widget.enableLandscapeSplit &&
+                                    context.isLandscapeOrientation
+                                ? ResponsiveGrid(
+                                    spacing: kSpaceL,
+                                    runSpacing: kSpaceL,
+                                    minItemWidth: 320,
+                                    children: settingFields,
+                                  )
+                                : Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    spacing: kSpaceL,
+                                    children: settingFields,
+                                  ),
                           ),
                         );
                       },

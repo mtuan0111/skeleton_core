@@ -32,6 +32,8 @@ class UserServices {
 
     String? userId;
     bool isAnonymous = true;
+    String? email;
+    String? displayName;
 
     if (_authServices.isOfflineMode) {
       userId = _authServices.offlineUserId;
@@ -40,6 +42,10 @@ class UserServices {
       final firebaseUser = _authServices.currentUser;
       userId = firebaseUser?.uid;
       isAnonymous = firebaseUser?.isAnonymous ?? true;
+      // Carried so the UI can show *which* account is signed in after a
+      // Google/Apple link, rather than only that one is.
+      email = firebaseUser?.email;
+      displayName = firebaseUser?.displayName;
       print('☁️ User session (online mode): $userId');
     }
 
@@ -48,6 +54,8 @@ class UserServices {
       firebaseUserId: userId,
       isAnonymous: isAnonymous,
       clearedLevels: clearedLevels,
+      email: email,
+      displayName: displayName,
     );
 
     return AuthenticatedUser(model: userModel);

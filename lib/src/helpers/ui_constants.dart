@@ -248,6 +248,14 @@ const double kBreakpointTablet = 600.0;
 /// Desktop breakpoint (min width)
 const double kBreakpointDesktop = 1200.0;
 
+/// Maximum side length of a numeric keypad button — keeps keypad cells from
+/// stretching into elongated rectangles on large screens.
+const double kMaxKeypadButtonSize = 110.0;
+
+/// Maximum width of a pick-right equation button — keeps equation buttons
+/// from stretching into unreadably wide pills on large screens.
+const double kMaxEquationButtonWidth = 500.0;
+
 // ============================================================================
 // SPECIFIC UI ELEMENT CONSTANTS
 // ============================================================================

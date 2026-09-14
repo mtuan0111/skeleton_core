@@ -1358,25 +1358,36 @@ class DeviceWrapper extends StatelessWidget {
   final Widget child;
   final bool isNavBar;
 
+  /// Overrides the default 800px content-width cap. Omit to keep today's
+  /// behavior exactly — pass a larger value (e.g. on tablet-landscape) to
+  /// let content use more of a large screen's width.
+  final double? maxWidth;
+
   const DeviceWrapper({
     super.key,
     required this.child,
     this.isNavBar = false,
+    this.maxWidth,
   });
 
   /// Helper to calculate the actual content width inside the wrapper
-  static double getWrapperWidth(BuildContext context, {bool isNavBar = false}) {
+  static double getWrapperWidth(
+    BuildContext context, {
+    bool isNavBar = false,
+    double? maxWidth,
+  }) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double padding = isNavBar ? 40 : 80; // 20 * 2 or 40 * 2
     final double availableWidth = screenWidth - padding;
-    return availableWidth > 800 ? 800 : availableWidth;
+    final double cap = maxWidth ?? 800;
+    return availableWidth > cap ? cap : availableWidth;
   }
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: SizedBox(
-        width: getWrapperWidth(context, isNavBar: isNavBar),
+        width: getWrapperWidth(context, isNavBar: isNavBar, maxWidth: maxWidth),
         child: child,
       ),
     );
