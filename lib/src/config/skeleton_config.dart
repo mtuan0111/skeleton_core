@@ -28,4 +28,18 @@ class SkeletonConfig {
   /// `main()` before `launch()`. Null just means Google sign-in is not
   /// configured for that app yet.
   static String? googleServerClientId;
+
+  /// Master switch for SNS (Google / Apple) sign-in. **Disabled by default** —
+  /// it is an opt-in feature.
+  ///
+  /// An app turns it on in `main()` (before `launch()`) only once its Firebase
+  /// Auth providers and OAuth client ids are actually configured. While this is
+  /// false the sign-in UI stays hidden and [AuthServices]'s `signInWithGoogle`
+  /// / `signInWithApple` refuse to run, so a half-configured provider can never
+  /// be reached — and any app that hasn't wired SNS up yet gets no dangling,
+  /// error-only sign-in button.
+  ///
+  /// Per-app, like [googleServerClientId], because this package backs several
+  /// apps and each opts in on its own schedule.
+  static bool snsLoginEnabled = false;
 }

@@ -196,6 +196,12 @@ class AuthServices {
   /// [AuthLinkConflict] if the Google identity already belongs to a
   /// different account, [AuthFailure] otherwise.
   Future<UserCredential?> signInWithGoogle() async {
+    if (!SkeletonConfig.snsLoginEnabled) {
+      // Backstop for the master switch: the UI hides the button when SNS is
+      // off, so reaching here means a stray call — refuse rather than start a
+      // flow against a provider the app opted out of.
+      throw const AuthFailure('authErrorProviderDisabled');
+    }
     _pendingConflictCredential = null;
     if (_isOfflineMode) throw const AuthFailure('authErrorNetwork');
 
@@ -264,6 +270,10 @@ class AuthServices {
   /// [_signInWithAppleViaProvider]). Same provider, same resulting Firebase
   /// user, different front end.
   Future<UserCredential?> signInWithApple() async {
+    if (!SkeletonConfig.snsLoginEnabled) {
+      // Backstop for the master switch (see signInWithGoogle).
+      throw const AuthFailure('authErrorProviderDisabled');
+    }
     _pendingConflictCredential = null;
     if (_isOfflineMode) throw const AuthFailure('authErrorNetwork');
 
