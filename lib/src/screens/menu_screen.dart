@@ -29,6 +29,12 @@ class MenuScreen extends StatefulWidget {
   /// completely unaffected unless they explicitly opt in.
   final bool enableLandscapeSplit;
 
+  /// Opt-in: on a foldable held half-open (book/tabletop) or a spanned
+  /// dual-screen device, put the header (logo, title, greeting) on one side
+  /// of the hinge and [menuItems] on the other, so nothing straddles it.
+  /// Defaults to false so existing consumers are unaffected.
+  final bool enableHingeSplit;
+
   const MenuScreen({
     super.key,
     required this.title,
@@ -41,6 +47,7 @@ class MenuScreen extends StatefulWidget {
     this.backgroundDecoration,
     this.backgroundWrapper,
     this.enableLandscapeSplit = false,
+    this.enableHingeSplit = false,
   });
 
   @override
@@ -52,13 +59,21 @@ class _MenuScreenState extends State<MenuScreen> with AppVersionStateMixin {
   Widget build(BuildContext context) {
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, userState) {
+        final body = widget.enableHingeSplit
+            ? HingeSplit(
+                minPaneExtent: 280,
+                first: _buildHeaderPane(context, userState),
+                second: _buildItemsPane(context),
+                child: _buildScrollBody(context, userState),
+              )
+            : _buildScrollBody(context, userState);
         return Scaffold(
           body: widget.backgroundWrapper != null
-              ? widget.backgroundWrapper!(_buildScrollBody(context, userState))
+              ? widget.backgroundWrapper!(body)
               : Container(
                   decoration: widget.backgroundDecoration ??
                       LayoutConfig(context).gradientDecoration,
-                  child: _buildScrollBody(context, userState),
+                  child: body,
                 ),
           floatingActionButton: widget.floatingActionButton,
           floatingActionButtonLocation: widget.floatingActionButtonLocation,
@@ -86,53 +101,11 @@ class _MenuScreenState extends State<MenuScreen> with AppVersionStateMixin {
               expandedHeight: widget.headerIcon == null ? 240 : 220,
               toolbarHeight: widget.headerIcon == null ? 80 : 80,
             ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (widget.title.isNotNullOrEmpty)
-                        Text(
-                          widget.title,
-                          style: AppTextStyles.headlineLarge(context),
-                        ),
-                      if (widget.subtitle != null) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          widget.subtitle!,
-                          style: AppTextStyles.bodyLarge(context),
-                        ),
-                      ],
-                      Text(
-                        userState.username != null
-                            ? coreLang(context).welcomeUser(userState.username!)
-                            : coreLang(context).welcome,
-                        style: AppTextStyles.titleLarge(context),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            SliverToBoxAdapter(child: _buildTitleBlock(context, userState)),
             if (widget.greetingMessage != null)
               SliverToBoxAdapter(child: widget.greetingMessage!),
             if (SeasonalTheme.current != ThemeType.defaultTheme)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.only(bottom: 10, left: 20, right: 20),
-                  child: Center(
-                    child: Text(
-                      _getHolidayMessage(context),
-                      style: AppTextStyles.bodyLargeMedium(context),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ),
+              SliverToBoxAdapter(child: _buildHolidayMessage(context)),
             if (widget.enableLandscapeSplit && context.isLandscapeOrientation)
               SliverToBoxAdapter(
                 child: Padding(
@@ -155,24 +128,118 @@ class _MenuScreenState extends State<MenuScreen> with AppVersionStateMixin {
                   childCount: widget.menuItems.length,
                 ),
               ),
-            if (appVersion?.isNotEmpty ?? false)
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Container(
-                  margin: const EdgeInsets.all(kPaddingM),
-                  alignment: Alignment.bottomCenter,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text("${coreLang(context).version}: ",
-                          style: AppTextStyles.bodyLarge(context)),
-                      Text(appVersion ?? "",
-                          style: AppTextStyles.bodyLarge(context)),
-                    ],
-                  ),
-                ),
+            if (appVersion?.isNotEmpty ?? false) _buildVersionSliver(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTitleBlock(BuildContext context, UserState userState) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (widget.title.isNotNullOrEmpty)
+              Text(
+                widget.title,
+                style: AppTextStyles.headlineLarge(context),
               ),
+            if (widget.subtitle != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                widget.subtitle!,
+                style: AppTextStyles.bodyLarge(context),
+              ),
+            ],
+            Text(
+              userState.username != null
+                  ? coreLang(context).welcomeUser(userState.username!)
+                  : coreLang(context).welcome,
+              style: AppTextStyles.titleLarge(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHolidayMessage(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10, left: 20, right: 20),
+      child: Center(
+        child: Text(
+          _getHolidayMessage(context),
+          style: AppTextStyles.bodyLargeMedium(context),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVersionSliver(BuildContext context) {
+    return SliverFillRemaining(
+      hasScrollBody: false,
+      child: Container(
+        margin: const EdgeInsets.all(kPaddingM),
+        alignment: Alignment.bottomCenter,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text("${coreLang(context).version}: ",
+                style: AppTextStyles.bodyLarge(context)),
+            Text(appVersion ?? "", style: AppTextStyles.bodyLarge(context)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// [enableHingeSplit]'s look-at pane: logo, title, greeting.
+  Widget _buildHeaderPane(BuildContext context, UserState userState) {
+    return SafeArea(
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(kPaddingM),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: 180,
+                child: Center(child: widget.headerIcon ?? const MainLogo()),
+              ),
+              _buildTitleBlock(context, userState),
+              if (widget.greetingMessage != null) widget.greetingMessage!,
+              if (SeasonalTheme.current != ThemeType.defaultTheme)
+                _buildHolidayMessage(context),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// [enableHingeSplit]'s touch pane: the menu buttons and version.
+  Widget _buildItemsPane(BuildContext context) {
+    return SafeArea(
+      child: DeviceWrapper(
+        child: CustomScrollView(
+          slivers: [
+            const SliverToBoxAdapter(child: SizedBox(height: kPaddingM)),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: widget.menuItems[index],
+                ),
+                childCount: widget.menuItems.length,
+              ),
+            ),
+            if (appVersion?.isNotEmpty ?? false) _buildVersionSliver(context),
           ],
         ),
       ),

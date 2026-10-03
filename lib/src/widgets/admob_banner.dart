@@ -130,7 +130,21 @@ class AdMobBanner extends StatefulWidget {
     required this.adUnitId,
     this.adSize = AdSize.banner,
     this.useTestAds, // null → read from registered config
+    this.adaptive = false,
   });
+
+  /// Opt-in: load an anchored adaptive banner sized to the width this widget
+  /// is given instead of [adSize], and reload it when that width changes —
+  /// folding/unfolding a foldable, rotating, or resizing a split-screen
+  /// window. [adSize] is still used as the placeholder until it loads.
+  final bool adaptive;
+
+  /// Suppresses the banner entirely — no ad is loaded and the widget renders
+  /// nothing (zero height). Off in production; the store-screenshot
+  /// integration test flips it on so a live/"Test mode" AdMob banner can't
+  /// land in a marketing frame (mirrors the `disableForTest` flags on the
+  /// FCM / AI-greeting / BLE services).
+  static bool disableForTest = false;
 
   @override
   State<AdMobBanner> createState() => _AdMobBannerState();
@@ -139,6 +153,11 @@ class AdMobBanner extends StatefulWidget {
 class _AdMobBannerState extends State<AdMobBanner> {
   BannerAd? _bannerAd;
   bool _isAdLoaded = false;
+
+  /// Size of the banner currently loaded/loading, and (adaptive only) the
+  /// slot width it was requested for.
+  late AdSize _size = widget.adSize;
+  double? _requestedWidth;
 
   /// Resolves useTestAds: explicit param > registered config > safe default.
   bool get _useTestAds =>
@@ -157,22 +176,48 @@ class _AdMobBannerState extends State<AdMobBanner> {
   @override
   void initState() {
     super.initState();
-    _loadAd();
+    if (!widget.adaptive) _loadAd();
+  }
+
+  /// Adaptive mode: (re)load for [width] once it differs from the last
+  /// requested width by at least a pixel.
+  void _maybeLoadAdaptive(double width) {
+    if (_requestedWidth != null && (width - _requestedWidth!).abs() < 1) {
+      return;
+    }
+    _requestedWidth = width;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted || AdMobBanner.disableForTest || kIsWeb) return;
+      final adaptiveSize =
+          await AdSize.getLargeAnchoredAdaptiveBannerAdSize(width.truncate());
+      if (!mounted || _requestedWidth != width) return;
+      _bannerAd?.dispose();
+      setState(() {
+        _bannerAd = null;
+        _isAdLoaded = false;
+        _size = adaptiveSize ?? widget.adSize;
+      });
+      _loadAd();
+    });
   }
 
   void _loadAd() {
+    if (AdMobBanner.disableForTest) {
+      debugPrint('📱 [AdMob] Banner suppressed (disableForTest)');
+      return;
+    }
     if (kIsWeb) {
       debugPrint('📱 [AdMob] Skipping banner ad load on web');
       return;
     }
-    
+
     final adUnitId = _effectiveAdUnitId;
     debugPrint(
         '📱 [AdMob] Loading banner — ID: $adUnitId (test: $_useTestAds)');
 
     _bannerAd = BannerAd(
       adUnitId: adUnitId,
-      size: widget.adSize,
+      size: _size,
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
@@ -202,8 +247,25 @@ class _AdMobBannerState extends State<AdMobBanner> {
 
   @override
   Widget build(BuildContext context) {
+    // Store-screenshot runs suppress ads entirely — render nothing (not even
+    // the reserved-height placeholder) so the frame has no empty ad gap.
+    if (AdMobBanner.disableForTest) return const SizedBox.shrink();
+    if (widget.adaptive) {
+      return LayoutBuilder(builder: (context, constraints) {
+        final width = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.sizeOf(context).width;
+        // The container below adds kPaddingS on each side.
+        _maybeLoadAdaptive(width - kPaddingS * 2);
+        return _buildBanner(context);
+      });
+    }
+    return _buildBanner(context);
+  }
+
+  Widget _buildBanner(BuildContext context) {
     if (!_isAdLoaded || _bannerAd == null) {
-      return SizedBox(height: widget.adSize.height.toDouble());
+      return SizedBox(height: _size.height.toDouble());
     }
 
     return Container(
@@ -217,8 +279,8 @@ class _AdMobBannerState extends State<AdMobBanner> {
         ),
       ),
       child: SizedBox(
-        height: widget.adSize.height.toDouble() + kPaddingS,
-        width: widget.adSize.width.toDouble() + kPaddingS / 2,
+        height: _size.height.toDouble() + kPaddingS,
+        width: _size.width.toDouble() + kPaddingS / 2,
         child: AdWidget(ad: _bannerAd!),
       ),
     );

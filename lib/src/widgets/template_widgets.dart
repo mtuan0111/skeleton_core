@@ -803,9 +803,14 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
     Widget content = widget.child ?? row;
 
     if (content is Row) {
-      return IntrinsicWidth(child: content);
+      content = IntrinsicWidth(child: content);
     }
-    return content;
+    // When the parent gives the button less width than its icon+label needs
+    // (e.g. the largest font sizes in landscape, where the text sits in an
+    // Expanded inside this IntrinsicWidth-pinned Row), the row would overflow
+    // on the right. scaleDown shrinks the whole content to fit only when it
+    // otherwise wouldn't — buttons that already fit render unchanged.
+    return FittedBox(fit: BoxFit.scaleDown, child: content);
   }
 
   @override
@@ -1354,6 +1359,9 @@ class _WidgetToImageState extends State<WidgetToImage> {
 // DeviceWrapper
 // ============================================================================
 
+/// Windows narrower than this get [DeviceWrapper]'s compact gutters.
+const double kNarrowWindowWidth = 360.0;
+
 class DeviceWrapper extends StatelessWidget {
   final Widget child;
   final bool isNavBar;
@@ -1377,7 +1385,14 @@ class DeviceWrapper extends StatelessWidget {
     double? maxWidth,
   }) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    final double padding = isNavBar ? 40 : 80; // 20 * 2 or 40 * 2
+    // Below a regular phone width (a Fold cover screen, a narrow
+    // split-screen/multi-window pane) the usual gutters would eat a quarter
+    // of the window, so they shrink there; every phone >= 360pt is unchanged.
+    final double padding = screenWidth < kNarrowWindowWidth
+        ? 32 // 16 * 2
+        : isNavBar
+            ? 40 // 20 * 2
+            : 80; // 40 * 2
     final double availableWidth = screenWidth - padding;
     final double cap = maxWidth ?? 800;
     return availableWidth > cap ? cap : availableWidth;

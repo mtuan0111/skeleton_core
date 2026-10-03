@@ -206,11 +206,13 @@ class SeasonalTheme {
   static final Map<ThemeType, ThemeConfig> _themes = {
     ThemeType.defaultTheme: ThemeConfig(
       name: 'Default',
-      primaryColor:
-          const Color.fromARGB(255, 0, 174, 90), // Bright green (adjusted)
-      secondaryColor: const Color.fromARGB(
-          255, 0, 51, 105), // Bright blue (adjusted to match brightness)
-      tertiaryColor: const Color(0xFF00AE5A), // Green
+      // Softer, more natural palette: the previous colours were near-neon
+      // (#00AE5A / #003369) which fought the content for attention. These are
+      // desaturated toward a calmer, foliage-inspired green so UI chrome
+      // recedes and gameplay reads as the focal point.
+      primaryColor: const Color(0xFF2E9E67), // Muted natural green
+      secondaryColor: const Color(0xFF265A73), // Soft deep teal (was harsh navy)
+      tertiaryColor: const Color(0xFF7DB685), // Sage green accent
       fireworkColors: [
         const Color(0xFFFF6B6B), // Warm red
         const Color(0xFFFF8E53), // Warm orange

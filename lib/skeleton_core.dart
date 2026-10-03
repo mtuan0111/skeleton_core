@@ -31,6 +31,8 @@ export 'src/helpers/helper.dart';
 export 'src/helpers/core_lang.dart';
 export 'src/helpers/app_version_state_mixin.dart';
 export 'src/helpers/device_type.dart';
+export 'src/helpers/window_size_class.dart';
+export 'src/helpers/fold_layout.dart';
 
 // Localization
 export 'src/localization/core_localizations.dart';
@@ -41,6 +43,7 @@ export 'src/widgets/custom_button_theme.dart';
 export 'src/widgets/custom_sliver_app_bar.dart';
 export 'src/widgets/alert_template.dart';
 export 'src/widgets/responsive_layout.dart';
+export 'src/widgets/hinge_split.dart';
 // alert_template.dart and update_notice_dialog.dart are available
 // for direct import but not auto-exported to avoid conflicts with
 // app-specific localized versions.

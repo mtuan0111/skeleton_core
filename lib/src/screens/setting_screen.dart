@@ -16,6 +16,7 @@ import 'package:skeleton_core/src/helpers/extension.dart';
 import 'package:skeleton_core/src/helpers/ui_constants.dart';
 import 'package:skeleton_core/src/widgets/custom_button_theme.dart';
 import 'package:skeleton_core/src/widgets/custom_sliver_app_bar.dart';
+import 'package:skeleton_core/src/widgets/hinge_split.dart';
 import 'package:skeleton_core/src/widgets/responsive_layout.dart';
 import 'package:skeleton_core/src/widgets/template_widgets.dart';
 
@@ -38,6 +39,7 @@ class SettingScreen extends StatefulWidget {
     this.backgroundColor,
     this.fontFamily,
     this.enableLandscapeSplit = false,
+    this.enableHingeSplit = false,
   });
 
   final String title;
@@ -86,6 +88,12 @@ class SettingScreen extends StatefulWidget {
   /// o_an_quan) are completely unaffected unless they explicitly opt in.
   final bool enableLandscapeSplit;
 
+  /// Opt-in: on a foldable held half-open (book/tabletop) or a spanned
+  /// dual-screen device, put the first half of the setting rows on one side
+  /// of the hinge and the rest on the other, so no row straddles it.
+  /// Defaults to false so existing consumers are unaffected.
+  final bool enableHingeSplit;
+
   @override
   State<SettingScreen> createState() => _SettingScreenState();
 }
@@ -108,33 +116,14 @@ class _SettingScreenState extends State<SettingScreen> {
         final scrollBody = SafeArea(
           child: CustomScrollView(
             slivers: [
-              CustomSliverAppBar(
-                title: screenTitle,
-                onBackPressed: () {
-                  context.read<MenuBloc>().add(ShowMenu());
-                },
-                expandedHeight: 100,
-              ),
+              _buildAppBar(context),
               SliverList(
                 delegate: SliverChildListDelegate(
                   [
                     BlocBuilder<UserBloc, UserState>(
                       builder: (context, userState) {
-                        final settingFields = [
-                          _buildUsernameField(context, userState),
-                          _buildFontSizeSlider(context, settingState),
-                          _buildVolumeSlider(context, settingState),
-                          _buildVibrateToggle(context, settingState),
-                          _buildTopScoresSlider(context, settingState),
-                          _buildOnlyMyRecordsToggle(context, settingState),
-                          _buildLanguageDropdown(context, settingState),
-                          if (widget.additionalSettingsBuilder != null)
-                            ...widget.additionalSettingsBuilder!(
-                              context,
-                              settingState,
-                              _buildField,
-                            ),
-                        ];
+                        final settingFields = _buildSettingFields(
+                            context, settingState, userState);
 
                         return DeviceWrapper(
                           maxWidth: widget.enableLandscapeSplit &&
@@ -167,16 +156,98 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
         );
 
+        final body = widget.enableHingeSplit
+            ? HingeSplit(
+                minPaneExtent: 300,
+                first: _buildHingePane(context, settingState, firstHalf: true),
+                second:
+                    _buildHingePane(context, settingState, firstHalf: false),
+                child: scrollBody,
+              )
+            : scrollBody;
+
         return Scaffold(
           body: widget.backgroundWrapper != null
-              ? widget.backgroundWrapper!(scrollBody)
+              ? widget.backgroundWrapper!(body)
               : Container(
                   decoration: widget.backgroundDecoration ??
                       LayoutConfig(context).gradientDecoration,
-                  child: scrollBody,
+                  child: body,
                 ),
         );
       },
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context) {
+    return CustomSliverAppBar(
+      title: screenTitle,
+      onBackPressed: () {
+        context.read<MenuBloc>().add(ShowMenu());
+      },
+      expandedHeight: 100,
+    );
+  }
+
+  List<Widget> _buildSettingFields(
+    BuildContext context,
+    SettingState settingState,
+    UserState userState,
+  ) {
+    return [
+      _buildUsernameField(context, userState),
+      _buildFontSizeSlider(context, settingState),
+      _buildVolumeSlider(context, settingState),
+      _buildVibrateToggle(context, settingState),
+      _buildTopScoresSlider(context, settingState),
+      _buildOnlyMyRecordsToggle(context, settingState),
+      _buildLanguageDropdown(context, settingState),
+      if (widget.additionalSettingsBuilder != null)
+        ...widget.additionalSettingsBuilder!(
+          context,
+          settingState,
+          _buildField,
+        ),
+    ];
+  }
+
+  /// One side of [SettingScreen.enableHingeSplit]: the app bar plus the
+  /// first half of the rows, or the remaining rows.
+  Widget _buildHingePane(
+    BuildContext context,
+    SettingState settingState, {
+    required bool firstHalf,
+  }) {
+    return SafeArea(
+      child: CustomScrollView(
+        slivers: [
+          if (firstHalf)
+            _buildAppBar(context)
+          else
+            const SliverToBoxAdapter(child: SizedBox(height: kSpaceL)),
+          SliverToBoxAdapter(
+            child: BlocBuilder<UserBloc, UserState>(
+              builder: (context, userState) {
+                final fields =
+                    _buildSettingFields(context, settingState, userState);
+                final mid = (fields.length / 2).ceil();
+                return DeviceWrapper(
+                  child: Form(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      spacing: kSpaceL,
+                      children: firstHalf
+                          ? fields.sublist(0, mid)
+                          : fields.sublist(mid),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: kSpaceL)),
+        ],
+      ),
     );
   }
 
