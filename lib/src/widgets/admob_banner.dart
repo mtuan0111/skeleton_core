@@ -191,6 +191,8 @@ class _AdMobBannerState extends State<AdMobBanner> {
       final adaptiveSize =
           await AdSize.getLargeAnchoredAdaptiveBannerAdSize(width.truncate());
       if (!mounted || _requestedWidth != width) return;
+      debugPrint('📱 [AdMob] Adaptive size for width ${width.truncate()}: '
+          '${adaptiveSize?.width}x${adaptiveSize?.height}');
       _bannerAd?.dispose();
       setState(() {
         _bannerAd = null;

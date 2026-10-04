@@ -805,6 +805,11 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
     if (content is Row) {
       content = IntrinsicWidth(child: content);
     }
+    // A caller-supplied child (e.g. AlertTemplate's dialog body) lays itself
+    // out within the button's width. Wrapping it in a FittedBox would hand it
+    // unbounded width, so paragraphs render as one line and get scaled down
+    // to an unreadable size instead of wrapping.
+    if (widget.child != null) return content;
     // When the parent gives the button less width than its icon+label needs
     // (e.g. the largest font sizes in landscape, where the text sits in an
     // Expanded inside this IntrinsicWidth-pinned Row), the row would overflow
