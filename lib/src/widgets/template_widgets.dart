@@ -574,6 +574,11 @@ class CustomElevatedButton extends StatefulWidget {
   final double? buttonRadius;
   final double? minWidth;
   final double? minHeight;
+
+  /// Inner padding on every side, overriding the [buttonSize]-based
+  /// default. The label is scaled down to fit what's left, so a fixed
+  /// padding on a small button leaves almost no room for it.
+  final double? padding;
   final Color? color;
   final Color? backgroundColor;
   final bool? isActive;
@@ -621,6 +626,7 @@ class CustomElevatedButton extends StatefulWidget {
     this.buttonRadius,
     this.minWidth,
     this.minHeight,
+    this.padding,
     this.color,
     this.backgroundColor,
     this.isActive,
@@ -672,6 +678,7 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
   }
 
   double getPaddingSize() {
+    if (widget.padding != null) return widget.padding!;
     double basePadding = 20;
     switch (widget.buttonSize) {
       case ButtonSize.smallest:
@@ -1151,6 +1158,11 @@ class AnimatedButton extends StatefulWidget {
   final RoundedWithShapeAt? shapeAt;
   final double? minWidth;
   final double? minHeight;
+
+  /// Overrides the [buttonSize]-based inner padding, e.g. to scale it
+  /// with a small keypad key so the label isn't squeezed. Passed through to
+  /// [CustomElevatedButton.padding].
+  final double? padding;
   final Color? color;
   final Color? backgroundColor;
   final TextDirection? textDirection;
@@ -1170,6 +1182,7 @@ class AnimatedButton extends StatefulWidget {
     this.shapeAt = RoundedWithShapeAt.topLeft,
     this.minWidth,
     this.minHeight,
+    this.padding,
     this.color,
     this.backgroundColor,
     this.textDirection,
@@ -1244,6 +1257,7 @@ class _AnimatedButtonState extends State<AnimatedButton> {
           shapeAt: widget.shapeAt,
           minWidth: minWidth,
           minHeight: minHeight,
+          padding: widget.padding,
           color: widget.color,
           backgroundColor: widget.backgroundColor,
           isActive: widget.isActive,
