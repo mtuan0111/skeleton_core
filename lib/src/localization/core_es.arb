@@ -167,7 +167,7 @@
   "@updatePostponed": {
     "description": "Message when user dismissed update"
   },
-  "welcome": "¡Bienvenido/a!",
+  "welcome": "¡Te damos la bienvenida!",
   "@welcome": {
     "description": "Welcome the user to the application",
     "placeholders": {}

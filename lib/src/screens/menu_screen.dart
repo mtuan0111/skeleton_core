@@ -35,6 +35,13 @@ class MenuScreen extends StatefulWidget {
   /// Defaults to false so existing consumers are unaffected.
   final bool enableHingeSplit;
 
+  /// Opt-in: in landscape, put the header (logo, title, greeting) in a left
+  /// pane and [menuItems] in a right one, side by side. Without it, the
+  /// header alone fills a landscape phone's short screen and every menu
+  /// button sits below the fold. Defaults to false so existing consumers
+  /// are unaffected.
+  final bool sideBySideInLandscape;
+
   const MenuScreen({
     super.key,
     required this.title,
@@ -48,6 +55,7 @@ class MenuScreen extends StatefulWidget {
     this.backgroundWrapper,
     this.enableLandscapeSplit = false,
     this.enableHingeSplit = false,
+    this.sideBySideInLandscape = false,
   });
 
   @override
@@ -59,14 +67,23 @@ class _MenuScreenState extends State<MenuScreen> with AppVersionStateMixin {
   Widget build(BuildContext context) {
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, userState) {
+        final Widget singleBody =
+            widget.sideBySideInLandscape && context.isLandscapeOrientation
+                ? Row(
+                    children: [
+                      Expanded(child: _buildHeaderPane(context, userState)),
+                      Expanded(child: _buildItemsPane(context)),
+                    ],
+                  )
+                : _buildScrollBody(context, userState);
         final body = widget.enableHingeSplit
             ? HingeSplit(
                 minPaneExtent: 280,
                 first: _buildHeaderPane(context, userState),
                 second: _buildItemsPane(context),
-                child: _buildScrollBody(context, userState),
+                child: singleBody,
               )
-            : _buildScrollBody(context, userState);
+            : singleBody;
         return Scaffold(
           body: widget.backgroundWrapper != null
               ? widget.backgroundWrapper!(body)

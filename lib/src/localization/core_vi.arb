@@ -171,7 +171,7 @@
   "@updatePostponed": {
     "description": "Thông báo khi người dùng từ chối cập nhật"
   },
-  "welcome": "Chào mừng!!",
+  "welcome": "Chào mừng!",
   "@welcome": {
     "description": "Chào mừng người dùng đến với ứng dụng",
     "placeholders": {}

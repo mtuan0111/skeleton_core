@@ -47,7 +47,7 @@
   "@waiting": {
     "description": "Waiting status text"
   },
-  "setting": "Setting",
+  "setting": "Settings",
   "@setting": {
     "description": "Settings menu label"
   },
@@ -171,7 +171,7 @@
   "@updatePostponed": {
     "description": "Message when user dismissed update"
   },
-  "welcome": "Welcome!!",
+  "welcome": "Welcome!",
   "@welcome": {
     "description": "Welcome the user to the application",
     "placeholders": {}

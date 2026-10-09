@@ -541,7 +541,8 @@ class RankingSortingWidget extends StatelessWidget {
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: theme.colorScheme.onSecondary,
                   fontWeight: FontWeight.bold,
-                  fontSize: 10,
+                  // 12, not 10: the "You" tag was too small to read.
+                  fontSize: 12,
                 ),
               ),
             ),
@@ -775,6 +776,14 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
       textWidget = Expanded(
         child: Text(
           widget.text!,
+          // A button label stays on one line. The button sizes itself from
+          // the label's intrinsic width, which comes out slightly short for
+          // fallback-font scripts with a synthesized italic (e.g. Hindi in a
+          // Latin-only font) — wrapping would then break the last word onto
+          // a second line. Too-wide labels are still shrunk to fit by the
+          // FittedBox around the icon+label row.
+          softWrap: false,
+          overflow: TextOverflow.visible,
           style: getTextStyle(context)
           // .copyWith(
           // fontSize: getFontSize(context),

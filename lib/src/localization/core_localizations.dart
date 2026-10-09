@@ -183,7 +183,7 @@ abstract class CoreLocalizations {
   /// Settings menu label
   ///
   /// In en, this message translates to:
-  /// **'Setting'**
+  /// **'Settings'**
   String get setting;
 
   /// About menu label
@@ -345,7 +345,7 @@ abstract class CoreLocalizations {
   /// Welcome the user to the application
   ///
   /// In en, this message translates to:
-  /// **'Welcome!!'**
+  /// **'Welcome!'**
   String get welcome;
 
   /// Welcome the user to the application

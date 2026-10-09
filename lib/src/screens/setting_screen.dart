@@ -572,6 +572,9 @@ class _SettingScreenState extends State<SettingScreen> {
       iconData: FontAwesomeIcons.language,
       title: coreLang(context).language,
       child: DropdownButtonFormField<String>(
+        // Fill the field and ellipsize long language names rather than
+        // overflowing — e.g. a 270pt-wide foldable window at max font size.
+        isExpanded: true,
         initialValue: settingState.locale,
         items: languages.entries
             .map(
@@ -579,6 +582,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 value: lang.key,
                 child: Text(
                   lang.value,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.bodyMedium(
                       context, Theme.of(context).primaryColor),
                 ),

@@ -78,6 +78,10 @@ class CustomSliverAppBar extends StatelessWidget {
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
               final double appBarHeight = constraints.biggest.height;
+              final bool hasSideButtons = leading != null ||
+                  onBackPressed != null ||
+                  (actions?.isNotEmpty ?? false);
+              final double sideInset = hasSideButtons ? kToolbarHeight : 0;
               final bool isCollapsed = !(appBarHeight <=
                   kToolbarHeight + MediaQuery.of(context).padding.top);
 
@@ -104,29 +108,36 @@ class CustomSliverAppBar extends StatelessWidget {
                     // titlePadding: EdgeInsets.zero,
                     expandedTitleScale: 1,
                     titlePadding: isCollapsed ? EdgeInsets.zero : titlePadding,
-                    title: Row(
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: title.isNotNullOrEmpty && isCollapsed
-                                ? titlePadding
-                                : EdgeInsets.zero,
-                            child: titleWidget != null
-                                ? Center(child: titleWidget)
-                                : Center(
-                                    child: FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      child: Text(
-                                        title!,
-                                        textAlign: TextAlign.center,
-                                        style: AppTextStyles
-                                            .displaySmallTitleScreen(context),
+                    // The title spans the whole bar, under the leading
+                    // button and actions; inset it by their width (on both
+                    // sides, so it stays centred) or a long title scales
+                    // down only until it runs into the back button.
+                    title: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: sideInset),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: title.isNotNullOrEmpty && isCollapsed
+                                  ? titlePadding
+                                  : EdgeInsets.zero,
+                              child: titleWidget != null
+                                  ? Center(child: titleWidget)
+                                  : Center(
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(
+                                          title!,
+                                          textAlign: TextAlign.center,
+                                          style: AppTextStyles
+                                              .displaySmallTitleScreen(context),
+                                        ),
                                       ),
                                     ),
-                                  ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],

@@ -129,7 +129,7 @@ class CoreLocalizationsEs extends CoreLocalizations {
   String get updatePostponed => 'Actualización disponible pero pospuesta.';
 
   @override
-  String get welcome => '¡Bienvenido/a!';
+  String get welcome => '¡Te damos la bienvenida!';
 
   @override
   String welcomeUser(String username) {

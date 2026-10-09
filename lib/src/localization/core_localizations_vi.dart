@@ -129,7 +129,7 @@ class CoreLocalizationsVi extends CoreLocalizations {
   String get updatePostponed => 'Có bản cập nhật nhưng đã hoãn lại.';
 
   @override
-  String get welcome => 'Chào mừng!!';
+  String get welcome => 'Chào mừng!';
 
   @override
   String welcomeUser(String username) {

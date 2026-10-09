@@ -42,7 +42,7 @@ class CoreLocalizationsEn extends CoreLocalizations {
   String get waiting => 'Waiting';
 
   @override
-  String get setting => 'Setting';
+  String get setting => 'Settings';
 
   @override
   String get about => 'About';
@@ -129,7 +129,7 @@ class CoreLocalizationsEn extends CoreLocalizations {
   String get updatePostponed => 'Update available but postponed.';
 
   @override
-  String get welcome => 'Welcome!!';
+  String get welcome => 'Welcome!';
 
   @override
   String welcomeUser(String username) {
