@@ -55,6 +55,12 @@ class SkeletonApp {
   /// Receives the child widget to wrap.
   final Widget Function(BuildContext context, Widget child)? tourWrapperBuilder;
 
+  /// Extra text scale on large screens (shortest side >= 600, i.e. tablets
+  /// and unfolded foldables), on top of the user's system text size. Phone
+  /// layouts on a tablet otherwise read as tiny. Applied to every route and
+  /// dialog. 1.0 (default) leaves all text as-is.
+  final double largeScreenTextScale;
+
   /// Optional: wraps the home screen in an update-checker.
   /// Receives the child widget to wrap.
   final Widget Function(BuildContext context, Widget child)?
@@ -100,6 +106,7 @@ class SkeletonApp {
     required this.themeBuilder,
     required this.menuNavBuilder,
     this.tourWrapperBuilder,
+    this.largeScreenTextScale = 1.0,
     this.updateCheckerBuilder,
     this.appBlocProviders,
     this.onInit,
@@ -171,10 +178,24 @@ class _SkeletonAppWidget extends StatelessWidget {
               theme: config.themeBuilder(context, state),
               themeMode: state.themeMode,
               builder: (innerContext, child) {
-                if (config.buttonTheme == null) return child!;
+                Widget app = child!;
+                final mq = MediaQuery.of(innerContext);
+                if (config.largeScreenTextScale != 1.0 &&
+                    mq.size.shortestSide >= 600) {
+                  // Keep the user's system text size and scale on top of it.
+                  app = MediaQuery(
+                    data: mq.copyWith(
+                      textScaler: TextScaler.linear(mq.textScaler.scale(14) /
+                          14 *
+                          config.largeScreenTextScale),
+                    ),
+                    child: app,
+                  );
+                }
+                if (config.buttonTheme == null) return app;
                 return CustomButtonTheme(
                   data: config.buttonTheme!,
-                  child: child!,
+                  child: app,
                 );
               },
               home: _buildHome(context),
